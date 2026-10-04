@@ -26,106 +26,220 @@
 
     <iframe name="hidden_gsheet_iframe" id="hidden_gsheet_iframe" style="display:none;"></iframe>
 
-    <header class="border-b border-slate-800 bg-slate-900/90 px-4 sm:px-6 py-3.5 flex items-center justify-between backdrop-blur sticky top-0 z-30">
-        <a href="index.html" class="flex items-center gap-2 text-xs font-semibold text-slate-300 hover:text-white transition">
-            <i class="fa-solid fa-arrow-left"></i> Back to Hub
-        </a>
-        <div class="flex items-center gap-2.5">
-            <span id="session-student-badge" class="text-xs font-mono px-3 py-1 rounded bg-slate-800 text-slate-300">Loading student...</span>
-            <div class="text-xs font-mono bg-purple-950/80 text-purple-400 border border-purple-800 px-2.5 py-1 rounded-full">
-                Module 05: While & Do-While Cycles
+    <header class="border-b border-slate-800 bg-slate-900/90 px-4 sm:px-6 py-3 shrink-0 backdrop-blur sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2 text-xs font-semibold text-slate-300 hover:text-white transition">
+                <i class="fa-solid fa-arrow-left"></i> Back to Academy Hub
+            </a>
+            <div class="flex items-center gap-3">
+                <span id="session-student-badge" class="text-xs font-mono px-3 py-1 rounded bg-slate-800 text-slate-300">Loading student...</span>
+                <div class="text-xs font-mono bg-purple-950/80 text-purple-400 border border-purple-800 px-2.5 py-1 rounded-full">
+                    Module 05: While & Do-While Cycles
+                </div>
             </div>
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto w-full px-4 py-8 space-y-8 flex-1">
+    <main class="max-w-7xl mx-auto w-full px-3 sm:px-6 py-6 space-y-8 flex-1">
         
-        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl">
-            <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
+        <!-- ========================================== -->
+        <!-- PHASE 1: FULL SCREEN INTERACTIVE LAB STAGE -->
+        <!-- ========================================== -->
+        <section id="interactive-stage-section" class="bg-slate-900 border border-slate-800 rounded-3xl p-4 sm:p-7 shadow-2xl space-y-5 transition-all">
+            
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
                 <div>
-                    <h3 class="text-base font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-arrows-spin text-purple-400"></i> While & Do-While Cycles: 5 MCQs
-                    </h3>
-                    <p class="text-xs text-slate-400 mt-1">Submit your assessment to complete course progress and store records in Google Sheets.</p>
+                    <h2 class="text-lg sm:text-xl font-bold text-white flex items-center gap-2.5">
+                        <i class="fa-solid fa-arrows-spin text-purple-400"></i> Pre-Test vs Post-Test Execution Cycle Sandbox
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">Compare standard `while` (pre-condition check) with `do-while` (post-condition check) when the initial condition is already false.</p>
                 </div>
-                <span class="text-xs font-mono px-3 py-1 rounded bg-slate-800 text-slate-300">Passing: 3/5</span>
+                <div class="flex items-center gap-2">
+                    <span class="text-[11px] font-mono px-3 py-1 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20 font-bold">
+                        Phase 1: Interactive Lab
+                    </span>
+                </div>
+            </div>
+
+            <!-- Controls Workspace -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-950 p-4 rounded-2xl border border-slate-800">
+                <div>
+                    <label class="block text-xs font-mono text-slate-400 mb-1">Loop Type</label>
+                    <select id="while-type" onchange="runWhileSimulation()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-purple-300 font-bold focus:outline-none">
+                        <option value="while" selected>Standard `while` (Pre-Test)</option>
+                        <option value="dowhile">`do-while` (Post-Test)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-mono text-slate-400 mb-1">Starting Variable `x` Value</label>
+                    <div class="flex gap-4 pt-1.5 text-xs font-mono">
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer">
+                            <input type="radio" name="xRadio" value="10" checked onchange="runWhileSimulation()" class="accent-purple-500"> x = 10 (Fails condition x &lt; 5)
+                        </label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer">
+                            <input type="radio" name="xRadio" value="2" onchange="runWhileSimulation()" class="accent-purple-500"> x = 2 (Valid start)
+                        </label>
+                    </div>
+                </div>
+
+                <div class="flex items-center">
+                    <div id="cycle-indicator" class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-mono text-purple-400">
+                        Guarantee Check: Ready
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visual State Display -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                <!-- Visual Pipeline -->
+                <div class="lg:col-span-6 bg-slate-950 p-5 rounded-2xl border border-slate-800 flex flex-col justify-between space-y-4">
+                    <span class="text-xs font-mono text-slate-400 uppercase font-semibold">Cycle Execution Pipeline</span>
+
+                    <div class="space-y-3 flex-1 flex flex-col justify-center">
+                        <div id="pipe-check" class="p-4 rounded-2xl border border-slate-800 bg-slate-900/60 flex items-center justify-between transition-all">
+                            <div>
+                                <span class="text-[10px] font-mono text-slate-500 uppercase block">Check Point</span>
+                                <div class="font-bold text-xs text-white">Condition Evaluation `(x < 5)`</div>
+                            </div>
+                            <span id="pipe-check-status" class="text-xs font-mono font-bold text-slate-600">PENDING</span>
+                        </div>
+                        <div id="pipe-body" class="p-4 rounded-2xl border border-slate-800 bg-slate-900/60 flex items-center justify-between transition-all">
+                            <div>
+                                <span class="text-[10px] font-mono text-slate-500 uppercase block">Execution Point</span>
+                                <div class="font-bold text-xs text-white">Loop Body Execution `{ x++; }`</div>
+                            </div>
+                            <span id="pipe-body-status" class="text-xs font-mono font-bold text-slate-600">PENDING</span>
+                        </div>
+                    </div>
+
+                    <div id="while-result-box" class="p-3 rounded-xl bg-purple-950/40 border border-purple-800/80 text-xs font-mono text-purple-300">
+                        Output: Ready
+                    </div>
+                </div>
+
+                <!-- Java Loop Snippet -->
+                <div class="lg:col-span-6 bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden flex flex-col">
+                    <div class="bg-slate-900 px-4 py-2.5 border-b border-slate-800 flex items-center justify-between">
+                        <span class="text-xs font-mono text-slate-200 font-bold" id="while-filename">WhileLoopDemo.java</span>
+                        <span class="text-[10px] font-mono text-purple-400">Bytecode Flow</span>
+                    </div>
+                    <pre id="while-code-pre" class="p-4 font-mono-code text-xs leading-6 text-slate-300 overflow-x-auto flex-1"></pre>
+                </div>
+            </div>
+
+            <!-- GATE ACTION -->
+            <div class="pt-4 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="text-xs text-slate-400">
+                    <i class="fa-solid fa-circle-info text-purple-400 mr-1.5"></i>
+                    Compared pre-test vs post-test execution guarantees? Unlock your assessment below.
+                </div>
+                <button id="unlock-quiz-btn" onclick="unlockAssessment()" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 font-bold text-xs text-white shadow-xl shadow-purple-600/30 transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-graduation-cap text-sm"></i>
+                    <span>I Have Learned This &bull; Take 5-Question Assessment</span>
+                </button>
+            </div>
+
+        </section>
+
+        <!-- ========================================== -->
+        <!-- PHASE 2: 5-QUESTION MCQ ASSESSMENT SECTION -->
+        <!-- ========================================== -->
+        <section id="assessment-section" class="hidden bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl transition-all">
+            <div class="flex items-center justify-between mb-5 border-b border-slate-800 pb-4">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20 font-mono text-[10px] font-bold uppercase">Phase 2</span>
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-purple-400"></i> Module 05: While Loops Assessment
+                        </h3>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-1">5 questions &bull; Passing score: 3/5 &bull; Automatically syncs to Google Sheets.</p>
+                </div>
+                <button onclick="scrollToVisualizer()" class="text-xs text-slate-400 hover:text-white px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 font-mono transition">
+                    &uarr; Review Visualizer
+                </button>
             </div>
 
             <form id="quiz-form" onsubmit="submitQuiz(event)" class="space-y-6">
                 <!-- Q1 -->
-                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 sm:p-5">
                     <p class="text-xs font-semibold text-slate-200 mb-3">1. What is the fundamental operational difference between a `while` loop and a `do-while` loop?</p>
-                    <div class="space-y-2 text-xs">
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="A" required> A) `while` checks the condition before executing; `do-while` executes the body at least once before checking</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="B"> B) `do-while` can only run up to 10 iterations</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="C"> C) `while` is deprecated in modern Java</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="D"> D) There is no difference; they compile to identical bytecode</label>
+                    <div class="space-y-2.5 text-xs">
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="A" required> A) `while` checks the condition before executing; `do-while` executes body at least once before checking</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="B"> B) `do-while` can only run up to 10 iterations</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="C"> C) `while` is deprecated in modern Java</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="D"> D) There is no difference; they compile to identical bytecode</label>
                     </div>
-                    <div id="expl-1" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
+                    <div id="expl-1" class="hidden mt-3 p-3 rounded-xl text-xs font-mono"></div>
                 </div>
 
                 <!-- Q2 -->
-                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 sm:p-5">
                     <p class="text-xs font-semibold text-slate-200 mb-3">2. What occurs in this code snippet: `int x = 0; while (x < 5); { x++; }`?</p>
-                    <div class="space-y-2 text-xs">
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="A" required> A) It increments x up to 5 and terminates normally</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="B"> B) Infinite loop: the semicolon after `while (x < 5);` creates an empty body, so x never increments</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="C"> C) Syntax compilation error</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="D"> D) The block `{ x++; }` runs only once</label>
+                    <div class="space-y-2.5 text-xs">
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="A" required> A) It increments x up to 5 and terminates normally</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="B"> B) Infinite loop: the semicolon after `while (x < 5);` creates an empty body, so x never increments</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="C"> C) Syntax compilation error</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="D"> D) The block `{ x++; }` runs only once</label>
                     </div>
-                    <div id="expl-2" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
+                    <div id="expl-2" class="hidden mt-3 p-3 rounded-xl text-xs font-mono"></div>
                 </div>
 
                 <!-- Q3 -->
-                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 sm:p-5">
                     <p class="text-xs font-semibold text-slate-200 mb-3">3. How many times does this loop body execute: `int a = 10; do { a++; } while (a < 5);`?</p>
-                    <div class="space-y-2 text-xs">
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="A" required> A) Exactly 0 times</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="B"> B) Exactly 1 time</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="C"> C) 5 times</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="D"> D) Infinite times</label>
+                    <div class="space-y-2.5 text-xs">
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="A" required> A) Exactly 0 times</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="B"> B) Exactly 1 time</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="C"> C) 5 times</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="D"> D) Infinite times</label>
                     </div>
-                    <div id="expl-3" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
+                    <div id="expl-3" class="hidden mt-3 p-3 rounded-xl text-xs font-mono"></div>
                 </div>
 
                 <!-- Q4 -->
-                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 sm:p-5">
                     <p class="text-xs font-semibold text-slate-200 mb-3">4. What is a required syntax element at the very end of a `do-while` loop statement?</p>
-                    <div class="space-y-2 text-xs">
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="A" required> A) A terminating semicolon `;` directly after `while (condition);`</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="B"> B) A colon `:`</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="C"> C) A closing double brace `}}`</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="D"> D) An empty return statement</label>
+                    <div class="space-y-2.5 text-xs">
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="A" required> A) A terminating semicolon `;` directly after `while (condition);`</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="B"> B) A colon `:`</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="C"> C) A closing double brace `}}`</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="D"> D) An empty return statement</label>
                     </div>
-                    <div id="expl-4" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
+                    <div id="expl-4" class="hidden mt-3 p-3 rounded-xl text-xs font-mono"></div>
                 </div>
 
                 <!-- Q5 -->
-                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 sm:p-5">
                     <p class="text-xs font-semibold text-slate-200 mb-3">5. Which scenario favors a `while` loop over a standard indexed `for` loop?</p>
-                    <div class="space-y-2 text-xs">
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="A" required> A) When iterating over a known fixed array length from 0 to N-1</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="B"> B) When iteration count is non-deterministic (e.g. reading from a network stream or file until EOF)</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="C"> C) When loop body requires 4 local variables</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="D"> D) Only when sorting arrays</label>
+                    <div class="space-y-2.5 text-xs">
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="A" required> A) When iterating over a known fixed array length from 0 to N-1</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="B"> B) When iteration count is non-deterministic (e.g. reading from network stream or file until EOF)</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="C"> C) When loop body requires 4 local variables</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="D"> D) Only when sorting arrays</label>
                     </div>
-                    <div id="expl-5" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
+                    <div id="expl-5" class="hidden mt-3 p-3 rounded-xl text-xs font-mono"></div>
                 </div>
 
-                <button type="submit" id="submit-btn" class="w-full py-3 rounded-xl bg-purple-600 hover:bg-purple-500 font-bold text-sm text-white shadow-lg transition flex items-center justify-center gap-2">
+                <button type="submit" id="submit-btn" class="w-full py-3.5 rounded-xl bg-purple-600 hover:bg-purple-500 font-bold text-sm text-white shadow-xl shadow-purple-600/30 transition flex items-center justify-center gap-2">
                     <i class="fa-solid fa-cloud-arrow-up"></i> Submit Assessment & Save to Cloud
                 </button>
             </form>
 
-            <div id="score-summary" class="hidden mt-6 p-4 rounded-xl border border-purple-500/40 bg-purple-950/20 text-center">
+            <div id="score-summary" class="hidden mt-6 p-5 rounded-2xl border border-purple-500/40 bg-purple-950/20 text-center">
                 <div class="text-xs uppercase font-mono text-slate-400 mb-1">Assessment Complete</div>
-                <div class="text-2xl font-bold font-mono text-purple-400" id="final-score-text">0 / 5</div>
+                <div class="text-3xl font-bold font-mono text-purple-400" id="final-score-text">0 / 5</div>
                 <div id="sync-status" class="text-xs font-mono text-amber-400 mt-2">
                     <i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Syncing to Google Sheet...
                 </div>
-                <div class="mt-4 flex justify-center gap-3">
-                    <a href="index.html" class="px-4 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-xs font-semibold text-white transition">Return to Academy Hub &rarr;</a>
-                    <a href="admin.html" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 transition">View on Admin Panel</a>
+                <div class="mt-5 flex flex-wrap justify-center gap-3">
+                    <a href="index.html" class="px-5 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-xs font-semibold text-white transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-house text-[10px]"></i> <span>Return to Academy Hub</span>
+                    </a>
+                    <a href="admin.html" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 transition">
+                        Instructor Panel
+                    </a>
                 </div>
             </div>
         </section>
@@ -133,7 +247,7 @@
     </main>
 
     <footer class="border-t border-slate-800 py-3.5 text-center text-xs text-slate-500">
-        Java Interactive Academy &bull; While Loops Module (05)
+        Java Interactive Academy &bull; Module 05: While Loops
     </footer>
 
     <script>
@@ -145,6 +259,66 @@
             document.getElementById('session-student-badge').textContent = `Student: ${currentStudent.name}${sid} (${currentStudent.age}y)`;
         }
 
+        function unlockAssessment() {
+            const sec = document.getElementById('assessment-section');
+            sec.classList.remove('hidden');
+            sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            document.getElementById('unlock-quiz-btn').innerHTML = '<i class="fa-solid fa-check text-emerald-400"></i> Assessment Unlocked Below &darr;';
+        }
+
+        function scrollToVisualizer() {
+            document.getElementById('interactive-stage-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function runWhileSimulation() {
+            const type = document.getElementById('while-type').value;
+            const xVal = parseInt(document.querySelector('input[name="xRadio"]:checked').value);
+
+            const pre = document.getElementById('while-code-pre');
+            const checkEl = document.getElementById('pipe-check');
+            const checkStatus = document.getElementById('pipe-check-status');
+            const bodyEl = document.getElementById('pipe-body');
+            const bodyStatus = document.getElementById('pipe-body-status');
+
+            if (type === 'while') {
+                document.getElementById('while-filename').textContent = "StandardWhile.java";
+                pre.innerHTML = `int x = ${xVal};\nwhile (x < 5) {\n    System.out.println("Loop body ran!");\n    x++;\n}`;
+                
+                const conditionPassed = (xVal < 5);
+                checkEl.className = "p-4 rounded-2xl border border-purple-500 bg-purple-950/40 flex items-center justify-between";
+                checkStatus.textContent = conditionPassed ? "TRUE (PASS)" : "FALSE (TERMINATE)";
+                checkStatus.className = `text-xs font-mono font-bold ${conditionPassed ? 'text-emerald-400' : 'text-rose-400'}`;
+
+                if (conditionPassed) {
+                    bodyEl.className = "p-4 rounded-2xl border border-emerald-500 bg-emerald-950/30 flex items-center justify-between";
+                    bodyStatus.textContent = "EXECUTED";
+                    bodyStatus.className = "text-xs font-mono font-bold text-emerald-400";
+                    document.getElementById('while-result-box').innerHTML = `Output: Loop executed. Final x value = <strong>${xVal + 1}</strong>`;
+                } else {
+                    bodyEl.className = "p-4 rounded-2xl border border-slate-800 bg-slate-900/60 flex items-center justify-between";
+                    bodyStatus.textContent = "BYPASSED (0 RUNS)";
+                    bodyStatus.className = "text-xs font-mono font-bold text-slate-600";
+                    document.getElementById('while-result-box').innerHTML = `Output: Condition was false before first pass. Body ran <strong>0 times</strong>.`;
+                }
+            } else {
+                document.getElementById('while-filename').textContent = "DoWhileGuarantee.java";
+                pre.innerHTML = `int x = ${xVal};\ndo {\n    System.out.println("Loop body ran!");\n    x++;\n} while (x < 5);`;
+
+                bodyEl.className = "p-4 rounded-2xl border border-purple-500 bg-purple-950/40 flex items-center justify-between";
+                bodyStatus.textContent = "EXECUTED (FIRST PASS GUARANTEE)";
+                bodyStatus.className = "text-xs font-mono font-bold text-purple-400";
+
+                const newX = xVal + 1;
+                const conditionPassed = (newX < 5);
+                checkEl.className = "p-4 rounded-2xl border border-slate-800 bg-slate-900/60 flex items-center justify-between";
+                checkStatus.textContent = conditionPassed ? "TRUE (CONTINUE)" : "FALSE (STOP AFTER 1 PASS)";
+                checkStatus.className = `text-xs font-mono font-bold ${conditionPassed ? 'text-emerald-400' : 'text-amber-400'}`;
+
+                document.getElementById('while-result-box').innerHTML = `Output: Body guaranteed execution at least once. Body ran <strong>1 time</strong> (x incremented to ${newX}).`;
+            }
+        }
+
+        // ASSESSMENT SUBMISSION LOGIC
         const QUIZ_KEY = {
             q1: { correct: 'A', reason: "Because 'do-while' checks its condition at the bottom, its body executes at least once even if the condition is false initially." },
             q2: { correct: 'B', reason: "The accidental semicolon terminates the loop head with an empty statement. The condition (0 < 5) remains true forever." },
@@ -177,10 +351,10 @@
                 const expl = document.getElementById(`expl-${i}`);
                 expl.classList.remove('hidden');
                 if (isCorrect) {
-                    expl.className = "mt-3 p-3 rounded-lg text-xs bg-emerald-500/10 border border-emerald-500/30 text-emerald-300";
+                    expl.className = "mt-3 p-3 rounded-xl text-xs bg-emerald-500/10 border border-emerald-500/30 text-emerald-300";
                     expl.innerHTML = `<strong>Correct (${chosen})!</strong> ${info.reason}`;
                 } else {
-                    expl.className = "mt-3 p-3 rounded-lg text-xs bg-rose-500/10 border border-rose-500/30 text-rose-300";
+                    expl.className = "mt-3 p-3 rounded-xl text-xs bg-rose-500/10 border border-rose-500/30 text-rose-300";
                     expl.innerHTML = `<strong>Incorrect.</strong> You chose <strong>${chosen}</strong>, but correct is <strong>${info.correct}</strong>.<br><span class="text-slate-300 mt-1 block">Why: ${info.reason}</span>`;
                 }
             }
@@ -246,6 +420,8 @@
                 if (document.body.contains(postForm)) postForm.remove();
             }, 1200);
         }
+
+        window.addEventListener('DOMContentLoaded', runWhileSimulation);
     </script>
 </body>
 </html>
