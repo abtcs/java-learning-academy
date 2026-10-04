@@ -3,253 +3,201 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Java For-Loop Module & Evaluation</title>
+    <title>Java Loops Lab - For & Nested Iteration</title>
     <script>
-        // STRICT ROUTE GUARD: If no student session exists, redirect immediately
         const activeStudent = JSON.parse(localStorage.getItem('currentStudent'));
         if (!activeStudent || !activeStudent.name || !activeStudent.age) {
-            alert("Access Denied: Please enter your Name and Age on the home portal first!");
+            alert("Access Denied: Please enter your Name and Age on the main portal first!");
             window.location.href = "index.html";
         }
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #0b0f19; color: #f1f5f9; }
-        .font-mono-code { font-family: 'Courier New', Courier, monospace; }
-        .code-active { background: rgba(16, 185, 129, 0.25); border-left: 3px solid #10b981; }
+        .font-mono-code { font-family: 'JetBrains Mono', monospace; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between">
-    <header class="border-b border-slate-800 bg-slate-900/80 px-6 py-4 flex items-center justify-between backdrop-blur">
+<body class="min-h-screen flex flex-col justify-between selection:bg-emerald-500/30">
+
+    <iframe name="hidden_gsheet_iframe" id="hidden_gsheet_iframe" style="display:none;"></iframe>
+
+    <header class="border-b border-slate-800 bg-slate-900/90 px-4 sm:px-6 py-3.5 flex items-center justify-between backdrop-blur sticky top-0 z-30">
         <a href="index.html" class="flex items-center gap-2 text-xs font-semibold text-slate-300 hover:text-white transition">
-            <i class="fa-solid fa-arrow-left"></i> Back to Curriculum
+            <i class="fa-solid fa-arrow-left"></i> Back to Hub
         </a>
-        <div class="text-xs font-mono bg-emerald-950/80 text-emerald-400 border border-emerald-800 px-2.5 py-1 rounded-full">
-            Concept 02: For & Nested Loops
+        <div class="flex items-center gap-2.5">
+            <span id="session-student-badge" class="text-xs font-mono px-3 py-1 rounded bg-slate-800 text-slate-300">Loading student...</span>
+            <div class="text-xs font-mono bg-emerald-950/80 text-emerald-400 border border-emerald-800 px-2.5 py-1 rounded-full">
+                Module 03: For Loops
+            </div>
         </div>
     </header>
 
-    <main class="max-w-5xl mx-auto w-full px-4 py-8 space-y-8">
-        <!-- Interactive Visualizer -->
-        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
-            <h2 class="text-lg font-bold mb-2 flex items-center gap-2">
-                <i class="fa-solid fa-arrows-spin text-emerald-400"></i> Interactive 4-Phase For-Loop
-            </h2>
-            <p class="text-xs text-slate-400 mb-6">Click "Step Next" to step through: (1) Init, (2) Condition, (3) Body, and (4) Step Update.</p>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <div class="flex items-center gap-2 mb-4">
-                        <button onclick="stepLoop()" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-xs font-semibold text-white transition flex items-center gap-1.5">
-                            <i class="fa-solid fa-forward-step"></i> Step Next
-                        </button>
-                        <button onclick="resetLoop()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 transition">
-                            Reset
-                        </button>
-                        <span id="loop-phase-badge" class="text-xs font-mono px-2 py-1 rounded bg-slate-800 text-sky-400">Phase: Init</span>
-                    </div>
-
-                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 font-mono-code text-xs leading-6" id="loop-code">
-                        <div id="fl1" class="px-2 py-0.5 rounded">int sum = 0;</div>
-                        <div id="fl2" class="px-2 py-0.5 rounded">for (int i = 1; i <= 4; i++) {</div>
-                        <div id="fl3" class="px-2 py-0.5 pl-6 rounded">sum += i;</div>
-                        <div id="fl4" class="px-2 py-0.5 pl-6 rounded">System.out.println("sum: " + sum);</div>
-                        <div id="fl5" class="px-2 py-0.5 rounded">}</div>
-                    </div>
-                </div>
-
-                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 flex flex-col justify-center items-center text-center">
-                    <div class="grid grid-cols-2 gap-4 w-full max-w-xs mb-4">
-                        <div class="bg-slate-900 border border-slate-800 p-2.5 rounded-lg">
-                            <span class="text-[10px] text-slate-500 block uppercase">Counter (i)</span>
-                            <span id="val-i" class="text-xl font-bold font-mono text-emerald-400">1</span>
-                        </div>
-                        <div class="bg-slate-900 border border-slate-800 p-2.5 rounded-lg">
-                            <span class="text-[10px] text-slate-500 block uppercase">Accumulator (sum)</span>
-                            <span id="val-sum" class="text-xl font-bold font-mono text-sky-400">0</span>
-                        </div>
-                    </div>
-                    <div id="loop-desc" class="text-xs font-mono text-slate-300 bg-slate-900/60 p-2.5 rounded border border-slate-800 w-full max-w-xs">
-                        Initialized loop with i = 1
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- 5 MCQs -->
+    <main class="max-w-4xl mx-auto w-full px-4 py-8 space-y-8 flex-1">
+        
         <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl">
-            <h3 class="text-base font-bold mb-4 flex items-center gap-2">
-                <i class="fa-solid fa-list-check text-emerald-400"></i> For-Loop Assessment: 5 MCQs
-            </h3>
+            <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
+                <div>
+                    <h3 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-repeat text-emerald-400"></i> For & Nested Loops: 5 MCQs
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-1">Submit your assessment to sync marks with your instructor's sheet.</p>
+                </div>
+                <span class="text-xs font-mono px-3 py-1 rounded bg-slate-800 text-slate-300">Passing: 3/5</span>
+            </div>
 
-            <form id="for-quiz-form" onsubmit="submitForQuiz(event)" class="space-y-6">
+            <form id="quiz-form" onsubmit="submitQuiz(event)" class="space-y-6">
                 <!-- Q1 -->
                 <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
-                    <p class="text-xs font-semibold text-slate-200 mb-3">1. How many times will this loop execute?<br>
-                    <code class="font-mono text-sky-400 bg-slate-900 px-1 py-0.5 rounded">for (int i = 0; i < 10; i += 2) { ... }</code></p>
+                    <p class="text-xs font-semibold text-slate-200 mb-3">1. What is the exact execution order of the three loop header expressions in a standard `for (init; cond; update)` statement?</p>
                     <div class="space-y-2 text-xs">
-                        <label class="flex items-center gap-2 text-slate-300"><input type="radio" name="fq1" value="A" required> A) 10 times</label>
-                        <label class="flex items-center gap-2 text-slate-300"><input type="radio" name="fq1" value="B"> B) 5 times (i = 0, 2, 4, 6, 8)</label>
-                        <label class="flex items-center gap-2 text-slate-300"><input type="radio" name="fq1" value="C"> C) 4 times</label>
-                        <label class="flex items-center gap-2 text-slate-300"><input type="radio" name="fq1" value="D"> D) Infinite loop</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="A" required> A) init &rarr; cond &rarr; body &rarr; update</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="B"> B) init &rarr; update &rarr; cond &rarr; body</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="C"> C) cond &rarr; init &rarr; body &rarr; update</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="D"> D) update &rarr; cond &rarr; body &rarr; init</label>
                     </div>
-                    <div id="f-expl-1" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
+                    <div id="expl-1" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
                 </div>
 
                 <!-- Q2 -->
                 <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
-                    <p class="text-xs font-semibold text-slate-200 mb-3">2. What happens when you declare: <code>for (;;) { }</code> in Java?</p>
+                    <p class="text-xs font-semibold text-slate-200 mb-3">2. How many total times will the innermost statement execute in: `for (int i=0; i<3; i++) for (int j=0; j<4; j++) print();`?</p>
                     <div class="space-y-2 text-xs">
-                        <label class="flex items-center gap-2 text-slate-300"><input type="radio" name="fq2" value="A" required> A) Compilation Error</label>
-                        <label class="flex items-center gap-2 text-slate-300"><input type="radio" name="fq2" value="B"> B) Valid infinite loop (condition defaults to true)</label>
-                        <label class="flex items-center gap-2 text-slate-300"><input type="radio" name="fq2" value="C"> C) Executes exactly 0 times</label>
-                        <label class="flex items-center gap-2 text-slate-300"><input type="radio" name="fq2" value="D"> D) Throws StackOverflowError</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="A" required> A) 7 times</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="B"> B) 12 times</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="C"> C) 9 times</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="D"> D) 16 times</label>
                     </div>
-                    <div id="f-expl-2" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
+                    <div id="expl-2" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
                 </div>
 
                 <!-- Q3 -->
                 <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
-                    <p class="text-xs font-semibold text-slate-200 mb-3">3. What is the value of <code>j</code> after the loop terminates?<br>
-                    <code class="font-mono text-sky-400 bg-slate-900 px-1 py-0.5 rounded">int j = 0; for (int i = 0; i < 5; i++) { if (i == 3) break; j += i; }</code></p>
+                    <p class="text-xs font-semibold text-slate-200 mb-3">3. What happens if the condition expression is completely omitted: `for ( ; ; ) { ... }`?</p>
                     <div class="space-y-2 text-xs">
-                        <label class="flex items-center gap-2 text-slate-300"><input type="radio" name="fq3" value="A" required> A) 3 (0 + 1 + 2)</label>
-                        <label class="flex items-center gap-2 text-slate-300"><input type="radio" name="fq3" value="B"> B) 6</label>
-                        <label class="flex items-center gap-2 text-slate-300"><input type="radio" name="fq3" value="C"> C) 10</label>
-                        <label class="flex items-center gap-2 text-slate-300"><input type="radio" name="fq3" value="D"> D) 0</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="A" required> A) The condition is treated as constant `true`, creating an infinite loop</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="B"> B) Compile error: condition expression is mandatory</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="C"> C) The loop never runs even once</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="D"> D) It executes exactly one iteration and halts</label>
                     </div>
-                    <div id="f-expl-3" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
+                    <div id="expl-3" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
                 </div>
 
                 <!-- Q4 -->
                 <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
-                    <p class="text-xs font-semibold text-slate-200 mb-3">4. What does the <code>continue</code> statement do inside a for-loop?</p>
+                    <p class="text-xs font-semibold text-slate-200 mb-3">4. What is the scope of a variable declared inside the initialization section: `for (int i = 0; ... )`?</p>
                     <div class="space-y-2 text-xs">
-                        <label class="flex items-center gap-2 text-slate-300"><input type="radio" name="fq4" value="A" required> A) Exits the entire loop completely</label>
-                        <label class="flex items-center gap-2 text-slate-300"><input type="radio" name="fq4" value="B"> B) Skips remaining statements in current iteration and jumps to update step</label>
-                        <label class="flex items-center gap-2 text-slate-300"><input type="radio" name="fq4" value="C"> C) Restarts the loop back to i = 0</label>
-                        <label class="flex items-center gap-2 text-slate-300"><input type="radio" name="fq4" value="D"> D) Causes compilation error if inside an if-condition</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="A" required> A) Across the entire enclosing method</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="B"> B) Strictly limited to the for loop header and body</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="C"> C) Across the entire class</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="D"> D) Persists in the JVM until garbage collected</label>
                     </div>
-                    <div id="f-expl-4" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
+                    <div id="expl-4" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
                 </div>
 
                 <!-- Q5 -->
                 <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
-                    <p class="text-xs font-semibold text-slate-200 mb-3">5. Can the variable declared inside the for-loop header (<code>for(int k=0;...)</code>) be accessed outside the loop?</p>
+                    <p class="text-xs font-semibold text-slate-200 mb-3">5. What does the `continue` statement do when encountered inside an active for loop?</p>
                     <div class="space-y-2 text-xs">
-                        <label class="flex items-center gap-2 text-slate-300"><input type="radio" name="fq5" value="A" required> A) Yes, it has method scope</label>
-                        <label class="flex items-center gap-2 text-slate-300"><input type="radio" name="fq5" value="B"> B) No, its scope is strictly confined to the loop block</label>
-                        <label class="flex items-center gap-2 text-slate-300"><input type="radio" name="fq5" value="C"> C) Yes, if static</label>
-                        <label class="flex items-center gap-2 text-slate-300"><input type="radio" name="fq5" value="D"> D) Only if compiled in Debug mode</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="A" required> A) Terminates the entire loop immediately</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="B"> B) Skips remaining statements in the current iteration and jumps directly to the update expression</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="C"> C) Restarts the loop from index 0</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="D"> D) Exits to the outer method</label>
                     </div>
-                    <div id="f-expl-5" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
+                    <div id="expl-5" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
                 </div>
 
-                <button type="submit" id="f-submit-btn" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 font-bold text-sm text-white shadow-lg transition">
-                    Submit Assessment & Save Results
+                <button type="submit" id="submit-btn" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 font-bold text-sm text-white shadow-lg transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Submit Assessment & Save to Cloud
                 </button>
             </form>
 
-            <div id="f-score-summary" class="hidden mt-6 p-4 rounded-xl border border-emerald-500/40 bg-emerald-950/20 text-center">
-                <div class="text-2xl font-bold font-mono text-emerald-400" id="f-final-score">0 / 5</div>
+            <div id="score-summary" class="hidden mt-6 p-4 rounded-xl border border-emerald-500/40 bg-emerald-950/20 text-center">
+                <div class="text-xs uppercase font-mono text-slate-400 mb-1">Assessment Complete</div>
+                <div class="text-2xl font-bold font-mono text-emerald-400" id="final-score-text">0 / 5</div>
+                <div id="sync-status" class="text-xs font-mono text-amber-400 mt-2">
+                    <i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Syncing to Google Sheet...
+                </div>
                 <div class="mt-4 flex justify-center gap-3">
-                    <a href="switch.html" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-xs font-semibold text-white transition">Next Concept: Switch &rarr;</a>
-                    <a href="admin.html" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 transition">View in Admin Panel</a>
+                    <a href="switch.html" class="px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-xs font-semibold text-white transition">Next Module: Switch &rarr;</a>
+                    <a href="admin.html" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 transition">View on Admin Panel</a>
                 </div>
             </div>
         </section>
+
     </main>
 
+    <footer class="border-t border-slate-800 py-3.5 text-center text-xs text-slate-500">
+        Java Interactive Academy &bull; For Loops Module (03)
+    </footer>
+
     <script>
-        let loopState = { i: 1, sum: 0, phase: 0 };
-        function stepLoop() {
-            const badge = document.getElementById('loop-phase-badge');
-            const desc = document.getElementById('loop-desc');
-            document.querySelectorAll('#loop-code div').forEach(el => el.classList.remove('code-active'));
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyhHoC6q67U2k_SZNSXTsa-KWCKL1Q2wsHiIVtmKjphJ5aYhPqhJFjd3bTHjHs74B5nrg/exec";
 
-            if (loopState.i > 4) {
-                badge.textContent = "Finished";
-                desc.textContent = `Loop ended: condition (i <= 4) evaluated to false. Final sum = ${loopState.sum}`;
-                document.getElementById('fl5').classList.add('code-active');
-                return;
-            }
-
-            if (loopState.phase === 0) {
-                // Condition Check
-                document.getElementById('fl2').classList.add('code-active');
-                badge.textContent = "Phase: Test Condition";
-                desc.textContent = `Testing: i (${loopState.i}) <= 4 -> TRUE`;
-                loopState.phase = 1;
-            } else if (loopState.phase === 1) {
-                // Body
-                document.getElementById('fl3').classList.add('code-active');
-                loopState.sum += loopState.i;
-                document.getElementById('val-sum').textContent = loopState.sum;
-                badge.textContent = "Phase: Loop Body";
-                desc.textContent = `sum += ${loopState.i} => sum is now ${loopState.sum}`;
-                loopState.phase = 2;
-            } else if (loopState.phase === 2) {
-                // Increment
-                document.getElementById('fl2').classList.add('code-active');
-                loopState.i++;
-                document.getElementById('val-i').textContent = loopState.i;
-                badge.textContent = "Phase: Increment (i++)";
-                desc.textContent = `Incremented i to ${loopState.i}`;
-                loopState.phase = 0;
-            }
+        const currentStudent = JSON.parse(localStorage.getItem('currentStudent'));
+        if (currentStudent) {
+            const sid = currentStudent.id ? ` [${currentStudent.id}]` : '';
+            document.getElementById('session-student-badge').textContent = `Student: ${currentStudent.name}${sid} (${currentStudent.age}y)`;
         }
 
-        function resetLoop() {
-            loopState = { i: 1, sum: 0, phase: 0 };
-            document.getElementById('val-i').textContent = 1;
-            document.getElementById('val-sum').textContent = 0;
-            document.getElementById('loop-phase-badge').textContent = "Phase: Init";
-            document.getElementById('loop-desc').textContent = "Initialized loop with i = 1";
-            document.querySelectorAll('#loop-code div').forEach(el => el.classList.remove('code-active'));
-        }
-
-        const FOR_KEY = {
-            fq1: { correct: 'B', reason: "i takes values 0, 2, 4, 6, 8. When i reaches 10, 10 < 10 is false, so it runs exactly 5 times." },
-            fq2: { correct: 'B', reason: "The empty for(;;) is the standard infinite loop construct in Java; omitted conditional expression defaults to true." },
-            fq3: { correct: 'A', reason: "Loop runs for i = 0 (j = 0), i = 1 (j = 1), i = 2 (j = 3). At i = 3, the break statement halts execution immediately." },
-            fq4: { correct: 'B', reason: "'continue' bypasses the rest of the current loop iteration body and jumps directly to the update expression (e.g. i++)." },
-            fq5: { correct: 'B', reason: "Variables declared within the initialization part of a for-statement have block scope limited strictly to the for statement." }
+        const QUIZ_KEY = {
+            q1: { correct: 'A', reason: "Initialization occurs once, followed by the condition evaluation, statement execution, and the increment/update step." },
+            q2: { correct: 'B', reason: "Nested loop iterations multiply: 3 iterations on the outer loop times 4 iterations on the inner loop equals 12 total runs." },
+            q3: { correct: 'A', reason: "According to the Java Language Specification, leaving the condition empty defaults to a literal true condition." },
+            q4: { correct: 'B', reason: "A local variable declared in the for-init block is scoped only within the for statement and cannot be referenced outside." },
+            q5: { correct: 'B', reason: "In a for loop, 'continue' immediately passes control to the loop's update step before checking the condition again." }
         };
 
-        function submitForQuiz(e) {
+        function submitQuiz(e) {
             e.preventDefault();
-            const student = JSON.parse(localStorage.getItem('currentStudent')) || { name: 'Guest Student', age: 18 };
-            const form = new FormData(document.getElementById('for-quiz-form'));
+            const form = new FormData(document.getElementById('quiz-form'));
             let score = 0;
             let report = [];
 
             for (let i = 1; i <= 5; i++) {
-                const k = `fq${i}`;
+                const k = `q${i}`;
                 const chosen = form.get(k);
-                const info = FOR_KEY[k];
+                const info = QUIZ_KEY[k];
                 const isCorrect = (chosen === info.correct);
                 if (isCorrect) score++;
 
-                report.push({ questionNo: i, chosenAnswer: chosen, correctAnswer: info.correct, isCorrect, explanation: info.reason });
-                const expl = document.getElementById(`f-expl-${i}`);
+                report.push({
+                    questionNo: i,
+                    chosenAnswer: chosen,
+                    correctAnswer: info.correct,
+                    isCorrect: isCorrect,
+                    explanation: info.reason
+                });
+
+                const expl = document.getElementById(`expl-${i}`);
                 expl.classList.remove('hidden');
                 if (isCorrect) {
                     expl.className = "mt-3 p-3 rounded-lg text-xs bg-emerald-500/10 border border-emerald-500/30 text-emerald-300";
                     expl.innerHTML = `<strong>Correct (${chosen})!</strong> ${info.reason}`;
                 } else {
                     expl.className = "mt-3 p-3 rounded-lg text-xs bg-rose-500/10 border border-rose-500/30 text-rose-300";
-                    expl.innerHTML = `<strong>Incorrect.</strong> You picked ${chosen}, correct is <strong>${info.correct}</strong>.<br>Why: ${info.reason}`;
+                    expl.innerHTML = `<strong>Incorrect.</strong> You chose <strong>${chosen}</strong>, but correct is <strong>${info.correct}</strong>.<br><span class="text-slate-300 mt-1 block">Why: ${info.reason}</span>`;
                 }
             }
 
+            const testId = 'REC-' + Date.now();
+            const timeStr = new Date().toLocaleString();
+            const studentId = (currentStudent && currentStudent.id) ? currentStudent.id : "STU-NEW";
+
             const rec = {
-                id: 'REC-' + Date.now(),
-                studentName: student.name,
-                studentAge: student.age,
+                id: testId,
+                studentId: studentId,
+                studentName: currentStudent.name,
+                studentAge: currentStudent.age,
                 concept: 'For & Nested Loops',
-                score, total: 5,
-                timestamp: new Date().toLocaleString(),
+                score: score,
+                total: 5,
+                timestamp: timeStr,
                 details: report
             };
 
@@ -257,25 +205,47 @@
             allRecords.push(rec);
             localStorage.setItem('javaQuizRecords', JSON.stringify(allRecords));
 
-            document.getElementById('f-final-score').textContent = `${score} / 5 (${(score / 5) * 100}%)`;
-            document.getElementById('f-score-summary').classList.remove('hidden');
-            document.getElementById('f-submit-btn').classList.add('hidden');
+            document.getElementById('final-score-text').textContent = `${score} / 5 (${(score / 5) * 100}%)`;
+            document.getElementById('score-summary').classList.remove('hidden');
+            document.getElementById('submit-btn').classList.add('hidden');
+
+            const statusEl = document.getElementById('sync-status');
+            statusEl.innerHTML = '<span class="text-amber-400 font-mono text-xs"><i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Syncing to Google Sheet...</span>';
+
+            const postForm = document.createElement("form");
+            postForm.method = "GET";
+            postForm.action = SCRIPT_URL;
+            postForm.target = "hidden_gsheet_iframe";
+            postForm.style.display = "none";
+
+            const payload = {
+                action: "ADD",
+                id: testId,
+                studentId: studentId,
+                timestamp: timeStr,
+                studentName: currentStudent.name,
+                studentAge: String(currentStudent.age),
+                concept: "For & Nested Loops",
+                score: `${score} / 5`,
+                details: JSON.stringify(report)
+            };
+
+            for (const key in payload) {
+                const hiddenInput = document.createElement("input");
+                hiddenInput.type = "hidden";
+                hiddenInput.name = key;
+                hiddenInput.value = payload[key];
+                postForm.appendChild(hiddenInput);
+            }
+
+            document.body.appendChild(postForm);
+            postForm.submit();
+
+            setTimeout(() => {
+                statusEl.innerHTML = '<span class="text-emerald-400 font-bold font-mono text-xs"><i class="fa-solid fa-cloud-check mr-1"></i> Synced to Cloud Google Sheet!</span>';
+                if (document.body.contains(postForm)) postForm.remove();
+            }, 1200);
         }
     </script>
-    <button onclick="copySubmissionCode()" class="mt-2 px-3 py-1.5 rounded-lg bg-sky-700 hover:bg-sky-600 text-xs text-white">
-    <i class="fa-solid fa-copy mr-1"></i> Copy Record for Admin
-</button>
-
-<script>
-function copySubmissionCode() {
-    const recs = JSON.parse(localStorage.getItem('javaQuizRecords')) || [];
-    if (recs.length === 0) return;
-    const latest = recs[recs.length - 1];
-    const codeString = JSON.stringify(latest, null, 2) + ",";
-    navigator.clipboard.writeText(codeString).then(() => {
-        alert("Student submission record copied to clipboard! Paste it into HARDCODED_STUDENT_RECORDS in admin.html.");
-    });
-}
-</script>
 </body>
 </html>
