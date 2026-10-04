@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Java Sorting Lab & Algorithm Evaluation</title>
     <script>
-        // STRICT ROUTE GUARD: If no student session exists, redirect immediately
+        // ROUTE GUARD: Redirect if student session is missing
         const activeStudent = JSON.parse(localStorage.getItem('currentStudent'));
         if (!activeStudent || !activeStudent.name || !activeStudent.age) {
             alert("Access Denied: Please enter your Name and Age on the home portal first!");
@@ -42,7 +42,7 @@
 
     <main class="max-w-6xl mx-auto w-full px-4 py-8 space-y-8">
         
-        <!-- Interactive Crane Visualizer & Code Workspace -->
+        <!-- Crane Visualizer & Code Workspace -->
         <section class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-4">
             
             <!-- Controls Bar -->
@@ -106,7 +106,6 @@
                     <!-- Overhead Crane Rail Track -->
                     <div class="w-full h-8 border-b-2 border-slate-700 bg-slate-900/60 relative flex items-center">
                         <div class="absolute inset-x-0 h-1 bg-gradient-to-r from-amber-500 via-sky-500 to-amber-500 opacity-30"></div>
-                        <!-- Movable Gantry Carriage -->
                         <div id="crane-carriage" class="absolute top-1 transition-all duration-300 flex flex-col items-center" style="left: 10px;">
                             <div class="w-8 h-4 rounded bg-amber-500 flex items-center justify-center text-[9px] font-mono font-bold text-slate-950 shadow-lg">
                                 <i class="fa-solid fa-gear fa-spin text-[8px]"></i>
@@ -121,9 +120,7 @@
                     </div>
 
                     <!-- Array Blocks Stage -->
-                    <div id="array-stage" class="flex items-end justify-center gap-1 sm:gap-2 flex-1 pt-12 pb-2">
-                        <!-- Dynamically populated bars -->
-                    </div>
+                    <div id="array-stage" class="flex items-end justify-center gap-1 sm:gap-2 flex-1 pt-12 pb-2"></div>
 
                     <!-- Crane Explanation Indicator -->
                     <div class="bg-slate-900/90 border border-slate-800 p-2.5 rounded-lg flex items-center justify-between text-xs">
@@ -139,9 +136,7 @@
                             <span id="code-filename" class="text-xs font-mono text-slate-300 font-semibold">BubbleSort.java</span>
                             <span class="text-[10px] font-mono text-slate-500">JVM Engine</span>
                         </div>
-                        <div id="code-box" class="p-2.5 font-mono-code text-[11px] leading-5 overflow-y-auto max-h-[220px]">
-                            <!-- Tokenized code rendered by script -->
-                        </div>
+                        <div id="code-box" class="p-2.5 font-mono-code text-[11px] leading-5 overflow-y-auto max-h-[220px]"></div>
                     </div>
 
                     <!-- JVM Variable Frame Inspector -->
@@ -162,9 +157,9 @@
                     <h3 class="text-base font-bold text-white flex items-center gap-2">
                         <i class="fa-solid fa-list-check text-emerald-400"></i> Sorting Assessment: 5 MCQs
                     </h3>
-                    <p class="text-xs text-slate-400 mt-1">Submit your answers to record your score in the Admin portal. Wrong choices reveal JVM rationale.</p>
+                    <p class="text-xs text-slate-400 mt-1">Submit your answers to record your score in the Cloud Admin portal.</p>
                 </div>
-                <span class="text-xs font-mono px-3 py-1 rounded bg-slate-800 text-slate-300">Passing: 3/5</span>
+                <span class="text-xs font-mono px-3 py-1 rounded bg-slate-800 text-slate-300">Module 01</span>
             </div>
 
             <form id="quiz-form" onsubmit="submitQuiz(event)" class="space-y-6">
@@ -229,13 +224,16 @@
                 </div>
 
                 <button type="submit" id="submit-btn" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 font-bold text-sm text-white shadow-lg transition flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-paper-plane"></i> Submit Assessment & Save Results
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Submit Assessment & Save to Cloud
                 </button>
             </form>
 
             <div id="score-summary" class="hidden mt-6 p-4 rounded-xl border border-sky-500/40 bg-sky-950/20 text-center">
                 <div class="text-xs uppercase font-mono text-slate-400 mb-1">Assessment Complete</div>
                 <div class="text-2xl font-bold font-mono text-sky-400" id="final-score-text">0 / 5</div>
+                <div id="sync-status" class="text-xs font-mono text-amber-400 mt-2">
+                    <i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Syncing to Google Sheet...
+                </div>
                 <div class="mt-4 flex justify-center gap-3">
                     <a href="if-else.html" class="px-4 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-xs font-semibold text-white transition">Next Module: If-Else &rarr;</a>
                     <a href="admin.html" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 transition">View on Admin Panel</a>
@@ -245,18 +243,15 @@
 
     </main>
 
-    <footer class="border-t border-slate-800 py-4 text-center text-xs text-slate-500">
-        Java Interactive Academy &bull; Sorting Lab (Module 01)
-    </footer>
-
     <script>
-        // Display student badge
+        // YOUR EXACT GOOGLE APPS SCRIPT URL
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyhHoC6q67U2k_SZNSXTsa-KWCKL1Q2wsHiIVtmKjphJ5aYhPqhJFjd3bTHjHs74B5nrg/exec";
+
         const currentStudent = JSON.parse(localStorage.getItem('currentStudent'));
         if (currentStudent) {
             document.getElementById('session-student-badge').textContent = `Student: ${currentStudent.name} (${currentStudent.age}y)`;
         }
 
-        // Clean Java Code Snippets
         const JAVA_CODES = {
             bubble: [
                 "public void bubbleSort(int[] arr) {",
@@ -317,7 +312,6 @@
         let comparisons = 0;
         let swaps = 0;
 
-        // Stopwatch Timer Variables
         let startTime = 0;
         let accumulatedTime = 0;
         let timerInterval = null;
@@ -441,24 +435,23 @@
             });
         }
 
-        // Sorting Generators
         function* bubbleGen() {
             let n = array.length;
-            yield { line: 1, vars: { n }, status: "Reading array length" };
+            yield { line: 1, vars: { n } };
             for (let i = 0; i < n - 1; i++) {
-                yield { line: 2, vars: { i, n }, status: `Outer loop iteration i = ${i}` };
+                yield { line: 2, vars: { i, n } };
                 let swapped = false;
                 yield { line: 3, vars: { i, swapped } };
                 for (let j = 0; j < n - i - 1; j++) {
                     comparisons++;
                     moveCraneTo(j, j + 1);
-                    yield { line: 5, active: [j, j + 1], vars: { i, j, "arr[j]": array[j], "arr[j+1]": array[j+1] }, status: `Comparing arr[${j}] (${array[j]}) vs arr[${j+1}] (${array[j+1]})` };
+                    yield { line: 5, active: [j, j + 1], vars: { i, j, "arr[j]": array[j], "arr[j+1]": array[j+1] } };
                     if (array[j] > array[j + 1]) {
                         swaps++;
                         let temp = array[j];
                         array[j] = array[j + 1];
                         array[j + 1] = temp;
-                        yield { line: 8, active: [j, j + 1], vars: { temp, swapped: true }, status: `Crane hoisted and swapped blocks at index ${j} and ${j+1}` };
+                        yield { line: 8, active: [j, j + 1], vars: { temp, swapped: true } };
                         swapped = true;
                     }
                 }
@@ -472,13 +465,13 @@
             yield { line: 1, vars: { n } };
             for (let i = 0; i < n - 1; i++) {
                 let minIdx = i;
-                yield { line: 3, active: [i], vars: { i, minIdx }, status: `Assumed minimum index = ${i}` };
+                yield { line: 3, active: [i], vars: { i, minIdx } };
                 for (let j = i + 1; j < n; j++) {
                     comparisons++;
-                    yield { line: 5, active: [minIdx, j], vars: { i, j, minIdx }, status: `Testing if arr[${j}] < arr[${minIdx}]` };
+                    yield { line: 5, active: [minIdx, j], vars: { i, j, minIdx } };
                     if (array[j] < array[minIdx]) {
                         minIdx = j;
-                        yield { line: 6, active: [minIdx], vars: { minIdx }, status: `Found new minimum at index ${minIdx} (${array[minIdx]})` };
+                        yield { line: 6, active: [minIdx], vars: { minIdx } };
                     }
                 }
                 if (minIdx !== i) {
@@ -487,7 +480,7 @@
                     let temp = array[minIdx];
                     array[minIdx] = array[i];
                     array[i] = temp;
-                    yield { line: 10, active: [i, minIdx], vars: { i, minIdx, temp }, status: `Crane swapped minimum block into slot ${i}` };
+                    yield { line: 10, active: [i, minIdx], vars: { i, minIdx, temp } };
                 }
             }
         }
@@ -498,15 +491,15 @@
                 let key = array[i];
                 let j = i - 1;
                 moveCraneTo(i, i);
-                yield { line: 3, active: [i], vars: { i, key, j }, status: `Picked key element ${key} at index ${i}` };
+                yield { line: 3, active: [i], vars: { i, key, j } };
                 while (j >= 0 && (comparisons++, array[j] > key)) {
                     array[j + 1] = array[j];
                     swaps++;
-                    yield { line: 6, active: [j, j + 1], vars: { key, j }, status: `Shifted arr[${j}] rightward` };
+                    yield { line: 6, active: [j, j + 1], vars: { key, j } };
                     j = j - 1;
                 }
                 array[j + 1] = key;
-                yield { line: 9, active: [j + 1], vars: { "arr[j+1]": key }, status: `Inserted key ${key} at slot ${j+1}` };
+                yield { line: 9, active: [j + 1], vars: { "arr[j+1]": key } };
             }
         }
 
@@ -524,7 +517,6 @@
                 const step = res.value;
                 highlightLine(step.line);
                 if (step.vars) renderVars(step.vars);
-                if (step.status) document.getElementById('crane-status').textContent = step.status;
                 if (step.active) renderBars(step.active);
                 else renderBars();
 
@@ -588,7 +580,7 @@
             resetData();
         }
 
-        // MCQ Submission
+        // ASSESSMENT SUBMISSION & GOOGLE SHEET SYNC
         const QUIZ_KEY = {
             q1: { correct: 'B', reason: "With an early break condition ('if (!swapped) break;'), Bubble Sort stops after one pass if no elements were swapped, taking O(N) time." },
             q2: { correct: 'B', reason: "Selection Sort performs only one swap per outer loop pass, giving at most N - 1 total swaps even in the worst case." },
@@ -597,7 +589,7 @@
             q5: { correct: 'B', reason: "When partitions are severely unbalanced (e.g., partitioning 0 elements on one side and N-1 on the other), recursion depth reaches N, causing O(N²) time complexity." }
         };
 
-        function submitQuiz(e) {
+        async function submitQuiz(e) {
             e.preventDefault();
             const form = new FormData(document.getElementById('quiz-form'));
             let score = 0;
@@ -623,15 +615,18 @@
             }
 
             const rec = {
+                action: "ADD",
                 id: 'REC-' + Date.now(),
                 studentName: currentStudent.name,
                 studentAge: currentStudent.age,
                 concept: 'Sorting Algorithms Lab',
-                score, total: 5,
+                score: score,
+                total: 5,
                 timestamp: new Date().toLocaleString(),
                 details: report
             };
 
+            // 1. Save locally for student progress bar
             let allRecords = JSON.parse(localStorage.getItem('javaQuizRecords')) || [];
             allRecords.push(rec);
             localStorage.setItem('javaQuizRecords', JSON.stringify(allRecords));
@@ -639,6 +634,20 @@
             document.getElementById('final-score-text').textContent = `${score} / 5 (${(score / 5) * 100}%)`;
             document.getElementById('score-summary').classList.remove('hidden');
             document.getElementById('submit-btn').classList.add('hidden');
+
+            // 2. SEND DIRECTLY TO GOOGLE SHEET
+            const statusEl = document.getElementById('sync-status');
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(rec)
+                });
+                statusEl.innerHTML = '<span class="text-emerald-400 font-bold"><i class="fa-solid fa-cloud-check mr-1"></i> Synced to Cloud Google Sheet!</span>';
+            } catch (err) {
+                console.error("Google Sheet error:", err);
+                statusEl.innerHTML = '<span class="text-rose-400"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Saved locally. (Cloud retry in progress)</span>';
+            }
         }
 
         window.addEventListener('DOMContentLoaded', () => {
