@@ -10,33 +10,35 @@
         body { font-family: 'Inter', sans-serif; background-color: #0b0f19; color: #f1f5f9; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between">
+<body class="min-h-screen flex flex-col justify-between selection:bg-sky-500/30">
+
     <!-- Header -->
-    <header class="border-b border-slate-800 bg-slate-900/80 px-6 py-4 flex items-center justify-between backdrop-blur">
+    <header class="border-b border-slate-800 bg-slate-900/90 px-6 py-4 flex items-center justify-between backdrop-blur sticky top-0 z-30">
         <div class="flex items-center space-x-3">
             <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-500/20">
                 <i class="fa-brands fa-java text-white text-xl"></i>
             </div>
             <div>
-                <h1 class="text-base font-bold">Java Interactive Learning Portal</h1>
-                <p class="text-xs text-slate-400">Interactive Visual Concepts & Assessment Lab</p>
+                <h1 class="text-base font-bold text-white">Java Interactive Academy</h1>
+                <p class="text-xs text-slate-400">Strictly Gated Concept Labs & Assessment System</p>
             </div>
         </div>
-        <a href="admin.html" class="px-3.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800/80 text-xs text-slate-300 hover:text-white hover:border-sky-500 transition flex items-center gap-2">
+        <a href="admin.html" class="px-3.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-xs text-slate-300 hover:text-white hover:border-sky-500 transition flex items-center gap-2">
             <i class="fa-solid fa-lock text-slate-400"></i> Admin Access
         </a>
     </header>
 
-    <!-- Main Section -->
-    <main class="max-w-4xl mx-auto w-full px-4 py-8">
+    <!-- Main Content -->
+    <main class="max-w-5xl mx-auto w-full px-4 py-8">
+        
         <!-- Registration Form Card -->
         <div id="auth-section" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl mb-8">
             <div class="max-w-md mx-auto text-center">
                 <div class="w-14 h-14 rounded-2xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center mx-auto mb-4 text-sky-400 text-2xl">
-                    <i class="fa-solid fa-graduation-cap"></i>
+                    <i class="fa-solid fa-user-lock"></i>
                 </div>
-                <h2 class="text-xl font-bold mb-1">Student Enrollment</h2>
-                <p class="text-xs text-slate-400 mb-6">Enter your details to track your quiz submissions and progress.</p>
+                <h2 class="text-xl font-bold mb-1 text-white">Student Access Gate</h2>
+                <p class="text-xs text-slate-400 mb-6">You must enter your Name and Age to unlock the Java concept labs and quizzes.</p>
                 
                 <form id="student-form" onsubmit="registerStudent(event)" class="space-y-4 text-left">
                     <div>
@@ -48,105 +50,149 @@
                         <input type="number" id="student-age" required min="8" max="99" placeholder="e.g. 18" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3.5 py-2 text-sm focus:outline-none focus:border-sky-500 text-white placeholder-slate-600">
                     </div>
                     <button type="submit" class="w-full py-2.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-semibold text-sm transition shadow-lg shadow-sky-600/30 flex items-center justify-center gap-2">
-                        <span>Save & Start Learning</span> <i class="fa-solid fa-arrow-right text-xs"></i>
+                        <i class="fa-solid fa-unlock text-xs"></i> <span>Unlock All Modules</span>
                     </button>
                 </form>
             </div>
         </div>
 
-        <!-- Current Student Banner (Hidden initially) -->
-        <div id="student-badge" class="hidden bg-slate-900/90 border border-emerald-500/30 rounded-xl p-4 mb-6 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <div class="w-9 h-9 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold text-sm">
+        <!-- Current Student Session Banner (Shows when registered) -->
+        <div id="student-badge" class="hidden bg-slate-900/90 border border-emerald-500/30 rounded-2xl p-4 mb-6 flex items-center justify-between shadow-lg">
+            <div class="flex items-center space-x-3.5">
+                <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center font-bold text-base border border-emerald-500/20">
                     <i class="fa-solid fa-user-check"></i>
                 </div>
                 <div>
-                    <div class="text-xs text-slate-400">Current Student Session:</div>
+                    <div class="text-xs text-slate-400">Enrolled Student:</div>
                     <div class="text-sm font-bold text-white"><span id="display-name"></span> (<span id="display-age"></span> yrs)</div>
                 </div>
             </div>
-            <button onclick="clearSession()" class="text-xs text-rose-400 hover:underline">Change Student</button>
+            <button onclick="clearSession()" class="text-xs text-rose-400 hover:underline px-3 py-1.5 rounded-lg bg-rose-950/30 border border-rose-900/40">Switch Student</button>
         </div>
 
-        <!-- Modules Grid -->
-        <h3 class="text-sm font-semibold uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2">
-            <i class="fa-solid fa-book-open text-sky-400"></i> Interactive Curriculum
-        </h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <!-- Concept 1 -->
-            <a href="if-else.html" class="bg-slate-900/60 border border-slate-800 hover:border-sky-500/50 p-5 rounded-xl transition group flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="w-8 h-8 rounded-lg bg-sky-500/10 text-sky-400 flex items-center justify-center text-xs font-mono font-bold">01</span>
-                        <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">5 MCQs</span>
-                    </div>
-                    <h4 class="text-base font-bold text-white group-hover:text-sky-400 transition mb-1">If-Else & Logical Flow</h4>
-                    <p class="text-xs text-slate-400">Visual decision branch gates, relational logic (`==`, `!=`, `<`, `>`), and nested conditions.</p>
-                </div>
-                <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-sky-400 font-medium">
-                    <span>Launch Module</span> <i class="fa-solid fa-chevron-right text-[10px]"></i>
-                </div>
-            </a>
-
-            <!-- Concept 2 -->
-            <a href="for-loop.html" class="bg-slate-900/60 border border-slate-800 hover:border-emerald-500/50 p-5 rounded-xl transition group flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xs font-mono font-bold">02</span>
-                        <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">5 MCQs</span>
-                    </div>
-                    <h4 class="text-base font-bold text-white group-hover:text-emerald-400 transition mb-1">For & Nested Loops</h4>
-                    <p class="text-xs text-slate-400">Step through initialization, condition checking, loop body execution, and counter increments.</p>
-                </div>
-                <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-emerald-400 font-medium">
-                    <span>Launch Module</span> <i class="fa-solid fa-chevron-right text-[10px]"></i>
-                </div>
-            </a>
-
-            <!-- Concept 3 -->
-            <a href="switch.html" class="bg-slate-900/60 border border-slate-800 hover:border-amber-500/50 p-5 rounded-xl transition group flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center text-xs font-mono font-bold">03</span>
-                        <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">5 MCQs</span>
-                    </div>
-                    <h4 class="text-base font-bold text-white group-hover:text-amber-400 transition mb-1">Switch & Case Fall-Through</h4>
-                    <p class="text-xs text-slate-400">Observe branch dispatching, the role of `break`, default fallbacks, and modern lambda arrow switch.</p>
-                </div>
-                <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-amber-400 font-medium">
-                    <span>Launch Module</span> <i class="fa-solid fa-chevron-right text-[10px]"></i>
-                </div>
-            </a>
-
-            <!-- Concept 4 -->
-            <a href="while-loop.html" class="bg-slate-900/60 border border-slate-800 hover:border-purple-500/50 p-5 rounded-xl transition group flex flex-col justify-between">
-                <div>
-                    <div class="flex items-center justify-between mb-3">
-                        <span class="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center text-xs font-mono font-bold">04</span>
-                        <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">5 MCQs</span>
-                    </div>
-                    <h4 class="text-base font-bold text-white group-hover:text-purple-400 transition mb-1">While & Do-While Cycles</h4>
-                    <p class="text-xs text-slate-400">Understand pre-test vs post-test execution guarantees and preventing infinite loops.</p>
-                </div>
-                <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-purple-400 font-medium">
-                    <span>Launch Module</span> <i class="fa-solid fa-chevron-right text-[10px]"></i>
-                </div>
-            </a>
+        <!-- Lock Notice Banner (Visible when NOT registered) -->
+        <div id="lock-notice" class="bg-amber-950/30 border border-amber-600/30 rounded-xl p-4 mb-6 flex items-center gap-3 text-xs text-amber-300">
+            <i class="fa-solid fa-triangle-exclamation text-amber-400 text-base shrink-0"></i>
+            <span><strong>Curriculum Locked:</strong> Enter your full name and age above to unlock and access the interactive modules.</span>
         </div>
+
+        <!-- Curriculum Grid (Disabled/Blurred when locked) -->
+        <div id="curriculum-container" class="opacity-40 pointer-events-none transition-all duration-300 space-y-4">
+            <h3 class="text-xs font-mono font-bold uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-cubes-stacked text-sky-400"></i> Available Concept Labs
+            </h3>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                
+                <!-- Sorting Lab -->
+                <a href="sorting.html" class="sm:col-span-2 lg:col-span-3 bg-gradient-to-r from-sky-950/40 via-slate-900 to-indigo-950/40 border border-sky-800/50 hover:border-sky-400 p-5 rounded-2xl transition group flex flex-col justify-between shadow-xl">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="w-8 h-8 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center text-xs font-mono font-bold">01</span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Crane Animated</span>
+                                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-300">5 MCQs</span>
+                            </div>
+                        </div>
+                        <h4 class="text-lg font-bold text-white group-hover:text-sky-300 transition mb-1">Sorting Algorithms Lab (Bubble, Selection, Insertion, Quick)</h4>
+                        <p class="text-xs text-slate-400 max-w-3xl">Robotic crane hoists blocks with winch cables, live wall-clock stopwatch timer, line-by-line Java code highlighting, and JVM variable inspection.</p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-sky-400 font-semibold">
+                        <span>Launch Sorting Lab</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </div>
+                </a>
+
+                <!-- If-Else -->
+                <a href="if-else.html" class="bg-slate-900/60 border border-slate-800 hover:border-sky-500/60 p-5 rounded-2xl transition group flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="w-8 h-8 rounded-lg bg-sky-500/10 text-sky-400 flex items-center justify-center text-xs font-mono font-bold">02</span>
+                            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">5 MCQs</span>
+                        </div>
+                        <h4 class="text-sm font-bold text-white group-hover:text-sky-400 transition mb-1">If-Else & Logical Flow</h4>
+                        <p class="text-xs text-slate-400">Interactive truth-gate decision trees, relational operators, and condition evaluation.</p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-sky-400 font-semibold">
+                        <span>Launch Module</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </div>
+                </a>
+
+                <!-- For Loop -->
+                <a href="for-loop.html" class="bg-slate-900/60 border border-slate-800 hover:border-emerald-500/60 p-5 rounded-2xl transition group flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xs font-mono font-bold">03</span>
+                            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">5 MCQs</span>
+                        </div>
+                        <h4 class="text-sm font-bold text-white group-hover:text-emerald-400 transition mb-1">For & Nested Loops</h4>
+                        <p class="text-xs text-slate-400">4-phase execution stepper tracking initialization, bounds checking, and increments.</p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-emerald-400 font-semibold">
+                        <span>Launch Module</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </div>
+                </a>
+
+                <!-- Switch -->
+                <a href="switch.html" class="bg-slate-900/60 border border-slate-800 hover:border-amber-500/60 p-5 rounded-2xl transition group flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center text-xs font-mono font-bold">04</span>
+                            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">5 MCQs</span>
+                        </div>
+                        <h4 class="text-sm font-bold text-white group-hover:text-amber-400 transition mb-1">Switch & Fall-Through</h4>
+                        <p class="text-xs text-slate-400">Jump-table dispatching, break statements, default fallbacks, and lambda arrows.</p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-amber-400 font-semibold">
+                        <span>Launch Module</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </div>
+                </a>
+
+                <!-- While Loop -->
+                <a href="while-loop.html" class="bg-slate-900/60 border border-slate-800 hover:border-purple-500/60 p-5 rounded-2xl transition group flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center text-xs font-mono font-bold">05</span>
+                            <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">5 MCQs</span>
+                        </div>
+                        <h4 class="text-sm font-bold text-white group-hover:text-purple-400 transition mb-1">While & Do-While Cycles</h4>
+                        <p class="text-xs text-slate-400">Pre-test vs post-test execution guarantees and preventing infinite cycles.</p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-purple-400 font-semibold">
+                        <span>Launch Module</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </div>
+                </a>
+
+            </div>
+        </div>
+
     </main>
 
-    <!-- Footer -->
     <footer class="border-t border-slate-800 py-4 text-center text-xs text-slate-500">
-        Java Interactive Academy &bull; Multi-page Static Architecture for GitHub Pages
+        Java Interactive Academy &bull; Student Access Gated Portal
     </footer>
 
     <script>
-        function checkExistingSession() {
+        function checkSession() {
             const student = JSON.parse(localStorage.getItem('currentStudent'));
-            if (student) {
+            const curriculum = document.getElementById('curriculum-container');
+            const lockNotice = document.getElementById('lock-notice');
+            const authSection = document.getElementById('auth-section');
+            const studentBadge = document.getElementById('student-badge');
+
+            if (student && student.name && student.age) {
+                // UNLOCKED
                 document.getElementById('display-name').textContent = student.name;
                 document.getElementById('display-age').textContent = student.age;
-                document.getElementById('student-badge').classList.remove('hidden');
+                studentBadge.classList.remove('hidden');
+                authSection.classList.add('hidden');
+                lockNotice.classList.add('hidden');
+                curriculum.classList.remove('opacity-40', 'pointer-events-none');
+            } else {
+                // LOCKED
+                studentBadge.classList.add('hidden');
+                authSection.classList.remove('hidden');
+                lockNotice.classList.remove('hidden');
+                curriculum.classList.add('opacity-40', 'pointer-events-none');
             }
         }
 
@@ -154,28 +200,32 @@
             e.preventDefault();
             const name = document.getElementById('student-name').value.trim();
             const age = parseInt(document.getElementById('student-age').value);
+
+            if (!name || isNaN(age)) {
+                alert("Please enter a valid Name and Age.");
+                return;
+            }
+
             const student = { name, age, registeredAt: new Date().toISOString() };
             localStorage.setItem('currentStudent', JSON.stringify(student));
-            
-            // Also maintain in global directory of students
+
             let directory = JSON.parse(localStorage.getItem('studentDirectory')) || [];
             if (!directory.some(s => s.name.toLowerCase() === name.toLowerCase())) {
                 directory.push(student);
                 localStorage.setItem('studentDirectory', JSON.stringify(directory));
             }
 
-            alert(`Welcome ${name}! Select any concept below to begin.`);
-            checkExistingSession();
+            checkSession();
         }
 
         function clearSession() {
             localStorage.removeItem('currentStudent');
-            document.getElementById('student-badge').classList.add('hidden');
             document.getElementById('student-name').value = '';
             document.getElementById('student-age').value = '';
+            checkSession();
         }
 
-        window.addEventListener('DOMContentLoaded', checkExistingSession);
+        window.addEventListener('DOMContentLoaded', checkSession);
     </script>
 </body>
 </html>
