@@ -15,6 +15,7 @@
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
     </style>
 </head>
+
 <body class="min-h-screen flex flex-col justify-between selection:bg-rose-500/30">
 
     <header class="border-b border-slate-800 bg-slate-900/90 px-4 sm:px-6 py-3 shrink-0 backdrop-blur sticky top-0 z-30">
@@ -99,9 +100,9 @@
                                 <th class="p-3.5">Student ID</th>
                                 <th class="p-3.5">Name</th>
                                 <th class="p-3.5">Age</th>
-                                <th class="p-3.5">Topic Assessed</th>
-                                <th class="p-3.5">Score</th>
-                                <th class="p-3.5">Date</th>
+                                <th class="p-3.5">Course Breakdown</th>
+                                <th class="p-3.5">Overall %</th>
+                                <th class="p-3.5">Last Updated</th>
                                 <th class="p-3.5 text-right">Actions</th>
                             </tr>
                         </thead>
@@ -208,8 +209,93 @@
             }
         }
 
+        function parseScoreValue(rawScore) {
+            const scoreText = String(rawScore || '0');
+            const fractionMatch = scoreText.match(/(\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)/i);
+            if (fractionMatch) {
+                return {
+                    scored: Number(fractionMatch[1]),
+                    total: Number(fractionMatch[2]),
+                    percent: Number(fractionMatch[1]) / Number(fractionMatch[2]) * 100
+                };
+            }
+
+            const percentMatch = scoreText.match(/(\d+(?:\.\d+)?)\s*%/i);
+            if (percentMatch) {
+                const value = Number(percentMatch[1]);
+                return { scored: value, total: 100, percent: value };
+            }
+
+            const numeric = Number(scoreText);
+            if (!Number.isNaN(numeric)) {
+                return { scored: numeric, total: 100, percent: numeric };
+            }
+
+            return { scored: 0, total: 100, percent: 0 };
+        }
+
+        function buildStudentSummary(records) {
+            const grouped = new Map();
+
+            records.forEach(rec => {
+                const key = String(rec.studentId || rec.studentName || 'N/A').trim() || 'N/A';
+                if (!grouped.has(key)) {
+                    grouped.set(key, {
+                        studentId: String(rec.studentId || 'N/A'),
+                        studentName: rec.studentName || 'Student',
+                        studentAge: rec.studentAge || 'N/A',
+                        courseMap: new Map(),
+                        lastUpdated: rec.timestamp || 'N/A'
+                    });
+                }
+
+                const student = grouped.get(key);
+                const concept = String(rec.concept || 'General').trim() || 'General';
+                const parsed = parseScoreValue(rec.score);
+                const candidate = {
+                    concept,
+                    scored: parsed.scored,
+                    total: parsed.total,
+                    percent: parsed.percent,
+                    lastUpdated: rec.timestamp || 'N/A'
+                };
+
+                const existing = student.courseMap.get(concept);
+                if (!existing || Date.parse(candidate.lastUpdated) > Date.parse(existing.lastUpdated || '1970-01-01')) {
+                    student.courseMap.set(concept, candidate);
+                }
+
+                const latestTimestamp = student.courseMap.get(concept)?.lastUpdated || rec.timestamp || 'N/A';
+                student.lastUpdated = latestTimestamp;
+            });
+
+            return Array.from(grouped.values()).map(student => {
+                const courses = Array.from(student.courseMap.values()).map(course => ({
+                    concept: course.concept,
+                    scored: course.scored,
+                    total: course.total,
+                    percentage: Math.round(course.percent),
+                    lastUpdated: course.lastUpdated
+                }));
+
+                const overallPercent = courses.length
+                    ? Math.round(courses.reduce((sum, course) => sum + course.percentage, 0) / courses.length)
+                    : 0;
+
+                return {
+                    studentId: student.studentId,
+                    studentName: student.studentName,
+                    studentAge: student.studentAge,
+                    overallPercent,
+                    courses,
+                    lastUpdated: student.lastUpdated
+                };
+            });
+        }
+
         function renderRecords(records) {
-            document.getElementById('record-count-badge').textContent = `${records.length} Records`;
+            const studentSummaries = buildStudentSummary(records);
+            document.getElementById('record-count-badge').textContent = `${studentSummaries.length} Students`;
 
             const desktopTbody = document.getElementById('desktop-table-body');
             const mobileContainer = document.getElementById('mobile-cards-container');
@@ -218,71 +304,91 @@
             desktopTbody.innerHTML = '';
             mobileContainer.innerHTML = '';
 
-            if (records.length === 0) {
+            if (studentSummaries.length === 0) {
                 emptyNotice.classList.remove('hidden');
                 return;
             }
             emptyNotice.classList.add('hidden');
 
-            records.slice().reverse().forEach(rec => {
-                const scoreColor = String(rec.score).includes("0") || String(rec.score).includes("1") || String(rec.score).includes("2") ?
-                    'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 
-                    'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+            studentSummaries.slice().reverse().forEach(student => {
+                const overallColor = student.overallPercent >= 70 ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
+                    student.overallPercent >= 40 ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
+                    'bg-rose-500/10 text-rose-400 border border-rose-500/20';
 
-                // Desktop Row
+                const courseOptions = student.courses.map(course => `
+                    <option value="${course.concept}" class="bg-slate-900 text-white">
+                        ${course.concept} — ${course.percentage}%
+                    </option>
+                `).join('');
+
+                const courseDropdown = `
+                    <select class="w-full rounded-lg border border-slate-700 bg-slate-950 px-2 py-1.5 text-[10px] text-slate-200 focus:outline-none focus:border-sky-500">
+                        <option selected disabled>Course breakdown</option>
+                        ${courseOptions}
+                    </select>
+                `;
+
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-800/40 transition";
+                tr.className = "hover:bg-slate-800/40 transition align-top";
                 tr.innerHTML = `
-                    <td class="p-3.5 font-mono text-sky-400 font-bold">${rec.studentId}</td>
-                    <td class="p-3.5 font-semibold text-white">${rec.studentName}</td>
-                    <td class="p-3.5 text-slate-400 font-mono">${rec.studentAge}y</td>
-                    <td class="p-3.5 text-slate-300 font-medium">${rec.concept}</td>
+                    <td class="p-3.5 font-mono text-sky-400 font-bold">${student.studentId}</td>
+                    <td class="p-3.5 font-semibold text-white">${student.studentName}</td>
+                    <td class="p-3.5 text-slate-400 font-mono">${student.studentAge}y</td>
+                    <td class="p-3.5 min-w-[220px]">
+                        ${courseDropdown}
+                    </td>
                     <td class="p-3.5">
-                        <span class="px-2 py-0.5 rounded font-mono font-bold ${scoreColor}">
-                            ${rec.score}
+                        <span class="px-2 py-0.5 rounded font-mono font-bold ${overallColor}">
+                            ${student.overallPercent}%
                         </span>
                     </td>
-                    <td class="p-3.5 text-slate-500 font-mono text-[11px]">${rec.timestamp}</td>
+                    <td class="p-3.5 text-slate-500 font-mono text-[11px]">${student.lastUpdated}</td>
                     <td class="p-3.5 text-right space-x-1.5 whitespace-nowrap">
-                        <button onclick="inspectRecord('${rec.id}')" class="px-2 py-1 rounded bg-sky-950 text-sky-400 border border-sky-800 hover:bg-sky-900 transition text-[11px] font-semibold" title="Audit Mistakes">
-                            <i class="fa-solid fa-eye"></i> Audit
+                        <button onclick="inspectStudent('${student.studentId}', '${student.studentName.replace(/'/g, "\\'")}', '${student.studentAge}')" class="px-2 py-1 rounded bg-sky-950 text-sky-400 border border-sky-800 hover:bg-sky-900 transition text-[11px] font-semibold" title="View course breakdown">
+                            <i class="fa-solid fa-eye"></i> View
                         </button>
-                        <button onclick="deleteSingleRecord('${rec.id}')" class="px-2 py-1 rounded bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 transition text-[11px] font-semibold" title="Delete Row">
+                        <button onclick="deleteStudentRecords('${student.studentId}')" class="px-2 py-1 rounded bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 transition text-[11px] font-semibold" title="Delete Student Records">
                             <i class="fa-solid fa-trash-can"></i>
                         </button>
-                        <button onclick="restartStudentCourse('${rec.studentId}', '${rec.studentName}')" class="px-2 py-1 rounded bg-amber-950/60 text-amber-400 border border-amber-800 hover:bg-amber-900 transition text-[11px] font-semibold" title="Reset Course to 0%">
-                            <i class="fa-solid fa-rotate-left"></i> Restart Course
+                        <button onclick="restartStudentCourse('${student.studentId}', '${student.studentName.replace(/'/g, "\\'")}')" class="px-2 py-1 rounded bg-amber-950/60 text-amber-400 border border-amber-800 hover:bg-amber-900 transition text-[11px] font-semibold" title="Reset Course to 0%">
+                            <i class="fa-solid fa-rotate-left"></i> Restart
                         </button>
                     </td>
                 `;
                 desktopTbody.appendChild(tr);
 
-                // Mobile Card
                 const card = document.createElement('div');
                 card.className = "bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-2.5 shadow-md";
                 card.innerHTML = `
-                    <div class="flex items-center justify-between">
+                    <div class="flex items-center justify-between gap-2">
                         <div>
-                            <span class="text-xs font-mono font-bold text-sky-400 mr-1.5">${rec.studentId}</span>
-                            <span class="font-bold text-sm text-white">${rec.studentName}</span>
-                            <span class="text-xs text-slate-400 font-mono">(${rec.studentAge}y)</span>
+                            <span class="text-xs font-mono font-bold text-sky-400 mr-1.5">${student.studentId}</span>
+                            <span class="font-bold text-sm text-white">${student.studentName}</span>
+                            <span class="text-xs text-slate-400 font-mono">(${student.studentAge}y)</span>
                         </div>
-                        <span class="px-2 py-0.5 rounded font-mono font-bold text-xs ${scoreColor}">
-                            ${rec.score}
+                        <span class="px-2 py-0.5 rounded font-mono font-bold text-xs ${overallColor}">
+                            ${student.overallPercent}%
                         </span>
                     </div>
-                    <div class="text-xs text-slate-300 flex items-center justify-between border-t border-slate-800/80 pt-2">
-                        <span class="font-medium text-slate-300">${rec.concept}</span>
-                        <span class="text-[10px] text-slate-500 font-mono">${rec.timestamp}</span>
+                    <div class="border-t border-slate-800/80 pt-2">
+                        <select class="w-full rounded-lg border border-slate-700 bg-slate-950 px-2 py-1.5 text-[10px] text-slate-200 focus:outline-none focus:border-sky-500">
+                            <option selected disabled>Course breakdown</option>
+                            ${student.courses.map(course => `
+                                <option value="${course.concept}" class="bg-slate-900 text-white">
+                                    ${course.concept} — ${course.percentage}%
+                                </option>
+                            `).join('')}
+                        </select>
                     </div>
+                    <div class="text-[10px] text-slate-500 font-mono pt-1 border-t border-slate-800/80">${student.lastUpdated}</div>
                     <div class="grid grid-cols-3 gap-1.5 pt-1">
-                        <button onclick="inspectRecord('${rec.id}')" class="py-1.5 rounded-lg bg-sky-950 text-sky-400 border border-sky-800 hover:bg-sky-900 text-[11px] font-semibold transition text-center">
-                            Audit
+                        <button onclick="inspectStudent('${student.studentId}', '${student.studentName.replace(/'/g, "\\'")}', '${student.studentAge}')" class="py-1.5 rounded-lg bg-sky-950 text-sky-400 border border-sky-800 hover:bg-sky-900 text-[11px] font-semibold transition text-center">
+                            View
                         </button>
-                        <button onclick="deleteSingleRecord('${rec.id}')" class="py-1.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 text-[11px] font-semibold transition text-center">
+                        <button onclick="deleteStudentRecords('${student.studentId}')" class="py-1.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 text-[11px] font-semibold transition text-center">
                             Delete
                         </button>
-                        <button onclick="restartStudentCourse('${rec.studentId}', '${rec.studentName}')" class="py-1.5 rounded-lg bg-amber-950/60 text-amber-400 border border-amber-800 hover:bg-amber-900 text-[11px] font-semibold transition text-center">
+                        <button onclick="restartStudentCourse('${student.studentId}', '${student.studentName.replace(/'/g, "\\'")}')" class="py-1.5 rounded-lg bg-amber-950/60 text-amber-400 border border-amber-800 hover:bg-amber-900 text-[11px] font-semibold transition text-center">
                             Restart
                         </button>
                     </div>
@@ -291,15 +397,52 @@
             });
         }
 
-        // Delete one test attempt
-        async function deleteSingleRecord(id) {
-            if (!confirm("Delete this single test submission?")) return;
+        async function deleteStudentRecords(studentId) {
+            if (!confirm(`Delete all records for student ${studentId}?`)) return;
 
-            CLOUD_RECORDS = CLOUD_RECORDS.filter(r => r.id !== id);
+            const targetId = String(studentId || '').trim();
+            CLOUD_RECORDS = CLOUD_RECORDS.filter(r => String(r.studentId || '').trim() !== targetId);
             renderRecords(CLOUD_RECORDS);
 
-            const url = `${SCRIPT_URL}?action=DELETE&id=${encodeURIComponent(id)}`;
+            const url = `${SCRIPT_URL}?action=RESET_STUDENT&studentId=${encodeURIComponent(targetId)}`;
             await fetch(url, { mode: 'no-cors' });
+        }
+
+        function inspectStudent(studentId, studentName, studentAge) {
+            const studentRecords = CLOUD_RECORDS.filter(r => String(r.studentId || '').trim() === String(studentId || '').trim());
+            const summary = buildStudentSummary(studentRecords);
+            const student = summary[0] || {
+                studentId,
+                studentName,
+                studentAge,
+                overallPercent: 0,
+                courses: []
+            };
+
+            document.getElementById('modal-title').textContent = `${student.studentName} [${student.studentId}] (${student.studentAge}y)`;
+            document.getElementById('modal-subtitle').textContent = `Overall progress: ${student.overallPercent}% across ${student.courses.length} course${student.courses.length === 1 ? '' : 's'}`;
+
+            const content = document.getElementById('modal-content');
+            content.innerHTML = '';
+
+            if (!student.courses.length) {
+                content.innerHTML = `<div class="text-xs text-slate-400 italic">No course records found for this student.</div>`;
+            } else {
+                student.courses.forEach(course => {
+                    const card = document.createElement('div');
+                    card.className = 'p-3 rounded-xl border bg-slate-950/60 border-slate-800';
+                    card.innerHTML = `
+                        <div class="flex items-center justify-between gap-3 mb-2">
+                            <div class="font-bold text-white text-sm">${course.concept}</div>
+                            <span class="px-2 py-0.5 rounded font-mono font-bold text-xs ${course.percentage >= 70 ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : course.percentage >= 40 ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'}">${course.percentage}%</span>
+                        </div>
+                        <div class="text-[11px] text-slate-300 font-mono">Score: ${course.scored} / ${course.total}</div>
+                    `;
+                    content.appendChild(card);
+                });
+            }
+
+            document.getElementById('audit-modal').classList.remove('hidden');
         }
 
         // RESTART ENTIRE COURSE FOR STUDENT TO 0%
