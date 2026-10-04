@@ -49,9 +49,7 @@
     <!-- MAIN CONTAINER -->
     <main class="max-w-7xl mx-auto w-full px-3 sm:px-6 py-6 space-y-8 flex-1">
         
-        <!-- ========================================== -->
         <!-- PHASE 1: FULL SCREEN INTERACTIVE LAB STAGE -->
-        <!-- ========================================== -->
         <section id="interactive-stage-section" class="bg-slate-900 border border-slate-800 rounded-3xl p-4 sm:p-7 shadow-2xl space-y-5 transition-all">
             
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
@@ -83,7 +81,7 @@
                     <button onclick="stepForward()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs transition" title="Step Next">
                         <i class="fa-solid fa-forward-step mr-1"></i> Step
                     </button>
-                    <button onclick="resetData()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs transition" title="Reset">
+                    <button onclick="resetData(true)" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs transition" title="Reset & Re-shuffle">
                         <i class="fa-solid fa-rotate-left mr-1"></i> Reset
                     </button>
                 </div>
@@ -124,26 +122,26 @@
 
             <!-- Gantry Stage + Live Code Sandbox -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-                <div class="lg:col-span-7 bg-slate-950 p-4 rounded-2xl border border-slate-800 flex flex-col justify-between min-h-[380px] relative overflow-hidden">
+                <div class="lg:col-span-7 bg-slate-950 p-4 rounded-2xl border border-slate-800 flex flex-col justify-between min-h-[380px] relative overflow-hidden" id="crane-enclosure">
                     
                     <!-- Overhead Crane Rail Track -->
                     <div class="w-full h-9 border-b-2 border-slate-700 bg-slate-900/60 relative flex items-center">
                         <div class="absolute inset-x-0 h-1 bg-gradient-to-r from-amber-500 via-sky-500 to-amber-500 opacity-40"></div>
-                        <div id="crane-carriage" class="absolute top-1 transition-all duration-300 flex flex-col items-center" style="left: 10px;">
+                        <div id="crane-carriage" class="absolute top-1 transition-all duration-200 flex flex-col items-center" style="left: 10px;">
                             <div class="w-9 h-4 rounded bg-amber-500 flex items-center justify-center text-[9px] font-mono font-bold text-slate-950 shadow-lg">
                                 <i class="fa-solid fa-gear fa-spin text-[8px]"></i>
                             </div>
                             <svg width="60" height="70" class="overflow-visible">
-                                <line id="cable-1" x1="20" y1="0" x2="20" y2="40" stroke="#f59e0b" stroke-width="2" class="crane-cable transition-all duration-300"></line>
-                                <line id="cable-2" x1="40" y1="0" x2="40" y2="40" stroke="#f59e0b" stroke-width="2" class="crane-cable transition-all duration-300"></line>
-                                <rect id="claw-1" x="14" y="38" width="12" height="6" rx="2" fill="#38bdf8" class="transition-all duration-300"></rect>
-                                <rect id="claw-2" x="34" y="38" width="12" height="6" rx="2" fill="#38bdf8" class="transition-all duration-300"></rect>
+                                <line id="cable-1" x1="20" y1="0" x2="20" y2="40" stroke="#f59e0b" stroke-width="2" class="crane-cable transition-all duration-200"></line>
+                                <line id="cable-2" x1="40" y1="0" x2="40" y2="40" stroke="#f59e0b" stroke-width="2" class="crane-cable transition-all duration-200"></line>
+                                <rect id="claw-1" x="14" y="38" width="12" height="6" rx="2" fill="#38bdf8" class="transition-all duration-200"></rect>
+                                <rect id="claw-2" x="34" y="38" width="12" height="6" rx="2" fill="#38bdf8" class="transition-all duration-200"></rect>
                             </svg>
                         </div>
                     </div>
 
                     <!-- Array Blocks Stage -->
-                    <div id="array-stage" class="flex items-end justify-center gap-1.5 sm:gap-2.5 flex-1 pt-14 pb-2"></div>
+                    <div id="array-stage" class="flex items-end justify-center gap-1.5 sm:gap-2.5 flex-1 pt-16 pb-2 relative"></div>
 
                     <!-- Crane Explanation Indicator -->
                     <div class="bg-slate-900/90 border border-slate-800 p-3 rounded-xl flex items-center justify-between text-xs">
@@ -172,7 +170,7 @@
                 </div>
             </div>
 
-            <!-- GATE ACTION: CLICK THIS ONCE FINISHED PRACTICING -->
+            <!-- GATE ACTION -->
             <div class="pt-4 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div class="text-xs text-slate-400">
                     <i class="fa-solid fa-circle-info text-sky-400 mr-1.5"></i>
@@ -186,10 +184,7 @@
 
         </section>
 
-        <!-- ========================================== -->
         <!-- PHASE 2: 5-QUESTION MCQ ASSESSMENT SECTION -->
-        <!-- Hidden until the student completes learning-->
-        <!-- ========================================== -->
         <section id="assessment-section" class="hidden bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl transition-all">
             <div class="flex items-center justify-between mb-5 border-b border-slate-800 pb-4">
                 <div>
@@ -385,8 +380,10 @@
         let startTime = 0;
         let accumulatedTime = 0;
         let timerInterval = null;
+        let isFinished = false;
 
         function startTimer() {
+            if (timerInterval || isFinished) return;
             startTime = performance.now();
             timerInterval = setInterval(() => {
                 const elapsed = accumulatedTime + (performance.now() - startTime);
@@ -400,13 +397,17 @@
                 accumulatedTime += (performance.now() - startTime);
                 startTime = 0;
             }
-            clearInterval(timerInterval);
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
         }
 
         function resetTimer() {
             pauseTimer();
             accumulatedTime = 0;
             startTime = 0;
+            isFinished = false;
             document.getElementById('timer-val').textContent = '0.00s';
             document.getElementById('timer-ms').textContent = '(0 ms)';
         }
@@ -468,26 +469,78 @@
                 bar.id = `bar-${idx}`;
                 const heightPercent = Math.max(12, (val / maxVal) * 100);
                 bar.style.height = `${heightPercent}%`;
-                bar.className = 'w-9 sm:w-11 rounded-t flex flex-col items-center justify-end pb-1.5 transition-all duration-150';
+                bar.className = 'w-9 sm:w-11 rounded-t flex flex-col items-center justify-end pb-1.5 transition-all duration-150 relative';
 
-                if (sorted.includes(idx)) bar.classList.add('bg-emerald-500');
-                else if (active.includes(idx)) bar.classList.add('bg-amber-400', 'shadow-lg', 'shadow-amber-400/40');
-                else bar.classList.add('bg-sky-600');
+                if (sorted.includes(idx)) {
+                    bar.classList.add('bg-emerald-500');
+                } else if (active.includes(idx)) {
+                    bar.classList.add('bg-amber-400', 'shadow-lg', 'shadow-amber-400/50');
+                } else {
+                    bar.classList.add('bg-sky-600');
+                }
 
-                bar.innerHTML = `<span class="text-[11px] font-mono font-bold text-white">${val}</span>`;
+                bar.innerHTML = `<span class="text-[11px] font-mono font-bold text-white select-none">${val}</span>`;
                 stage.appendChild(bar);
             });
         }
 
-        function moveCraneTo(idx1, idx2) {
+        // PHYSICAL CRANE HOISTING & GANTRY MOVEMENT
+        function moveCraneTo(idx1, idx2 = null, isSwapping = false) {
             const bar1 = document.getElementById(`bar-${idx1}`);
             const carriage = document.getElementById('crane-carriage');
-            if (bar1 && carriage) {
-                const rect = bar1.getBoundingClientRect();
-                const parentRect = bar1.parentElement.getBoundingClientRect();
-                const offset = rect.left - parentRect.left;
-                carriage.style.left = `${offset - 8}px`;
+            const enclosure = document.getElementById('crane-enclosure');
+            const cable1 = document.getElementById('cable-1');
+            const cable2 = document.getElementById('cable-2');
+            const claw1 = document.getElementById('claw-1');
+            const claw2 = document.getElementById('claw-2');
+
+            if (!bar1 || !carriage || !enclosure) return;
+
+            const enclosureRect = enclosure.getBoundingClientRect();
+            const bar1Rect = bar1.getBoundingClientRect();
+            let targetLeft = (bar1Rect.left - enclosureRect.left) + (bar1Rect.width / 2) - 20;
+
+            if (idx2 !== null) {
+                const bar2 = document.getElementById(`bar-${idx2}`);
+                if (bar2) {
+                    const bar2Rect = bar2.getBoundingClientRect();
+                    const midpoint = ((bar1Rect.left + bar2Rect.right) / 2) - enclosureRect.left;
+                    targetLeft = midpoint - 30;
+                }
             }
+
+            carriage.style.left = `${Math.max(10, targetLeft)}px`;
+
+            if (isSwapping) {
+                // Lower crane cables during memory swap
+                cable1.setAttribute('y2', '52');
+                cable2.setAttribute('y2', '52');
+                claw1.setAttribute('y', '50');
+                claw2.setAttribute('y', '50');
+                claw1.setAttribute('fill', '#f59e0b');
+                claw2.setAttribute('fill', '#f59e0b');
+            } else {
+                // Hoist crane cables during inspection
+                cable1.setAttribute('y2', '38');
+                cable2.setAttribute('y2', '38');
+                claw1.setAttribute('y', '36');
+                claw2.setAttribute('y', '36');
+                claw1.setAttribute('fill', '#38bdf8');
+                claw2.setAttribute('fill', '#38bdf8');
+            }
+        }
+
+        function resetCrane() {
+            const carriage = document.getElementById('crane-carriage');
+            const cable1 = document.getElementById('cable-1');
+            const cable2 = document.getElementById('cable-2');
+            const claw1 = document.getElementById('claw-1');
+            const claw2 = document.getElementById('claw-2');
+            if (carriage) carriage.style.left = '10px';
+            if (cable1) cable1.setAttribute('y2', '40');
+            if (cable2) cable2.setAttribute('y2', '40');
+            if (claw1) { claw1.setAttribute('y', '38'); claw1.setAttribute('fill', '#38bdf8'); }
+            if (claw2) { claw2.setAttribute('y', '38'); claw2.setAttribute('fill', '#38bdf8'); }
         }
 
         function renderVars(varsObj) {
@@ -505,6 +558,7 @@
             });
         }
 
+        // GENERATORS
         function* bubbleGen() {
             let n = array.length;
             yield { line: 1, vars: { n } };
@@ -514,14 +568,13 @@
                 yield { line: 3, vars: { i, swapped } };
                 for (let j = 0; j < n - i - 1; j++) {
                     comparisons++;
-                    moveCraneTo(j, j + 1);
-                    yield { line: 5, active: [j, j + 1], vars: { i, j, "arr[j]": array[j], "arr[j+1]": array[j+1] } };
+                    yield { line: 5, active: [j, j + 1], crane: [j, j + 1, false], vars: { i, j, "arr[j]": array[j], "arr[j+1]": array[j+1] }, status: `Comparing ${array[j]} and ${array[j+1]}` };
                     if (array[j] > array[j + 1]) {
                         swaps++;
                         let temp = array[j];
                         array[j] = array[j + 1];
                         array[j + 1] = temp;
-                        yield { line: 8, active: [j, j + 1], vars: { temp, swapped: true } };
+                        yield { line: 8, active: [j, j + 1], crane: [j, j + 1, true], vars: { temp, swapped: true }, status: `Crane Hoisted & Swapped: ${array[j+1]} &harr; ${array[j]}` };
                         swapped = true;
                     }
                 }
@@ -535,22 +588,21 @@
             yield { line: 1, vars: { n } };
             for (let i = 0; i < n - 1; i++) {
                 let minIdx = i;
-                yield { line: 3, active: [i], vars: { i, minIdx } };
+                yield { line: 3, active: [i], crane: [i, null, false], vars: { i, minIdx }, status: `Set minIdx = ${i} (value: ${array[i]})` };
                 for (let j = i + 1; j < n; j++) {
                     comparisons++;
-                    yield { line: 5, active: [minIdx, j], vars: { i, j, minIdx } };
+                    yield { line: 5, active: [minIdx, j], crane: [minIdx, j, false], vars: { i, j, minIdx }, status: `Comparing min (${array[minIdx]}) with arr[${j}] (${array[j]})` };
                     if (array[j] < array[minIdx]) {
                         minIdx = j;
-                        yield { line: 6, active: [minIdx], vars: { minIdx } };
+                        yield { line: 6, active: [minIdx], crane: [minIdx, null, false], vars: { minIdx }, status: `New minimum found at index ${minIdx} (${array[minIdx]})` };
                     }
                 }
                 if (minIdx !== i) {
                     swaps++;
-                    moveCraneTo(i, minIdx);
                     let temp = array[minIdx];
                     array[minIdx] = array[i];
                     array[i] = temp;
-                    yield { line: 10, active: [i, minIdx], vars: { i, minIdx, temp } };
+                    yield { line: 10, active: [i, minIdx], crane: [i, minIdx, true], vars: { i, minIdx, temp }, status: `Swapped minimum ${array[i]} into position ${i}` };
                 }
             }
         }
@@ -560,20 +612,21 @@
             for (let i = 1; i < n; i++) {
                 let key = array[i];
                 let j = i - 1;
-                moveCraneTo(i, i);
-                yield { line: 3, active: [i], vars: { i, key, j } };
+                yield { line: 3, active: [i], crane: [i, null, false], vars: { i, key, j }, status: `Picked key element ${key} at index ${i}` };
                 while (j >= 0 && (comparisons++, array[j] > key)) {
                     array[j + 1] = array[j];
                     swaps++;
-                    yield { line: 6, active: [j, j + 1], vars: { key, j } };
+                    yield { line: 6, active: [j, j + 1], crane: [j, j + 1, true], vars: { key, j }, status: `Shifted ${array[j]} to index ${j+1}` };
                     j = j - 1;
                 }
                 array[j + 1] = key;
-                yield { line: 9, active: [j + 1], vars: { "arr[j+1]": key } };
+                yield { line: 9, active: [j + 1], crane: [j + 1, null, false], vars: { "arr[j+1]": key }, status: `Inserted key ${key} at slot ${j+1}` };
             }
         }
 
         function stepForward() {
+            if (isFinished) return;
+
             if (!generator) {
                 const algo = document.getElementById('algo-select').value;
                 if (algo === 'bubble') generator = bubbleGen();
@@ -587,67 +640,91 @@
                 const step = res.value;
                 highlightLine(step.line);
                 if (step.vars) renderVars(step.vars);
+                if (step.status) document.getElementById('crane-status').textContent = step.status;
                 if (step.active) renderBars(step.active);
                 else renderBars();
+
+                if (step.crane) {
+                    moveCraneTo(step.crane[0], step.crane[1], step.crane[2]);
+                }
 
                 document.getElementById('cmp-val').textContent = comparisons;
                 document.getElementById('swap-val').textContent = swaps;
             } else {
+                // COMPLETED: Halt execution & lock timer
+                isFinished = true;
                 stop();
                 pauseTimer();
                 highlightLine(null);
+                resetCrane();
                 renderBars([], array.map((_, i) => i));
-                document.getElementById('crane-status').textContent = "Sorting Completed Successfully!";
+                document.getElementById('crane-status').textContent = "Sorting Completed Successfully 🎉";
             }
         }
 
         function togglePlay() {
+            if (isFinished) resetData(true);
             if (isRunning) stop();
             else start();
         }
 
         function start() {
+            if (isFinished) return;
             isRunning = true;
             document.getElementById('play-btn').innerHTML = '<i class="fa-solid fa-pause text-[10px]"></i> <span>Pause</span>';
             document.getElementById('play-btn').className = 'px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-semibold text-xs flex items-center gap-2 transition';
             startTimer();
 
             const speed = 620 - parseInt(document.getElementById('speed-slider').value);
+            if (animationInterval) clearInterval(animationInterval);
             animationInterval = setInterval(stepForward, Math.max(25, speed));
         }
 
         function stop() {
             isRunning = false;
-            clearInterval(animationInterval);
+            if (animationInterval) {
+                clearInterval(animationInterval);
+                animationInterval = null;
+            }
             pauseTimer();
             document.getElementById('play-btn').innerHTML = '<i class="fa-solid fa-play text-[10px]"></i> <span>Run Animation</span>';
             document.getElementById('play-btn').className = 'px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center gap-2 transition';
         }
 
-        function resetData() {
+        // RESET FUNCTION WITH AUTOMATIC RESHUFFLE
+        function resetData(reshuffle = true) {
             stop();
             resetTimer();
             generator = null;
             comparisons = 0;
             swaps = 0;
+            isFinished = false;
+
+            if (reshuffle) {
+                generateRandomData();
+            } else {
+                renderBars();
+            }
+
             document.getElementById('cmp-val').textContent = '0';
             document.getElementById('swap-val').textContent = '0';
             document.getElementById('crane-status').textContent = 'Crane Idle • Ready';
             highlightLine(null);
+            resetCrane();
             renderVars({});
-            renderBars();
         }
 
         function generateRandomData() {
             array = [];
             for (let i = 0; i < 10; i++) array.push(Math.floor(Math.random() * 85) + 12);
-            resetData();
+            renderBars();
         }
 
         function changeAlgo() {
             const algo = document.getElementById('algo-select').value;
             renderCode(algo);
-            resetData();
+            // Re-shuffle array so user starts fresh with new algorithm
+            resetData(true);
         }
 
         // ASSESSMENT SUBMISSION LOGIC
@@ -755,7 +832,7 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             renderCode('bubble');
-            renderBars();
+            resetData(true);
         });
     </script>
 </body>
