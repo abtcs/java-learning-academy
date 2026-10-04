@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Java Conditional Flow Lab - If-Else & Decision Logic</title>
+    <title>Java Conditional Flow Lab - Full Interactive Learning & Assessment</title>
     <script>
         const activeStudent = JSON.parse(localStorage.getItem('currentStudent'));
         if (!activeStudent || !activeStudent.name || !activeStudent.age) {
-            alert("Access Denied: Please enter your Name and Age on the main portal first!");
+            alert("Access Denied: Please enter your Name and Age on the home portal first!");
             window.location.href = "index.html";
         }
     </script>
@@ -26,106 +26,239 @@
 
     <iframe name="hidden_gsheet_iframe" id="hidden_gsheet_iframe" style="display:none;"></iframe>
 
-    <header class="border-b border-slate-800 bg-slate-900/90 px-4 sm:px-6 py-3.5 flex items-center justify-between backdrop-blur sticky top-0 z-30">
-        <a href="index.html" class="flex items-center gap-2 text-xs font-semibold text-slate-300 hover:text-white transition">
-            <i class="fa-solid fa-arrow-left"></i> Back to Hub
-        </a>
-        <div class="flex items-center gap-2.5">
-            <span id="session-student-badge" class="text-xs font-mono px-3 py-1 rounded bg-slate-800 text-slate-300">Loading student...</span>
-            <div class="text-xs font-mono bg-sky-950/80 text-sky-400 border border-sky-800 px-2.5 py-1 rounded-full">
-                Module 02: If-Else Logic
+    <header class="border-b border-slate-800 bg-slate-900/90 px-4 sm:px-6 py-3 shrink-0 backdrop-blur sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2 text-xs font-semibold text-slate-300 hover:text-white transition">
+                <i class="fa-solid fa-arrow-left"></i> Back to Academy Hub
+            </a>
+            <div class="flex items-center gap-3">
+                <span id="session-student-badge" class="text-xs font-mono px-3 py-1 rounded bg-slate-800 text-slate-300">Loading student...</span>
+                <div class="text-xs font-mono bg-sky-950/80 text-sky-400 border border-sky-800 px-2.5 py-1 rounded-full">
+                    Module 02: If-Else Logic
+                </div>
             </div>
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto w-full px-4 py-8 space-y-8 flex-1">
+    <main class="max-w-7xl mx-auto w-full px-3 sm:px-6 py-6 space-y-8 flex-1">
         
-        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl">
-            <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
+        <!-- ========================================== -->
+        <!-- PHASE 1: FULL SCREEN INTERACTIVE LAB STAGE -->
+        <!-- ========================================== -->
+        <section id="interactive-stage-section" class="bg-slate-900 border border-slate-800 rounded-3xl p-4 sm:p-7 shadow-2xl space-y-5 transition-all">
+            
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
                 <div>
-                    <h3 class="text-base font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-code-branch text-sky-400"></i> If-Else Decision Logic: 5 MCQs
-                    </h3>
-                    <p class="text-xs text-slate-400 mt-1">Answer the following questions to evaluate conditional logic branch execution.</p>
+                    <h2 class="text-lg sm:text-xl font-bold text-white flex items-center gap-2.5">
+                        <i class="fa-solid fa-code-branch text-sky-400"></i> Interactive Decision Tree & Truth Gate Sandbox
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">Adjust runtime variables, evaluate truth conditions, and observe branching paths before testing your knowledge.</p>
                 </div>
-                <span class="text-xs font-mono px-3 py-1 rounded bg-slate-800 text-slate-300">Passing: 3/5</span>
+                <div class="flex items-center gap-2">
+                    <span class="text-[11px] font-mono px-3 py-1 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20 font-bold">
+                        Phase 1: Interactive Lab
+                    </span>
+                </div>
+            </div>
+
+            <!-- Dynamic Input Workspace -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-950 p-4 rounded-2xl border border-slate-800">
+                <div>
+                    <label class="block text-xs font-mono text-slate-400 mb-1">Variable `score` (0-100)</label>
+                    <input type="range" id="input-score" min="0" max="100" value="82" oninput="runDecisionSimulation()" class="w-full accent-sky-500 cursor-pointer">
+                    <div class="flex justify-between text-xs font-mono text-slate-400 mt-1">
+                        <span>0</span> <span id="score-display" class="text-sky-400 font-bold text-sm">82</span> <span>100</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-mono text-slate-400 mb-1">Boolean `hasAttendedLabs`</label>
+                    <div class="flex gap-3 pt-1">
+                        <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                            <input type="radio" name="labRadio" value="true" checked onchange="runDecisionSimulation()" class="accent-sky-500"> true
+                        </label>
+                        <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+                            <input type="radio" name="labRadio" value="false" onchange="runDecisionSimulation()" class="accent-sky-500"> false
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-mono text-slate-400 mb-1">Evaluation Mode</label>
+                    <select id="eval-mode" onchange="runDecisionSimulation()" class="w-full bg-slate-900 border border-slate-700 text-xs rounded-xl px-3 py-2 text-white font-mono focus:outline-none">
+                        <option value="standard">Standard If-Else Ladder</option>
+                        <option value="shortcircuit">Short-Circuit Test (score >= 50 && hasAttendedLabs)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Visual Decision Pathways & Active Code Highlight -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                <!-- Branch Visual Graph -->
+                <div class="lg:col-span-6 bg-slate-950 p-5 rounded-2xl border border-slate-800 flex flex-col justify-between space-y-4">
+                    <span class="text-xs font-mono text-slate-400 uppercase font-semibold">Active Execution Branch</span>
+                    
+                    <div class="space-y-3 flex-1 flex flex-col justify-center">
+                        <div id="branch-a" class="p-3.5 rounded-xl border border-slate-800 bg-slate-900/60 transition-all flex items-center justify-between">
+                            <span class="font-mono text-xs">Branch 1: Grade A (score &gt;= 90)</span>
+                            <span class="status-indicator text-xs font-bold text-slate-600">BYPASSED</span>
+                        </div>
+                        <div id="branch-b" class="p-3.5 rounded-xl border border-slate-800 bg-slate-900/60 transition-all flex items-center justify-between">
+                            <span class="font-mono text-xs">Branch 2: Grade B (score &gt;= 80)</span>
+                            <span class="status-indicator text-xs font-bold text-slate-600">BYPASSED</span>
+                        </div>
+                        <div id="branch-c" class="p-3.5 rounded-xl border border-slate-800 bg-slate-900/60 transition-all flex items-center justify-between">
+                            <span class="font-mono text-xs">Branch 3: Grade C (score &gt;= 60)</span>
+                            <span class="status-indicator text-xs font-bold text-slate-600">BYPASSED</span>
+                        </div>
+                        <div id="branch-fail" class="p-3.5 rounded-xl border border-slate-800 bg-slate-900/60 transition-all flex items-center justify-between">
+                            <span class="font-mono text-xs">Branch 4: Default Else (Fail)</span>
+                            <span class="status-indicator text-xs font-bold text-slate-600">BYPASSED</span>
+                        </div>
+                    </div>
+
+                    <div id="result-box" class="p-3 rounded-xl bg-sky-950/40 border border-sky-800 text-xs font-mono text-sky-300">
+                        Result: Calculating...
+                    </div>
+                </div>
+
+                <!-- Java Code Snippet Sandbox -->
+                <div class="lg:col-span-6 bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden flex flex-col">
+                    <div class="bg-slate-900 px-4 py-2.5 border-b border-slate-800 flex items-center justify-between">
+                        <span class="text-xs font-mono text-slate-200 font-bold">GradeCalculator.java</span>
+                        <span class="text-[10px] font-mono text-sky-400">Bytecode Flow</span>
+                    </div>
+                    <pre class="p-4 font-mono-code text-xs leading-6 text-slate-300 overflow-x-auto flex-1">
+<span id="code-line-1" class="block px-2 rounded">int score = <span id="code-score-val" class="text-amber-400">82</span>;</span>
+<span id="code-line-2" class="block px-2 rounded">boolean hasAttendedLabs = <span id="code-lab-val" class="text-amber-400">true</span>;</span>
+<span id="code-line-3" class="block px-2 rounded"></span>
+<span id="code-line-4" class="block px-2 rounded"><span class="text-rose-400 font-semibold">if</span> (score >= 90 && hasAttendedLabs) {</span>
+<span id="code-line-5" class="block px-2 rounded">    grade = 'A';</span>
+<span id="code-line-6" class="block px-2 rounded">} <span class="text-rose-400 font-semibold">else if</span> (score >= 80 && hasAttendedLabs) {</span>
+<span id="code-line-7" class="block px-2 rounded">    grade = 'B';</span>
+<span id="code-line-8" class="block px-2 rounded">} <span class="text-rose-400 font-semibold">else if</span> (score >= 60) {</span>
+<span id="code-line-9" class="block px-2 rounded">    grade = 'C';</span>
+<span id="code-line-10" class="block px-2 rounded">} <span class="text-rose-400 font-semibold">else</span> {</span>
+<span id="code-line-11" class="block px-2 rounded">    grade = 'F';</span>
+<span id="code-line-12" class="block px-2 rounded">}</span></pre>
+                </div>
+            </div>
+
+            <!-- UNLOCK ACTION BUTTON -->
+            <div class="pt-4 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="text-xs text-slate-400">
+                    <i class="fa-solid fa-circle-info text-sky-400 mr-1.5"></i>
+                    Finished testing conditional flow and short-circuit logic? Unlock your test when ready.
+                </div>
+                <button id="unlock-quiz-btn" onclick="unlockAssessment()" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 font-bold text-xs text-white shadow-xl shadow-sky-600/30 transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-graduation-cap text-sm"></i>
+                    <span>I Have Learned This &bull; Take 5-Question Assessment</span>
+                </button>
+            </div>
+
+        </section>
+
+        <!-- ========================================== -->
+        <!-- PHASE 2: 5-QUESTION MCQ ASSESSMENT SECTION -->
+        <!-- ========================================== -->
+        <section id="assessment-section" class="hidden bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl transition-all">
+            <div class="flex items-center justify-between mb-5 border-b border-slate-800 pb-4">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/20 font-mono text-[10px] font-bold uppercase">Phase 2</span>
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-sky-400"></i> Module 02: If-Else Assessment
+                        </h3>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-1">5 questions &bull; Passing score: 3/5 &bull; Automatically syncs to Google Sheets.</p>
+                </div>
+                <button onclick="scrollToVisualizer()" class="text-xs text-slate-400 hover:text-white px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 font-mono transition">
+                    &uarr; Review Visualizer
+                </button>
             </div>
 
             <form id="quiz-form" onsubmit="submitQuiz(event)" class="space-y-6">
                 <!-- Q1 -->
-                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 sm:p-5">
                     <p class="text-xs font-semibold text-slate-200 mb-3">1. In Java, what is the required data type for the expression inside an `if (...)` statement?</p>
-                    <div class="space-y-2 text-xs">
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="A" required> A) Any integer (0 is false, non-zero is true)</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="B"> B) Strictly a boolean expression (`true` or `false`)</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="C"> C) Any non-null object reference</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="D"> D) String or character sequence</label>
+                    <div class="space-y-2.5 text-xs">
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="A" required> A) Any integer (0 is false, non-zero is true)</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="B"> B) Strictly a boolean expression (`true` or `false`)</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="C"> C) Any non-null object reference</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="D"> D) String or character sequence</label>
                     </div>
-                    <div id="expl-1" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
+                    <div id="expl-1" class="hidden mt-3 p-3 rounded-xl text-xs font-mono"></div>
                 </div>
 
                 <!-- Q2 -->
-                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 sm:p-5">
                     <p class="text-xs font-semibold text-slate-200 mb-3">2. What happens during short-circuit evaluation with the logical AND (`&&`) operator if the left operand evaluates to `false`?</p>
-                    <div class="space-y-2 text-xs">
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="A" required> A) The right-hand operand is completely bypassed and never evaluated</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="B"> B) The right-hand operand is evaluated twice to verify</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="C"> C) A compile-time error occurs</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="D"> D) Both operands are always evaluated regardless of values</label>
+                    <div class="space-y-2.5 text-xs">
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="A" required> A) The right-hand operand is completely bypassed and never evaluated</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="B"> B) The right-hand operand is evaluated twice to verify</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="C"> C) A compile-time error occurs</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="D"> D) Both operands are always evaluated regardless of values</label>
                     </div>
-                    <div id="expl-2" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
+                    <div id="expl-2" class="hidden mt-3 p-3 rounded-xl text-xs font-mono"></div>
                 </div>
 
                 <!-- Q3 -->
-                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 sm:p-5">
                     <p class="text-xs font-semibold text-slate-200 mb-3">3. What is the output of the ternary operator expression: `int x = (5 > 2) ? 10 : 20;`?</p>
-                    <div class="space-y-2 text-xs">
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="A" required> A) 20</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="B"> B) 10</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="C"> C) true</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="D"> D) 5</label>
+                    <div class="space-y-2.5 text-xs">
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="A" required> A) 20</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="B"> B) 10</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="C"> C) true</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="D"> D) 5</label>
                     </div>
-                    <div id="expl-3" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
+                    <div id="expl-3" class="hidden mt-3 p-3 rounded-xl text-xs font-mono"></div>
                 </div>
 
                 <!-- Q4 -->
-                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 sm:p-5">
                     <p class="text-xs font-semibold text-slate-200 mb-3">4. How is the "dangling else" problem resolved by Java compilers in nested statements without curly braces?</p>
-                    <div class="space-y-2 text-xs">
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="A" required> A) The `else` clause binds with the outermost `if`</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="B"> B) The `else` clause binds with the closest preceding unmatched `if`</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="C"> C) It throws a Compilation Error</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="D"> D) The JVM picks a branch randomly</label>
+                    <div class="space-y-2.5 text-xs">
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="A" required> A) The `else` clause binds with the outermost `if`</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="B"> B) The `else` clause binds with the closest preceding unmatched `if`</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="C"> C) It throws a Compilation Error</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="D"> D) The JVM picks a branch randomly</label>
                     </div>
-                    <div id="expl-4" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
+                    <div id="expl-4" class="hidden mt-3 p-3 rounded-xl text-xs font-mono"></div>
                 </div>
 
                 <!-- Q5 -->
-                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 sm:p-5">
                     <p class="text-xs font-semibold text-slate-200 mb-3">5. Why is using `==` to compare two `String` variables in an `if` statement usually a logic bug in Java?</p>
-                    <div class="space-y-2 text-xs">
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="A" required> A) `==` tests memory reference equality, whereas `.equals()` tests character value equality</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="B"> B) `==` is not supported for Objects in Java</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="C"> C) It causes a stack overflow error</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="D"> D) Strings are primitive types in Java</label>
+                    <div class="space-y-2.5 text-xs">
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="A" required> A) `==` tests memory reference equality, whereas `.equals()` tests character value equality</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="B"> B) `==` is not supported for Objects in Java</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="C"> C) It causes a stack overflow error</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="D"> D) Strings are primitive types in Java</label>
                     </div>
-                    <div id="expl-5" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
+                    <div id="expl-5" class="hidden mt-3 p-3 rounded-xl text-xs font-mono"></div>
                 </div>
 
-                <button type="submit" id="submit-btn" class="w-full py-3 rounded-xl bg-sky-600 hover:bg-sky-500 font-bold text-sm text-white shadow-lg transition flex items-center justify-center gap-2">
+                <button type="submit" id="submit-btn" class="w-full py-3.5 rounded-xl bg-sky-600 hover:bg-sky-500 font-bold text-sm text-white shadow-xl shadow-sky-600/30 transition flex items-center justify-center gap-2">
                     <i class="fa-solid fa-cloud-arrow-up"></i> Submit Assessment & Save to Cloud
                 </button>
             </form>
 
-            <div id="score-summary" class="hidden mt-6 p-4 rounded-xl border border-sky-500/40 bg-sky-950/20 text-center">
+            <div id="score-summary" class="hidden mt-6 p-5 rounded-2xl border border-sky-500/40 bg-sky-950/20 text-center">
                 <div class="text-xs uppercase font-mono text-slate-400 mb-1">Assessment Complete</div>
-                <div class="text-2xl font-bold font-mono text-sky-400" id="final-score-text">0 / 5</div>
+                <div class="text-3xl font-bold font-mono text-sky-400" id="final-score-text">0 / 5</div>
                 <div id="sync-status" class="text-xs font-mono text-amber-400 mt-2">
                     <i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Syncing to Google Sheet...
                 </div>
-                <div class="mt-4 flex justify-center gap-3">
-                    <a href="for-loop.html" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-xs font-semibold text-white transition">Next Module: For Loops &rarr;</a>
-                    <a href="admin.html" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 transition">View on Admin Panel</a>
+                <div class="mt-5 flex flex-wrap justify-center gap-3">
+                    <a href="for-loop.html" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-semibold text-white transition flex items-center gap-1.5">
+                        <span>Next Module: For Loops</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </a>
+                    <a href="index.html" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 transition">
+                        Academy Dashboard
+                    </a>
+                    <a href="admin.html" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 transition">
+                        Instructor Panel
+                    </a>
                 </div>
             </div>
         </section>
@@ -133,7 +266,7 @@
     </main>
 
     <footer class="border-t border-slate-800 py-3.5 text-center text-xs text-slate-500">
-        Java Interactive Academy &bull; If-Else Module (02)
+        Java Interactive Academy &bull; Module 02: If-Else Logic
     </footer>
 
     <script>
@@ -145,12 +278,87 @@
             document.getElementById('session-student-badge').textContent = `Student: ${currentStudent.name}${sid} (${currentStudent.age}y)`;
         }
 
+        function unlockAssessment() {
+            const sec = document.getElementById('assessment-section');
+            sec.classList.remove('hidden');
+            sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            document.getElementById('unlock-quiz-btn').innerHTML = '<i class="fa-solid fa-check text-emerald-400"></i> Assessment Unlocked Below &darr;';
+            document.getElementById('unlock-quiz-btn').classList.replace('from-sky-600', 'from-emerald-700');
+            document.getElementById('unlock-quiz-btn').classList.replace('to-indigo-600', 'to-emerald-800');
+        }
+
+        function scrollToVisualizer() {
+            document.getElementById('interactive-stage-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // DECISION SIMULATION ENGINE
+        function runDecisionSimulation() {
+            const score = parseInt(document.getElementById('input-score').value);
+            const hasAttendedLabs = document.querySelector('input[name="labRadio"]:checked').value === "true";
+
+            document.getElementById('score-display').textContent = score;
+            document.getElementById('code-score-val').textContent = score;
+            document.getElementById('code-lab-val').textContent = hasAttendedLabs;
+
+            // Reset branch styles
+            const branches = ['branch-a', 'branch-b', 'branch-c', 'branch-fail'];
+            branches.forEach(b => {
+                const el = document.getElementById(b);
+                el.className = "p-3.5 rounded-xl border border-slate-800 bg-slate-900/60 transition-all flex items-center justify-between";
+                el.querySelector('.status-indicator').textContent = "BYPASSED";
+                el.querySelector('.status-indicator').className = "status-indicator text-xs font-bold text-slate-600";
+            });
+
+            // Clear highlighted code lines
+            for (let i = 4; i <= 12; i++) {
+                const el = document.getElementById(`code-line-${i}`);
+                if (el) el.className = "block px-2 rounded";
+            }
+
+            let resultGrade = '';
+            let activeBranchId = '';
+            let codeLinesToHighlight = [];
+
+            if (score >= 90 && hasAttendedLabs) {
+                resultGrade = 'Grade A (Outstanding)';
+                activeBranchId = 'branch-a';
+                codeLinesToHighlight = [4, 5];
+            } else if (score >= 80 && hasAttendedLabs) {
+                resultGrade = 'Grade B (Very Good)';
+                activeBranchId = 'branch-b';
+                codeLinesToHighlight = [6, 7];
+            } else if (score >= 60) {
+                resultGrade = 'Grade C (Passing Grade)';
+                activeBranchId = 'branch-c';
+                codeLinesToHighlight = [8, 9];
+            } else {
+                resultGrade = 'Grade F (Failed - Needs lab retake or higher score)';
+                activeBranchId = 'branch-fail';
+                codeLinesToHighlight = [10, 11];
+            }
+
+            const activeEl = document.getElementById(activeBranchId);
+            if (activeEl) {
+                activeEl.className = "p-3.5 rounded-xl border border-sky-500 bg-sky-950/40 shadow-lg shadow-sky-500/20 transition-all flex items-center justify-between";
+                activeEl.querySelector('.status-indicator').textContent = "EXECUTED";
+                activeEl.querySelector('.status-indicator').className = "status-indicator text-xs font-bold text-sky-400";
+            }
+
+            codeLinesToHighlight.forEach(l => {
+                const el = document.getElementById(`code-line-${l}`);
+                if (el) el.className = "block px-2 rounded bg-sky-500/20 border-l-2 border-sky-400 text-white";
+            });
+
+            document.getElementById('result-box').innerHTML = `Evaluated Output: <strong class="text-sky-300 font-bold">${resultGrade}</strong>`;
+        }
+
+        // ASSESSMENT SUBMISSION LOGIC
         const QUIZ_KEY = {
-            q1: { correct: 'B', reason: "Unlike C/C++, Java does not allow integer expressions (0 or 1) in if statements; the expression must evaluate to a boolean." },
-            q2: { correct: 'A', reason: "If the first condition of an '&&' operation is false, the overall outcome cannot be true, so the right-hand condition is short-circuited." },
-            q3: { correct: 'B', reason: "Since (5 > 2) evaluates to true, the expression returns the first value following the '?', which is 10." },
-            q4: { correct: 'B', reason: "In Java grammar, an unbraced 'else' always associates with the nearest previous unmatched 'if' statement." },
-            q5: { correct: 'A', reason: "'==' checks memory address references, while '.equals()' compares actual string character contents." }
+            q1: { correct: 'B', reason: "Unlike C/C++, Java requires conditions in if-statements to be of strictly boolean type." },
+            q2: { correct: 'A', reason: "With '&&', if the first expression is false, the overall outcome must be false, so the right-side is skipped." },
+            q3: { correct: 'B', reason: "Because (5 > 2) is true, the ternary expression returns the first term, which is 10." },
+            q4: { correct: 'B', reason: "An unbraced 'else' always binds to the closest preceding unmatched 'if' statement." },
+            q5: { correct: 'A', reason: "'==' checks memory address equality. Always use '.equals()' for string value comparisons." }
         };
 
         function submitQuiz(e) {
@@ -177,10 +385,10 @@
                 const expl = document.getElementById(`expl-${i}`);
                 expl.classList.remove('hidden');
                 if (isCorrect) {
-                    expl.className = "mt-3 p-3 rounded-lg text-xs bg-emerald-500/10 border border-emerald-500/30 text-emerald-300";
+                    expl.className = "mt-3 p-3 rounded-xl text-xs bg-emerald-500/10 border border-emerald-500/30 text-emerald-300";
                     expl.innerHTML = `<strong>Correct (${chosen})!</strong> ${info.reason}`;
                 } else {
-                    expl.className = "mt-3 p-3 rounded-lg text-xs bg-rose-500/10 border border-rose-500/30 text-rose-300";
+                    expl.className = "mt-3 p-3 rounded-xl text-xs bg-rose-500/10 border border-rose-500/30 text-rose-300";
                     expl.innerHTML = `<strong>Incorrect.</strong> You chose <strong>${chosen}</strong>, but correct is <strong>${info.correct}</strong>.<br><span class="text-slate-300 mt-1 block">Why: ${info.reason}</span>`;
                 }
             }
@@ -246,6 +454,8 @@
                 if (document.body.contains(postForm)) postForm.remove();
             }, 1200);
         }
+
+        window.addEventListener('DOMContentLoaded', runDecisionSimulation);
     </script>
 </body>
 </html>
