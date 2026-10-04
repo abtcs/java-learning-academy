@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java If-Else Module & Evaluation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0b0f19; color: #f1f5f9; }
+        .font-mono-code { font-family: 'Courier New', Courier, monospace; }
+        .code-active { background: rgba(14, 165, 233, 0.25); border-left: 3px solid #38bdf8; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-slate-900/80 px-6 py-4 flex items-center justify-between backdrop-blur">
+        <a href="index.html" class="flex items-center gap-2 text-xs font-semibold text-slate-300 hover:text-white transition">
+            <i class="fa-solid fa-arrow-left"></i> Back to Curriculum
+        </a>
+        <div class="text-xs font-mono bg-sky-950/80 text-sky-400 border border-sky-800 px-2.5 py-1 rounded-full">
+            Concept 01: If-Else & Decision Logic
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto w-full px-4 py-8 space-y-8">
+        <!-- Interactive Visualizer -->
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
+            <h2 class="text-lg font-bold mb-2 flex items-center gap-2">
+                <i class="fa-solid fa-code-branch text-sky-400"></i> Interactive Decision Branching
+            </h2>
+            <p class="text-xs text-slate-400 mb-6">Modify the input value and watch the Java Virtual Machine evaluate the boolean condition.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Controls & Code -->
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <label class="text-xs font-semibold text-slate-300">Test Score (0 - 100):</label>
+                        <input type="range" id="score-slider" min="0" max="100" value="82" oninput="updateVisualizer()" class="w-36 accent-sky-500">
+                        <span id="score-display" class="font-mono font-bold text-sky-400 text-sm">82</span>
+                    </div>
+
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 font-mono-code text-xs leading-6" id="code-lines">
+                        <div id="l1" class="px-2 py-0.5 rounded">int score = <span id="code-score-val" class="text-sky-300">82</span>;</div>
+                        <div id="l2" class="px-2 py-0.5 rounded">if (score >= 90) {</div>
+                        <div id="l3" class="px-2 py-0.5 pl-6 rounded">grade = "A (Excellent)";</div>
+                        <div id="l4" class="px-2 py-0.5 rounded">} else if (score >= 75) {</div>
+                        <div id="l5" class="px-2 py-0.5 pl-6 rounded">grade = "B (Good)";</div>
+                        <div id="l6" class="px-2 py-0.5 rounded">} else {</div>
+                        <div id="l7" class="px-2 py-0.5 pl-6 rounded">grade = "C (Needs Practice)";</div>
+                        <div id="l8" class="px-2 py-0.5 rounded">}</div>
+                    </div>
+                </div>
+
+                <!-- Animated Gate Diagram -->
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 flex flex-col justify-center items-center text-center">
+                    <div class="text-[11px] font-mono text-slate-500 uppercase tracking-widest mb-3">Live Condition Evaluation</div>
+                    <div id="condition-box" class="px-4 py-2 rounded-lg border text-xs font-mono font-bold transition-all duration-300 mb-4 bg-slate-900 border-slate-700 text-slate-300">
+                        Testing: score >= 90
+                    </div>
+                    <div class="w-full flex items-center justify-center gap-2">
+                        <div class="w-2.5 h-12 bg-sky-500/20 rounded"></div>
+                        <i class="fa-solid fa-arrow-down text-slate-600"></i>
+                    </div>
+                    <div class="mt-4 p-3 rounded-lg border w-full max-w-xs" id="result-box">
+                        <span class="text-[10px] text-slate-500 uppercase block">Selected Branch Result</span>
+                        <span id="result-text" class="text-sm font-bold text-white font-mono">B (Good)</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5-Question MCQ Assessment Section -->
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h3 class="text-base font-bold flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-emerald-400"></i> Concept Assessment: 5 MCQs
+                    </h3>
+                    <p class="text-xs text-slate-400">Test your mastery. If you select a wrong answer, detailed JVM reasoning is provided.</p>
+                </div>
+                <div class="text-xs font-mono px-3 py-1 rounded bg-slate-800 text-slate-300" id="session-student-name">
+                    Student: None
+                </div>
+            </div>
+
+            <form id="quiz-form" onsubmit="submitQuiz(event)" class="space-y-6">
+                <!-- Question 1 -->
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4" id="q-container-1">
+                    <p class="text-xs font-semibold text-slate-200 mb-3">1. What is the output of the following Java snippet?<br>
+                    <code class="font-mono text-sky-400 bg-slate-900 px-1 py-0.5 rounded">int x = 5; if (x = 5) { System.out.print("Yes"); }</code></p>
+                    <div class="space-y-2 text-xs">
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="A" required> A) Prints "Yes"</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="B"> B) Compilation Error: Type mismatch (cannot convert int to boolean)</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="C"> C) Runtime Exception</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="D"> D) Prints nothing</label>
+                    </div>
+                    <div id="expl-1" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4" id="q-container-2">
+                    <p class="text-xs font-semibold text-slate-200 mb-3">2. In Java, what is the key difference between the short-circuit AND (<code>&amp;&amp;</code>) and bitwise AND (<code>&amp;</code>)?</p>
+                    <div class="space-y-2 text-xs">
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="A" required> A) No difference, both evaluate both operands</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="B"> B) <code>&amp;&amp;</code> skips the right-hand operand if the left operand evaluates to false</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="C"> C) <code>&amp;</code> cannot be used with boolean expressions</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="D"> D) <code>&amp;&amp;</code> is deprecated in Java 21</label>
+                    </div>
+                    <div id="expl-2" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
+                </div>
+
+                <!-- Question 3 -->
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4" id="q-container-3">
+                    <p class="text-xs font-semibold text-slate-200 mb-3">3. What is the output?<br>
+                    <code class="font-mono text-sky-400 bg-slate-900 px-1 py-0.5 rounded">int a = 10; String res = (a > 5) ? (a < 15 ? "X" : "Y") : "Z";</code></p>
+                    <div class="space-y-2 text-xs">
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="A" required> A) "Z"</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="B"> B) "Y"</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="C"> C) "X"</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="D"> D) NullPointerException</label>
+                    </div>
+                    <div id="expl-3" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
+                </div>
+
+                <!-- Question 4 -->
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4" id="q-container-4">
+                    <p class="text-xs font-semibold text-slate-200 mb-3">4. Can an <code>else</code> block exist without an <code>if</code> block in Java?</p>
+                    <div class="space-y-2 text-xs">
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="A" required> A) Yes, if inside a switch</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="B"> B) No, an else block must be preceded by an if or else-if statement</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="C"> C) Yes, using the goto keyword</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="D"> D) Yes, if defined inside an interface</label>
+                    </div>
+                    <div id="expl-4" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
+                </div>
+
+                <!-- Question 5 -->
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4" id="q-container-5">
+                    <p class="text-xs font-semibold text-slate-200 mb-3">5. What does the expression <code>if (flag = true)</code> do if <code>boolean flag = false;</code> beforehand?</p>
+                    <div class="space-y-2 text-xs">
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="A" required> A) Throws compilation error</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="B"> B) Evaluates false because original flag was false</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="C"> C) Assigns true to flag and executes the if-branch</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="D"> D) Prints null</label>
+                    </div>
+                    <div id="expl-5" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" id="submit-btn" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 font-bold text-sm text-white shadow-lg shadow-emerald-600/30 transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> Submit Assessment & Save Results
+                </button>
+            </form>
+
+            <!-- Score Result Panel -->
+            <div id="score-summary" class="hidden mt-6 p-4 rounded-xl border border-sky-500/40 bg-sky-950/20 text-center">
+                <div class="text-sm font-semibold text-white mb-1">Assessment Complete!</div>
+                <div class="text-2xl font-bold font-mono text-sky-400" id="final-score-text">0 / 5</div>
+                <p class="text-xs text-slate-400 mt-1">Detailed answer explanations and correct answers are highlighted above.</p>
+                <div class="mt-4 flex justify-center gap-3">
+                    <a href="for-loop.html" class="px-4 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-xs font-semibold text-white transition">Next Concept: For Loop &rarr;</a>
+                    <a href="admin.html" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 transition">View in Admin Panel</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Interactive visualizer logic
+        function updateVisualizer() {
+            const score = parseInt(document.getElementById('score-slider').value);
+            document.getElementById('score-display').textContent = score;
+            document.getElementById('code-score-val').textContent = score;
+
+            document.querySelectorAll('#code-lines div').forEach(el => el.classList.remove('code-active'));
+            const condBox = document.getElementById('condition-box');
+            const resBox = document.getElementById('result-box');
+            const resText = document.getElementById('result-text');
+
+            if (score >= 90) {
+                document.getElementById('l2').classList.add('code-active');
+                document.getElementById('l3').classList.add('code-active');
+                condBox.textContent = `score (${score}) >= 90 is TRUE`;
+                condBox.className = "px-4 py-2 rounded-lg border text-xs font-mono font-bold bg-emerald-500/10 border-emerald-500 text-emerald-400 mb-4";
+                resText.textContent = "A (Excellent)";
+            } else if (score >= 75) {
+                document.getElementById('l4').classList.add('code-active');
+                document.getElementById('l5').classList.add('code-active');
+                condBox.textContent = `score (${score}) >= 75 is TRUE`;
+                condBox.className = "px-4 py-2 rounded-lg border text-xs font-mono font-bold bg-sky-500/10 border-sky-500 text-sky-400 mb-4";
+                resText.textContent = "B (Good)";
+            } else {
+                document.getElementById('l6').classList.add('code-active');
+                document.getElementById('l7').classList.add('code-active');
+                condBox.textContent = `All conditions FALSE -> entering else`;
+                condBox.className = "px-4 py-2 rounded-lg border text-xs font-mono font-bold bg-amber-500/10 border-amber-500 text-amber-400 mb-4";
+                resText.textContent = "C (Needs Practice)";
+            }
+        }
+
+        // Correct Answers & Detailed Explanations
+        const QUIZ_KEY = {
+            q1: { correct: 'B', reason: "In Java, '=' is the assignment operator. 'x = 5' assigns 5 and yields an int, but if() expects a boolean expression. In C/C++ this is allowed, but in Java it causes a compile-time type mismatch error." },
+            q2: { correct: 'B', reason: "The short-circuit '&&' halts evaluation immediately if the left expression evaluates to false, because the final outcome can never be true. The single '&' evaluates both operands regardless." },
+            q3: { correct: 'C', reason: "Since a (10) > 5 is true, the first ternary branch evaluates: (a < 15 ? 'X' : 'Y'). Since 10 < 15 is also true, it returns 'X'." },
+            q4: { correct: 'B', reason: "Java syntax requires an 'else' keyword to immediately follow a preceding 'if' or 'else if' block. An isolated 'else' causes a compile-time syntax error." },
+            q5: { correct: 'C', reason: "Because 'flag' is a boolean, 'flag = true' assigns true to flag and returns the value true. Hence the if-condition evaluates to true and executes the branch." }
+        };
+
+        function submitQuiz(e) {
+            e.preventDefault();
+            const student = JSON.parse(localStorage.getItem('currentStudent')) || { name: 'Guest Student', age: 18 };
+            const form = new FormData(document.getElementById('quiz-form'));
+
+            let score = 0;
+            let report = [];
+
+            for (let i = 1; i <= 5; i++) {
+                const qKey = `q${i}`;
+                const chosen = form.get(qKey);
+                const info = QUIZ_KEY[qKey];
+                const isCorrect = (chosen === info.correct);
+                if (isCorrect) score++;
+
+                report.push({
+                    questionNo: i,
+                    chosenAnswer: chosen,
+                    correctAnswer: info.correct,
+                    isCorrect: isCorrect,
+                    explanation: info.reason
+                });
+
+                // Display Explanations on Page
+                const explBox = document.getElementById(`expl-${i}`);
+                explBox.classList.remove('hidden');
+                if (isCorrect) {
+                    explBox.className = "mt-3 p-3 rounded-lg text-xs bg-emerald-500/10 border border-emerald-500/30 text-emerald-300";
+                    explBox.innerHTML = `<strong>Correct (${chosen})!</strong> ${info.reason}`;
+                } else {
+                    explBox.className = "mt-3 p-3 rounded-lg text-xs bg-rose-500/10 border border-rose-500/30 text-rose-300";
+                    explBox.innerHTML = `<strong>Incorrect.</strong> You chose <strong>${chosen}</strong>, but the correct answer is <strong>${info.correct}</strong>.<br><span class="text-slate-300 mt-1 block">Why: ${info.reason}</span>`;
+                }
+            }
+
+            // Save Result to LocalStorage for Biswam2 Admin Panel
+            const testRecord = {
+                id: 'REC-' + Date.now(),
+                studentName: student.name,
+                studentAge: student.age,
+                concept: 'If-Else Decision Logic',
+                score: score,
+                total: 5,
+                timestamp: new Date().toLocaleString(),
+                details: report
+            };
+
+            let allRecords = JSON.parse(localStorage.getItem('javaQuizRecords')) || [];
+            allRecords.push(testRecord);
+            localStorage.setItem('javaQuizRecords', JSON.stringify(allRecords));
+
+            // Display Score summary
+            document.getElementById('final-score-text').textContent = `${score} / 5 (${(score / 5) * 100}%)`;
+            document.getElementById('score-summary').classList.remove('hidden');
+            document.getElementById('submit-btn').classList.add('hidden');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const student = JSON.parse(localStorage.getItem('currentStudent'));
+            if (student) {
+                document.getElementById('session-student-name').textContent = `Student: ${student.name} (${student.age}y)`;
+            }
+            updateVisualizer();
+        });
+    </script>
+</body>
+</html>
