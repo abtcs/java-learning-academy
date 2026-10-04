@@ -3,21 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Student Progress & Marks Matrix</title>
+    <title>Instructor & Admin Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #0b0f19; color: #f1f5f9; }
         .font-mono-code { font-family: 'JetBrains Mono', monospace; }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-rose-500/30">
 
-    <!-- Top Navigation Header -->
     <header class="border-b border-slate-800 bg-slate-900/90 px-6 py-4 flex items-center justify-between backdrop-blur sticky top-0 z-30">
         <div class="flex items-center space-x-3">
             <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-rose-500/20">
@@ -25,22 +21,21 @@
             </div>
             <div>
                 <h1 class="text-base font-bold text-white">Instructor & Admin Portal</h1>
-                <p class="text-xs text-slate-400">Student Progress Matrix & Assessment Marks Audit</p>
+                <p class="text-xs text-slate-400">Student Progress Matrix & Evaluation Records</p>
             </div>
         </div>
         <div class="flex items-center gap-3">
-            <a href="index.html" class="px-3.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-xs text-slate-300 hover:text-white transition flex items-center gap-1.5">
-                <i class="fa-solid fa-house"></i> Student Portal
+            <a href="index.html" class="px-3.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-xs text-slate-300 hover:text-white transition">
+                <i class="fa-solid fa-house"></i> Home
             </a>
-            <button id="logout-btn" onclick="logoutAdmin()" class="hidden px-3.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-xs font-semibold text-white transition flex items-center gap-1.5">
-                <i class="fa-solid fa-right-from-bracket"></i> Logout
+            <button id="logout-btn" onclick="logoutAdmin()" class="hidden px-3.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-xs font-semibold text-white transition">
+                Logout
             </button>
         </div>
     </header>
 
     <main class="max-w-7xl mx-auto w-full px-4 py-8">
-
-        <!-- Login Form (Visible if not authenticated) -->
+        <!-- Login Card -->
         <div id="login-card" class="max-w-md mx-auto bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl">
             <div class="text-center mb-6">
                 <div class="w-14 h-14 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center mx-auto mb-3 text-rose-400 text-2xl">
@@ -60,7 +55,7 @@
                     <input type="password" id="admin-pass" required placeholder="••••••••" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3.5 py-2 text-sm text-white focus:outline-none focus:border-rose-500">
                 </div>
                 <div id="login-error" class="hidden text-xs text-rose-400 bg-rose-500/10 p-2.5 rounded-lg border border-rose-500/20 text-center font-medium">
-                    Invalid credentials. Username is <span class="font-mono">biswam2</span>.
+                    Invalid credentials. Username is biswam2.
                 </div>
                 <button type="submit" class="w-full py-2.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold text-sm transition shadow-lg shadow-rose-600/30">
                     Sign In to Portal
@@ -68,53 +63,16 @@
             </form>
         </div>
 
-        <!-- Protected Dashboard Content (Hidden until authenticated) -->
+        <!-- Dashboard View -->
         <div id="dashboard-view" class="hidden space-y-6">
-
-            <!-- High-Level Metric Cards -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
-                    <span class="text-xs text-slate-400 block mb-1">Enrolled Students</span>
-                    <span id="metric-students-count" class="text-2xl font-bold font-mono text-sky-400">0</span>
-                </div>
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
-                    <span class="text-xs text-slate-400 block mb-1">Total Submissions</span>
-                    <span id="metric-total-quizzes" class="text-2xl font-bold font-mono text-white">0</span>
-                </div>
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
-                    <span class="text-xs text-slate-400 block mb-1">Total Concepts in Syllabus</span>
-                    <span class="text-2xl font-bold font-mono text-purple-400">5</span>
-                </div>
-                <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
-                    <span class="text-xs text-slate-400 block mb-1">Class Average</span>
-                    <span id="metric-class-avg" class="text-2xl font-bold font-mono text-emerald-400">0%</span>
-                </div>
-            </div>
-
-            <!-- Action & Search Bar -->
-            <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-wrap items-center justify-between gap-3 shadow-lg">
-                <div class="flex items-center gap-2 flex-1 max-w-sm">
-                    <i class="fa-solid fa-magnifying-glass text-slate-500 text-xs"></i>
-                    <input type="text" id="search-input" oninput="filterStudents()" placeholder="Search student name..." class="bg-slate-950 border border-slate-700 text-xs text-white rounded-lg px-3 py-1.5 w-full focus:outline-none focus:border-sky-500 placeholder-slate-600">
-                </div>
-                <div class="flex items-center gap-2">
-                    <button onclick="exportJSONData()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 border border-slate-700 transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-download"></i> Export JSON
-                    </button>
-                    <button onclick="clearAllData()" class="px-3 py-1.5 rounded-lg bg-rose-950/50 hover:bg-rose-900 text-xs font-semibold text-rose-300 border border-rose-800 transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-trash"></i> Reset Records
-                    </button>
-                </div>
-            </div>
-
-            <!-- SECTION 1: STUDENT TOPIC PROGRESS & MARKS MATRIX -->
+            <!-- Progress Matrix -->
             <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
                 <div class="p-4 border-b border-slate-800 bg-slate-950/60 flex items-center justify-between">
                     <div>
                         <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-table-cells text-sky-400"></i> Student Topic Coverage & Marks Matrix
+                            <i class="fa-solid fa-table-cells text-sky-400"></i> Active Student Records & Marks
                         </h3>
-                        <p class="text-xs text-slate-400">Tracks how many of the 5 topics each student covered, with exact marks earned per concept.</p>
+                        <p class="text-xs text-slate-400">Hardcoded and saved submissions. Click "Dismiss / Remove" after review.</p>
                     </div>
                 </div>
 
@@ -124,93 +82,62 @@
                             <tr>
                                 <th class="p-3.5">Student</th>
                                 <th class="p-3.5">Age</th>
-                                <th class="p-3.5">Coverage Progress</th>
-                                <th class="p-3.5 text-center">Sorting Lab</th>
-                                <th class="p-3.5 text-center">If-Else</th>
-                                <th class="p-3.5 text-center">For Loop</th>
-                                <th class="p-3.5 text-center">Switch</th>
-                                <th class="p-3.5 text-center">While Loop</th>
-                                <th class="p-3.5 text-right">Details</th>
-                            </tr>
-                        </thead>
-                        <tbody id="matrix-table-body" class="divide-y divide-slate-800/60">
-                            <!-- Injected dynamically -->
-                        </tbody>
-                    </table>
-                </div>
-                <div id="no-students-notice" class="p-8 text-center text-xs text-slate-500 italic hidden">
-                    No students have enrolled or completed assessments yet.
-                </div>
-            </div>
-
-            <!-- SECTION 2: CHRONOLOGICAL SUBMISSION LOG -->
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
-                <div class="p-4 border-b border-slate-800 bg-slate-950/60">
-                    <h4 class="text-sm font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-clock-rotate-left text-purple-400"></i> Chronological Submission Feed
-                    </h4>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs">
-                        <thead class="bg-slate-950 text-slate-400 uppercase tracking-wider font-mono text-[10px] border-b border-slate-800">
-                            <tr>
-                                <th class="p-3.5">Timestamp</th>
-                                <th class="p-3.5">Student</th>
                                 <th class="p-3.5">Topic Assessed</th>
-                                <th class="p-3.5">Marks</th>
-                                <th class="p-3.5 text-right">Error Audit</th>
+                                <th class="p-3.5">Score</th>
+                                <th class="p-3.5">Date</th>
+                                <th class="p-3.5 text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="feed-table-body" class="divide-y divide-slate-800/60">
-                            <!-- Injected dynamically -->
+                        <tbody id="admin-table-body" class="divide-y divide-slate-800/60">
                         </tbody>
                     </table>
                 </div>
+                <div id="empty-notice" class="p-8 text-center text-xs text-slate-500 italic hidden">
+                    All records reviewed and dismissed.
+                </div>
             </div>
-
         </div>
 
-        <!-- Audit Modal (Breaks down question mistakes & JVM explanations) -->
+        <!-- Audit Modal -->
         <div id="audit-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
             <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto p-6 shadow-2xl">
                 <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
-                    <div>
-                        <h4 class="text-base font-bold text-white" id="modal-title">Student Error Audit</h4>
-                        <p class="text-xs text-slate-400" id="modal-subtitle"></p>
-                    </div>
-                    <button onclick="closeModal()" class="text-slate-400 hover:text-white text-lg">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
+                    <h4 class="text-base font-bold text-white" id="modal-title">Student Error Audit</h4>
+                    <button onclick="closeModal()" class="text-slate-400 hover:text-white text-lg">&times;</button>
                 </div>
-                <div id="modal-content" class="space-y-3">
-                    <!-- Dynamic Question-by-Question Breakdowns -->
-                </div>
+                <div id="modal-content" class="space-y-3"></div>
             </div>
         </div>
-
     </main>
-
-    <footer class="border-t border-slate-800 py-4 text-center text-xs text-slate-500">
-        Admin Portal &bull; Protected Access biswam2
-    </footer>
 
     <script>
         const AUTH_USER = "biswam2";
         const AUTH_PASS = "12345678";
 
-        const ALL_TOPICS = [
-            { key: "sorting", name: "Sorting Algorithms Lab" },
-            { key: "ifelse", name: "If-Else Decision Logic" },
-            { key: "forloop", name: "For & Nested Loops" },
-            { key: "switch", name: "Switch Statements" },
-            { key: "whileloop", name: "While & Do-While Cycles" }
+        /* =========================================================================
+           PASTE HARDCODED STUDENT SUBMISSIONS BELOW THIS LINE:
+           ========================================================================= */
+        let HARDCODED_STUDENT_RECORDS = [
+            // Example completed record:
+            {
+                id: "REC-101",
+                studentName: "Demo Student",
+                studentAge: 20,
+                concept: "Sorting Algorithms Lab",
+                score: 5,
+                total: 5,
+                timestamp: "Demo Record",
+                details: [
+                    { questionNo: 1, chosenAnswer: "B", correctAnswer: "B", isCorrect: true, explanation: "Bubble sort with early exit runs in O(N)." }
+                ]
+            }
         ];
+        /* ========================================================================= */
 
         function handleAdminLogin(e) {
             e.preventDefault();
             const u = document.getElementById('admin-user').value.trim();
             const p = document.getElementById('admin-pass').value.trim();
-
             if (u === AUTH_USER && p === AUTH_PASS) {
                 sessionStorage.setItem('adminAuthenticated', 'true');
                 showDashboard();
@@ -223,7 +150,7 @@
             document.getElementById('login-card').classList.add('hidden');
             document.getElementById('dashboard-view').classList.remove('hidden');
             document.getElementById('logout-btn').classList.remove('hidden');
-            renderDashboard();
+            renderTable();
         }
 
         function logoutAdmin() {
@@ -231,276 +158,80 @@
             window.location.reload();
         }
 
-        function getRecords() {
-            // Read from either javaQuizRecords or javaAdminRecords
-            const rec1 = JSON.parse(localStorage.getItem('javaQuizRecords')) || [];
-            const rec2 = JSON.parse(localStorage.getItem('javaAdminRecords')) || [];
-            // Merge unique records by id
-            const map = new Map();
-            [...rec1, ...rec2].forEach(r => map.set(r.id, r));
-            return Array.from(map.values());
+        function getDismissedIds() {
+            return JSON.parse(localStorage.getItem('adminDismissedIds')) || [];
         }
 
-        function getStudentDirectory() {
-            return JSON.parse(localStorage.getItem('studentDirectory')) || [];
-        }
-
-        function normalizeTopicKey(conceptStr) {
-            const s = (conceptStr || "").toLowerCase();
-            if (s.includes("sort")) return "sorting";
-            if (s.includes("if")) return "ifelse";
-            if (s.includes("for")) return "forloop";
-            if (s.includes("switch")) return "switch";
-            if (s.includes("while")) return "whileloop";
-            return "other";
-        }
-
-        function renderDashboard() {
-            const records = getRecords();
-            const directory = getStudentDirectory();
-            const matrixBody = document.getElementById('matrix-table-body');
-            const feedBody = document.getElementById('feed-table-body');
-            matrixBody.innerHTML = '';
-            feedBody.innerHTML = '';
-
-            // Group records by student name
-            const studentsMap = {};
-
-            // Initialize all enrolled students from directory
-            directory.forEach(st => {
-                studentsMap[st.name.toLowerCase()] = {
-                    name: st.name,
-                    age: st.age,
-                    topics: {},
-                    attempts: []
-                };
-            });
-
-            // Populate submissions into student records
-            records.forEach(rec => {
-                const key = (rec.studentName || "Guest").toLowerCase();
-                if (!studentsMap[key]) {
-                    studentsMap[key] = {
-                        name: rec.studentName || "Guest",
-                        age: rec.studentAge || "N/A",
-                        topics: {},
-                        attempts: []
-                    };
-                }
-                const topicKey = normalizeTopicKey(rec.concept || rec.conceptName);
-                
-                // Track highest score per topic
-                if (!studentsMap[key].topics[topicKey] || rec.score > studentsMap[key].topics[topicKey].score) {
-                    studentsMap[key].topics[topicKey] = rec;
-                }
-                studentsMap[key].attempts.push(rec);
-            });
-
-            const studentList = Object.values(studentsMap);
-
-            if (studentList.length === 0) {
-                document.getElementById('no-students-notice').classList.remove('hidden');
-            } else {
-                document.getElementById('no-students-notice').classList.add('hidden');
+        function dismissRecord(recId) {
+            let dismissed = getDismissedIds();
+            if (!dismissed.includes(recId)) {
+                dismissed.push(recId);
+                localStorage.setItem('adminDismissedIds', JSON.stringify(dismissed));
             }
+            renderTable();
+        }
 
-            let totalScoreEarned = 0;
-            let totalPossibleScore = 0;
+        function renderTable() {
+            const dismissed = getDismissedIds();
+            const localRecs = JSON.parse(localStorage.getItem('javaQuizRecords')) || [];
+            
+            // Combine hardcoded and local submissions, omitting any dismissed records
+            const all = [...HARDCODED_STUDENT_RECORDS, ...localRecs].filter(r => !dismissed.includes(r.id));
+            const tbody = document.getElementById('admin-table-body');
+            tbody.innerHTML = '';
 
-            // RENDER MATRIX TABLE
-            studentList.forEach(st => {
-                const coveredCount = Object.keys(st.topics).length;
-                const percentCovered = Math.round((coveredCount / 5) * 100);
+            if (all.length === 0) {
+                document.getElementById('empty-notice').classList.remove('hidden');
+                return;
+            }
+            document.getElementById('empty-notice').classList.add('hidden');
 
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-800/40 transition";
-
-                // Badges for each concept
-                const makeBadge = (tKey) => {
-                    const rec = st.topics[tKey];
-                    if (!rec) {
-                        return `<span class="px-2 py-0.5 rounded text-[10px] font-mono bg-slate-950 text-slate-600 border border-slate-800">Uncovered</span>`;
-                    }
-                    totalScoreEarned += rec.score;
-                    totalPossibleScore += rec.total;
-                    const isPass = rec.score >= 3;
-                    return `<span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold ${isPass ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'}">
-                        ${rec.score} / ${rec.total}
-                    </span>`;
-                };
-
-                tr.innerHTML = `
-                    <td class="p-3.5 font-semibold text-white flex items-center gap-2">
-                        <span class="w-7 h-7 rounded-full bg-slate-800 flex items-center justify-center text-xs text-sky-400 font-bold border border-slate-700">
-                            ${st.name.charAt(0).toUpperCase()}
-                        </span>
-                        <div>
-                            <span class="text-white block">${st.name}</span>
-                            <span class="text-[10px] text-slate-500 font-normal">${st.attempts.length} quiz attempt(s)</span>
-                        </div>
-                    </td>
-                    <td class="p-3.5 text-slate-400 font-mono">${st.age}y</td>
-                    <td class="p-3.5">
-                        <div class="flex items-center gap-2">
-                            <div class="w-20 bg-slate-950 rounded-full h-1.5 overflow-hidden border border-slate-800">
-                                <div class="bg-gradient-to-r from-sky-500 to-emerald-400 h-full" style="width: ${percentCovered}%"></div>
-                            </div>
-                            <span class="text-xs font-mono font-bold ${coveredCount === 5 ? 'text-emerald-400' : 'text-sky-400'}">${coveredCount} / 5 Topics</span>
-                        </div>
-                    </td>
-                    <td class="p-3.5 text-center">${makeBadge("sorting")}</td>
-                    <td class="p-3.5 text-center">${makeBadge("ifelse")}</td>
-                    <td class="p-3.5 text-center">${makeBadge("forloop")}</td>
-                    <td class="p-3.5 text-center">${makeBadge("switch")}</td>
-                    <td class="p-3.5 text-center">${makeBadge("whileloop")}</td>
-                    <td class="p-3.5 text-right">
-                        ${st.attempts.length > 0 ? `
-                        <button onclick="openStudentAttempts('${st.name.replace(/'/g, "\\'")}')" class="px-2.5 py-1 rounded bg-sky-950 text-sky-400 border border-sky-800 hover:bg-sky-900 transition text-[11px] font-semibold">
-                            <i class="fa-solid fa-list-check mr-1"></i> Audit Mistakes
-                        </button>` : `<span class="text-slate-600 italic text-[11px]">No submissions</span>`}
-                    </td>
-                `;
-                matrixBody.appendChild(tr);
-            });
-
-            // RENDER FEED TABLE
-            records.slice().reverse().forEach((rec, idx) => {
+            all.forEach(rec => {
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-800/40 transition";
                 tr.innerHTML = `
-                    <td class="p-3.5 text-slate-500 font-mono text-[11px]">${rec.timestamp || 'N/A'}</td>
-                    <td class="p-3.5 font-semibold text-white">${rec.studentName} (${rec.studentAge || 'N/A'}y)</td>
-                    <td class="p-3.5 text-slate-300 font-medium">${rec.concept || rec.conceptName}</td>
+                    <td class="p-3.5 font-semibold text-white">${rec.studentName}</td>
+                    <td class="p-3.5 text-slate-400 font-mono">${rec.studentAge}y</td>
+                    <td class="p-3.5 text-slate-300">${rec.concept}</td>
                     <td class="p-3.5">
                         <span class="px-2 py-0.5 rounded font-mono font-bold ${rec.score >= 3 ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'}">
-                            ${rec.score} / ${rec.total} (${Math.round((rec.score/rec.total)*100)}%)
+                            ${rec.score} / ${rec.total}
                         </span>
                     </td>
-                    <td class="p-3.5 text-right">
-                        <button onclick="openSingleAudit('${rec.id}')" class="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-[11px] font-medium transition">
-                            <i class="fa-solid fa-eye mr-1"></i> View Test
-                        </button>
+                    <td class="p-3.5 text-slate-500 font-mono text-[11px]">${rec.timestamp}</td>
+                    <td class="p-3.5 text-right space-x-2">
+                        <button onclick="inspectRecord('${rec.id}')" class="px-2.5 py-1 rounded bg-sky-950 text-sky-400 border border-sky-800 hover:bg-sky-900 transition text-[11px]">Audit</button>
+                        <button onclick="dismissRecord('${rec.id}')" class="px-2.5 py-1 rounded bg-rose-950 text-rose-400 border border-rose-800 hover:bg-rose-900 transition text-[11px]">Remove</button>
                     </td>
                 `;
-                feedBody.appendChild(tr);
+                tbody.appendChild(tr);
             });
-
-            // Update Header Metrics
-            document.getElementById('metric-students-count').textContent = studentList.length;
-            document.getElementById('metric-total-quizzes').textContent = records.length;
-            const avg = totalPossibleScore > 0 ? Math.round((totalScoreEarned / totalPossibleScore) * 100) : 0;
-            document.getElementById('metric-class-avg').textContent = avg + '%';
         }
 
-        function openStudentAttempts(studentName) {
-            const records = getRecords().filter(r => r.studentName.toLowerCase() === studentName.toLowerCase());
-            if (records.length === 0) return;
-
-            document.getElementById('modal-title').textContent = `${studentName}'s Assessment History`;
-            document.getElementById('modal-subtitle').textContent = `Total of ${records.length} assessments completed`;
-
-            const container = document.getElementById('modal-content');
-            container.innerHTML = '';
-
-            records.forEach(rec => {
-                const section = document.createElement('div');
-                section.className = "p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3 mb-4";
-                section.innerHTML = `
-                    <div class="flex items-center justify-between border-b border-slate-800/80 pb-2">
-                        <span class="text-sm font-bold text-white">${rec.concept || rec.conceptName}</span>
-                        <span class="px-2 py-0.5 rounded font-mono text-xs font-bold ${rec.score >= 3 ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}">
-                            Score: ${rec.score} / ${rec.total}
-                        </span>
-                    </div>
-                `;
-
-                (rec.details || []).forEach(q => {
-                    const qCard = document.createElement('div');
-                    qCard.className = `p-3 rounded-lg border text-xs ${q.isCorrect ? 'bg-emerald-950/20 border-emerald-500/20' : 'bg-rose-950/20 border-rose-500/20'}`;
-                    qCard.innerHTML = `
-                        <div class="flex items-center justify-between font-bold mb-1">
-                            <span>${q.questionText || `Question #${q.questionNo}`}</span>
-                            <span class="text-[10px] font-mono ${q.isCorrect ? 'text-emerald-400' : 'text-rose-400'}">
-                                ${q.isCorrect ? 'PASSED' : 'WRONG ANSWER'}
-                            </span>
-                        </div>
-                        <div class="font-mono text-slate-300 mb-1.5">
-                            Chosen: <span class="${q.isCorrect ? 'text-emerald-400' : 'text-rose-400'} font-bold">${q.chosenAnswer}</span> | Correct: <strong class="text-emerald-400">${q.correctAnswer}</strong>
-                        </div>
-                        <div class="text-[11px] text-slate-400 bg-slate-900 p-2 rounded border border-slate-800">
-                            <strong class="text-slate-300">JVM Reasoning:</strong> ${q.explanation}
-                        </div>
-                    `;
-                    section.appendChild(qCard);
-                });
-                container.appendChild(section);
-            });
-
-            document.getElementById('audit-modal').classList.remove('hidden');
-        }
-
-        function openSingleAudit(recId) {
-            const rec = getRecords().find(r => r.id === recId);
+        function inspectRecord(recId) {
+            const localRecs = JSON.parse(localStorage.getItem('javaQuizRecords')) || [];
+            const rec = [...HARDCODED_STUDENT_RECORDS, ...localRecs].find(r => r.id === recId);
             if (!rec) return;
 
-            document.getElementById('modal-title').textContent = `${rec.studentName} (${rec.studentAge || 'N/A'}y) - Score: ${rec.score}/${rec.total}`;
-            document.getElementById('modal-subtitle').textContent = `Topic: ${rec.concept || rec.conceptName} on ${rec.timestamp}`;
-
-            const container = document.getElementById('modal-content');
-            container.innerHTML = '';
+            document.getElementById('modal-title').textContent = `${rec.studentName} - ${rec.concept} (${rec.score}/${rec.total})`;
+            const content = document.getElementById('modal-content');
+            content.innerHTML = '';
 
             (rec.details || []).forEach(q => {
                 const card = document.createElement('div');
                 card.className = `p-3 rounded-xl border text-xs ${q.isCorrect ? 'bg-emerald-950/20 border-emerald-500/30' : 'bg-rose-950/20 border-rose-500/30'}`;
                 card.innerHTML = `
-                    <div class="flex items-center justify-between font-bold mb-1.5">
-                        <span class="text-white">${q.questionText || `Question #${q.questionNo}`}</span>
-                        <span class="px-2 py-0.5 rounded text-[10px] font-mono ${q.isCorrect ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}">
-                            ${q.isCorrect ? 'PASSED' : 'WRONG ANSWER'}
-                        </span>
-                    </div>
-                    <div class="font-mono text-slate-300 mb-1.5">
-                        Student Answer: <span class="${q.isCorrect ? 'text-emerald-400' : 'text-rose-400'} font-bold">${q.chosenAnswer}</span> | Correct Answer: <strong class="text-emerald-400">${q.correctAnswer}</strong>
-                    </div>
-                    <div class="text-[11px] text-slate-400 bg-slate-950/80 p-2.5 rounded-lg border border-slate-800">
-                        <strong class="text-slate-300">Why:</strong> ${q.explanation}
-                    </div>
+                    <div class="font-bold text-white mb-1">Question #${q.questionNo}</div>
+                    <div class="font-mono text-slate-300 mb-1">Chosen: <strong>${q.chosenAnswer}</strong> | Correct: <strong class="text-emerald-400">${q.correctAnswer}</strong></div>
+                    <div class="text-[11px] text-slate-400">${q.explanation}</div>
                 `;
-                container.appendChild(card);
+                content.appendChild(card);
             });
-
             document.getElementById('audit-modal').classList.remove('hidden');
         }
 
         function closeModal() {
             document.getElementById('audit-modal').classList.add('hidden');
-        }
-
-        function filterStudents() {
-            const query = document.getElementById('search-input').value.toLowerCase();
-            document.querySelectorAll('#matrix-table-body tr').forEach(row => {
-                const nameText = row.querySelector('td')?.textContent.toLowerCase() || '';
-                row.style.display = nameText.includes(query) ? '' : 'none';
-            });
-        }
-
-        function exportJSONData() {
-            const records = getRecords();
-            const blob = new Blob([JSON.stringify(records, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `java_class_progress_${Date.now()}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-        }
-
-        function clearAllData() {
-            if (confirm("Are you sure you want to reset and clear all student assessment history?")) {
-                localStorage.removeItem('javaQuizRecords');
-                localStorage.removeItem('javaAdminRecords');
-                renderDashboard();
-            }
         }
 
         window.addEventListener('DOMContentLoaded', () => {
