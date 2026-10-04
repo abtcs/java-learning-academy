@@ -728,6 +728,94 @@
         }
 
         // ASSESSMENT SUBMISSION LOGIC
+        function buildCertificatePdf(studentName, overall) {
+            const safeName = (studentName || 'Student').replace(/[^a-zA-Z0-9]/g, '_');
+            const lines = [
+                'Java Academy Certificate',
+                '',
+                'This certifies that',
+                studentName || 'Student',
+                '',
+                `Has achieved ${overall.toFixed(1)}% overall score`,
+                'and passed the learning track.',
+                '',
+                'Date: ' + new Date().toLocaleDateString(),
+                'Great work!'
+            ];
+
+            const escapePdf = value => String(value)
+                .replace(/\\/g, '\\\\')
+                .replace(/\(/g, '\\(')
+                .replace(/\)/g, '\\)');
+
+            let content = '';
+            let y = 760;
+            lines.forEach((line) => {
+                content += `BT /F1 18 Tf 50 ${y} Td (${escapePdf(line)}) Tj ET\n`;
+                y -= 28;
+            });
+
+            const objects = [
+                '<< /Type /Catalog /Pages 2 0 R >>',
+                '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+                '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>',
+                `<< /Length ${content.length} >>\nstream\n${content}endstream`,
+                '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>'
+            ];
+
+            let pdf = '%PDF-1.4\n';
+            const offsets = [0];
+            objects.forEach((obj, index) => {
+                offsets.push(pdf.length);
+                pdf += `${index + 1} 0 obj\n${obj}\nendobj\n`;
+            });
+            const xrefPosition = pdf.length;
+            pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`;
+            for (let i = 1; i < offsets.length; i++) {
+                pdf += `${String(offsets[i]).padStart(10, '0')} 00000 n \n`;
+            }
+            pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefPosition}\n%%EOF`;
+
+            const blob = new Blob([pdf], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            const anchor = document.createElement('a');
+            anchor.href = url;
+            anchor.download = `${safeName}_Result_Certificate.pdf`;
+            document.body.appendChild(anchor);
+            anchor.click();
+            anchor.remove();
+            URL.revokeObjectURL(url);
+        }
+
+        async function maybeDownloadCertificateForStudent(student) {
+            const studentId = (student && student.id) ? student.id : 'STU-NEW';
+            const studentName = (student && student.name) ? student.name : 'Student';
+            const certificateKey = `certificate_downloaded_${studentId}`;
+            const allRecords = JSON.parse(localStorage.getItem('javaQuizRecords')) || [];
+            const studentRecords = allRecords.filter(r => {
+                if (r.studentId && r.studentId === studentId) return true;
+                if (r.studentName && r.studentName.trim().toLowerCase() === studentName.trim().toLowerCase()) return true;
+                return false;
+            });
+
+            if (!studentRecords.length) return;
+
+            const totalPossible = studentRecords.reduce((sum, r) => sum + (Number(r.total) || 5), 0);
+            const totalMarks = studentRecords.reduce((sum, r) => sum + (Number(r.score) || 0), 0);
+            const overall = totalPossible ? (totalMarks / totalPossible) * 100 : 0;
+            const passedTopics = new Set(
+                studentRecords
+                    .filter(r => (Number(r.score) || 0) >= 3)
+                    .map(r => (r.concept || '').toLowerCase().trim())
+                    .filter(Boolean)
+            );
+
+            if (overall >= 80 && passedTopics.size >= 3 && !localStorage.getItem(certificateKey)) {
+                buildCertificatePdf(studentName, overall);
+                localStorage.setItem(certificateKey, 'true');
+            }
+        }
+
         const QUIZ_KEY = {
             q1: { correct: 'B', reason: "With an early break condition ('if (!swapped) break;'), Bubble Sort stops after one pass if no elements were swapped, taking O(N) time." },
             q2: { correct: 'B', reason: "Selection Sort performs only one swap per outer loop pass, giving at most N - 1 total swaps even in the worst case." },
@@ -771,6 +859,7 @@
             const testId = 'REC-' + Date.now();
             const timeStr = new Date().toLocaleString();
             const studentId = (currentStudent && currentStudent.id) ? currentStudent.id : "STU-NEW";
+            const passedConcept = score >= 3;
 
             const rec = {
                 id: testId,
@@ -780,6 +869,7 @@
                 concept: 'Sorting Algorithms Lab',
                 score: score,
                 total: 5,
+                passed: passedConcept,
                 timestamp: timeStr,
                 details: report
             };
@@ -793,7 +883,11 @@
             document.getElementById('submit-btn').classList.add('hidden');
 
             const statusEl = document.getElementById('sync-status');
-            statusEl.innerHTML = '<span class="text-amber-400 font-mono text-xs"><i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Syncing to Google Sheet...</span>';
+            statusEl.innerHTML = passedConcept
+                ? '<span class="text-emerald-400 font-mono text-xs"><i class="fa-solid fa-circle-check mr-1"></i> Concept Passed (3+ correct)</span>'
+                : '<span class="text-amber-400 font-mono text-xs"><i class="fa-solid fa-circle-exclamation mr-1"></i> Needs 3 correct answers to pass</span>';
+
+            await maybeDownloadCertificateForStudent(currentStudent);
 
             const payload = {
                 action: "ADD",

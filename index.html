@@ -206,6 +206,36 @@
                     </div>
                 </a>
 
+                <!-- Arrays -->
+                <a href="arrays.html" class="bg-slate-900/60 border border-slate-800 hover:border-cyan-500/60 p-5 rounded-2xl transition group flex flex-col justify-between shadow-lg">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="w-8 h-8 rounded-lg bg-cyan-500/10 text-cyan-400 flex items-center justify-center text-xs font-mono font-bold">06</span>
+                            <span id="badge-arrays" class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">Not Attempted</span>
+                        </div>
+                        <h4 class="text-sm font-bold text-white group-hover:text-cyan-400 transition mb-1">Arrays & Indexing</h4>
+                        <p class="text-xs text-slate-400">Access elements by index, manage memory layout, and read values from arrays efficiently.</p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-cyan-400 font-semibold">
+                        <span>Launch Module</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </div>
+                </a>
+
+                <!-- Methods -->
+                <a href="methods.html" class="bg-slate-900/60 border border-slate-800 hover:border-rose-500/60 p-5 rounded-2xl transition group flex flex-col justify-between shadow-lg">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-400 flex items-center justify-center text-xs font-mono font-bold">07</span>
+                            <span id="badge-methods" class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">Not Attempted</span>
+                        </div>
+                        <h4 class="text-sm font-bold text-white group-hover:text-rose-400 transition mb-1">Methods & Parameters</h4>
+                        <p class="text-xs text-slate-400">Understand reusable logic, return values, and how arguments flow through method calls.</p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-rose-400 font-semibold">
+                        <span>Launch Module</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </div>
+                </a>
+
             </div>
         </div>
 
@@ -341,7 +371,7 @@
             const countLabel = document.getElementById('progress-modules-count');
             if (fillBar) fillBar.style.width = '0%';
             if (percentLabel) percentLabel.textContent = '0%';
-            if (countLabel) countLabel.textContent = '0 of 5 Modules Completed';
+            if (countLabel) countLabel.textContent = '0 of 7 Modules Completed';
 
             checkSession();
         }
@@ -363,6 +393,10 @@
             const scoresMap = {};
 
             thisStudentRecords.forEach(rec => {
+                const scoreValue = Number(rec.score) || 0;
+                const passedConcept = rec.passed === true || scoreValue >= 3;
+                if (!passedConcept) return;
+
                 const s = (rec.concept || rec.conceptName || "").toLowerCase();
                 let key = null;
                 if (s.includes("sort")) key = "sorting";
@@ -370,15 +404,18 @@
                 else if (s.includes("for")) key = "forloop";
                 else if (s.includes("switch")) key = "switch";
                 else if (s.includes("while")) key = "whileloop";
+                else if (s.includes("array")) key = "arrays";
+                else if (s.includes("method")) key = "methods";
 
                 if (key) {
                     completedTopics.add(key);
-                    scoresMap[key] = Math.max(scoresMap[key] || 0, rec.score);
+                    scoresMap[key] = Math.max(scoresMap[key] || 0, scoreValue);
                 }
             });
 
             const distinctCount = completedTopics.size;
-            const percentage = Math.round((distinctCount / 5) * 100);
+            const totalModules = 7;
+            const percentage = Math.round((distinctCount / totalModules) * 100);
 
             const fillBar = document.getElementById('progress-bar-fill');
             const percentLabel = document.getElementById('progress-percentage-label');
@@ -387,14 +424,14 @@
 
             if (fillBar) fillBar.style.width = `${percentage}%`;
             if (percentLabel) percentLabel.textContent = `${percentage}%`;
-            if (countLabel) countLabel.textContent = `${distinctCount} of 5 Modules Completed`;
+            if (countLabel) countLabel.textContent = `${distinctCount} of ${totalModules} Modules Completed`;
 
             if (statusText) {
-                if (distinctCount === 5) {
+                if (distinctCount === totalModules) {
                     statusText.textContent = `Course 100% Completed! Great job, ${student.name} 🎉`;
                     statusText.className = "text-emerald-400 font-bold";
                 } else if (distinctCount > 0) {
-                    statusText.textContent = `${5 - distinctCount} more module(s) remaining for ID ${student.id}.`;
+                    statusText.textContent = `${totalModules - distinctCount} more module(s) remaining for ID ${student.id}.`;
                     statusText.className = "text-sky-400";
                 } else {
                     statusText.textContent = `Course reset to 0%. Choose a topic below to begin!`;
@@ -420,6 +457,8 @@
             updateCardBadge('badge-forloop', 'forloop');
             updateCardBadge('badge-switch', 'switch');
             updateCardBadge('badge-whileloop', 'whileloop');
+            updateCardBadge('badge-arrays', 'arrays');
+            updateCardBadge('badge-methods', 'methods');
         }
 
         window.addEventListener('DOMContentLoaded', checkSession);

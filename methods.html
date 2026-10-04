@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Methods Lab - Parameters & Return Values</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background: #020817; color: #f8fafc; }
+        .font-mono-code { font-family: 'JetBrains Mono', monospace; }
+    </style>
+</head>
+<body class="min-h-screen">
+    <header class="border-b border-slate-800 bg-slate-900/90 sticky top-0 z-20 backdrop-blur">
+        <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+            <a href="index.html" class="flex items-center gap-2 text-xs font-semibold text-slate-300 hover:text-white transition">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Back to Academy Hub</span>
+            </a>
+            <div class="text-right">
+                <div class="text-xs uppercase font-mono text-rose-400 font-bold tracking-[0.18em]">Module 07</div>
+                <div class="text-sm font-bold text-white">Methods & Parameters</div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+        <section class="bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-7 shadow-2xl">
+            <div class="flex items-start justify-between gap-4 mb-5">
+                <div>
+                    <div class="text-xs uppercase font-mono font-bold text-rose-400 mb-2 tracking-[0.2em]">Phase 1</div>
+                    <h2 class="text-xl sm:text-2xl font-bold text-white">Method Call Flow</h2>
+                    <p class="text-xs text-slate-400 mt-1">See how arguments are passed into a method, how return values are produced, and how methods reuse logic.</p>
+                </div>
+                <button onclick="runMethodSimulation()" class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-xs font-bold text-white shadow-lg shadow-rose-600/20 transition">Run Simulation</button>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-5">
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4">
+                    <div class="text-xs uppercase font-mono text-slate-400 mb-3">Method inputs</div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="text-[11px] text-slate-300">
+                            <span class="block mb-1">basePrice</span>
+                            <input id="base-price" type="number" value="150" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-xs text-white">
+                        </label>
+                        <label class="text-[11px] text-slate-300">
+                            <span class="block mb-1">taxRate</span>
+                            <input id="tax-rate" type="number" value="0.18" step="0.01" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-xs text-white">
+                        </label>
+                    </div>
+                    <div class="mt-4 rounded-xl border border-rose-500/30 bg-rose-500/5 p-3 text-[11px] font-mono text-rose-200">
+                        int total = calculateTotal(basePrice, taxRate);
+                    </div>
+                </div>
+
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4">
+                    <div class="text-xs uppercase font-mono text-slate-400 mb-3">Runtime trace</div>
+                    <div id="method-trace" class="space-y-2 font-mono text-[11px] text-slate-300"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="assessment-section" class="bg-slate-900 border border-slate-800 rounded-3xl p-5 sm:p-7 shadow-2xl">
+            <div class="flex items-center justify-between mb-5 border-b border-slate-800 pb-4">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="px-2 py-0.5 rounded bg-rose-500/10 text-rose-400 border border-rose-500/20 font-mono text-[10px] font-bold uppercase">Phase 2</span>
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-list-check text-rose-400"></i> Module 07: Methods Assessment</h3>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-1">5 questions &bull; Passing score: 3/5 &bull; Automatically syncs to Google Sheets.</p>
+                </div>
+            </div>
+
+            <form id="quiz-form" onsubmit="submitQuiz(event)" class="space-y-6">
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 sm:p-5">
+                    <p class="text-xs font-semibold text-slate-200 mb-3">1. A Java method can return:</p>
+                    <div class="space-y-2.5 text-xs">
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="A" required> A) A primitive value</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="B"> B) An object reference</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="C"> C) Nothing at all</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="D"> D) All of the above</label>
+                    </div>
+                    <div id="expl-1" class="hidden mt-3 p-3 rounded-xl text-xs font-mono"></div>
+                </div>
+
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 sm:p-5">
+                    <p class="text-xs font-semibold text-slate-200 mb-3">2. What are parameters in a method?</p>
+                    <div class="space-y-2.5 text-xs">
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="A" required> A) Variables declared inside the method</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="B"> B) Values passed into the method when it is called</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="C"> C) Method names</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="D"> D) Class names</label>
+                    </div>
+                    <div id="expl-2" class="hidden mt-3 p-3 rounded-xl text-xs font-mono"></div>
+                </div>
+
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 sm:p-5">
+                    <p class="text-xs font-semibold text-slate-200 mb-3">3. If a method is declared as `int add(int a, int b)`, what type is the return value?</p>
+                    <div class="space-y-2.5 text-xs">
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="A" required> A) int</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="B"> B) double</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="C"> C) void</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="D"> D) boolean</label>
+                    </div>
+                    <div id="expl-3" class="hidden mt-3 p-3 rounded-xl text-xs font-mono"></div>
+                </div>
+
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 sm:p-5">
+                    <p class="text-xs font-semibold text-slate-200 mb-3">4. Which keyword is used when a method does not return any value?</p>
+                    <div class="space-y-2.5 text-xs">
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="A" required> A) return</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="B"> B) break</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="C"> C) void</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="D"> D) continue</label>
+                    </div>
+                    <div id="expl-4" class="hidden mt-3 p-3 rounded-xl text-xs font-mono"></div>
+                </div>
+
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 sm:p-5">
+                    <p class="text-xs font-semibold text-slate-200 mb-3">5. Why are methods useful in Java?</p>
+                    <div class="space-y-2.5 text-xs">
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="A" required> A) They let code be reused without rewriting logic</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="B"> B) They replace variables</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="C"> C) They always speed up the program</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="D"> D) They only work with arrays</label>
+                    </div>
+                    <div id="expl-5" class="hidden mt-3 p-3 rounded-xl text-xs font-mono"></div>
+                </div>
+
+                <button type="submit" id="submit-btn" class="w-full py-3.5 rounded-xl bg-rose-600 hover:bg-rose-500 font-bold text-sm text-white shadow-xl shadow-rose-600/30 transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Submit Assessment & Save to Cloud
+                </button>
+            </form>
+
+            <div id="score-summary" class="hidden mt-6 p-5 rounded-2xl border border-rose-500/40 bg-rose-950/20 text-center">
+                <div class="text-xs uppercase font-mono text-slate-400 mb-1">Assessment Complete</div>
+                <div class="text-3xl font-bold font-mono text-rose-400" id="final-score-text">0 / 5</div>
+                <div id="sync-status" class="text-xs font-mono text-amber-400 mt-2">
+                    <i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Syncing to Google Sheet...
+                </div>
+                <div class="mt-5 flex flex-wrap justify-center gap-3">
+                    <a href="index.html" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 transition">Academy Dashboard</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyhHoC6q67U2k_SZNSXTsa-KWCKL1Q2wsHiIVtmKjphJ5aYhPqhJFjd3bTHjHs74B5nrg/exec";
+        const currentStudent = JSON.parse(localStorage.getItem('currentStudent')) || { id: 'STU-NEW', name: 'Guest', age: 20 };
+
+        function runMethodSimulation() {
+            const basePrice = Number(document.getElementById('base-price').value || 0);
+            const taxRate = Number(document.getElementById('tax-rate').value || 0);
+            const total = basePrice + (basePrice * taxRate);
+            const trace = document.getElementById('method-trace');
+            trace.innerHTML = `
+                <div class="p-2 rounded-lg border border-slate-700 bg-slate-900">
+                    <div>basePrice = ${basePrice}</div>
+                    <div>taxRate = ${taxRate}</div>
+                    <div class="mt-2 text-rose-300">calculateTotal(basePrice, taxRate)</div>
+                    <div>taxAmount = basePrice * taxRate = ${(basePrice * taxRate).toFixed(2)}</div>
+                    <div>total = basePrice + taxAmount = ${total.toFixed(2)}</div>
+                    <div class="mt-2 text-emerald-300">return total;</div>
+                </div>
+            `;
+        }
+
+        function buildCertificatePdf(studentName, overall) {
+            const safeName = (studentName || 'Student').replace(/[^a-zA-Z0-9]/g, '_');
+            const lines = [
+                'Java Academy Certificate',
+                '',
+                'This certifies that',
+                studentName || 'Student',
+                '',
+                `Has achieved ${overall.toFixed(1)}% overall score`,
+                'and passed the learning track.',
+                '',
+                'Date: ' + new Date().toLocaleDateString(),
+                'Great work!'
+            ];
+
+            const escapePdf = value => String(value)
+                .replace(/\\/g, '\\\\')
+                .replace(/\(/g, '\\(')
+                .replace(/\)/g, '\\)');
+
+            let content = '';
+            let y = 760;
+            lines.forEach((line) => {
+                content += `BT /F1 18 Tf 50 ${y} Td (${escapePdf(line)}) Tj ET\n`;
+                y -= 28;
+            });
+
+            const objects = [
+                '<< /Type /Catalog /Pages 2 0 R >>',
+                '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
+                '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>',
+                `<< /Length ${content.length} >>\nstream\n${content}endstream`,
+                '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>'
+            ];
+
+            let pdf = '%PDF-1.4\n';
+            const offsets = [0];
+            objects.forEach((obj, index) => {
+                offsets.push(pdf.length);
+                pdf += `${index + 1} 0 obj\n${obj}\nendobj\n`;
+            });
+            const xrefPosition = pdf.length;
+            pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`;
+            for (let i = 1; i < offsets.length; i++) {
+                pdf += `${String(offsets[i]).padStart(10, '0')} 00000 n \n`;
+            }
+            pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefPosition}\n%%EOF`;
+
+            const blob = new Blob([pdf], { type: 'application/pdf' });
+            const url = URL.createObjectURL(blob);
+            const anchor = document.createElement('a');
+            anchor.href = url;
+            anchor.download = `${safeName}_Result_Certificate.pdf`;
+            document.body.appendChild(anchor);
+            anchor.click();
+            anchor.remove();
+            URL.revokeObjectURL(url);
+        }
+
+        async function maybeDownloadCertificateForStudent(student) {
+            const studentId = (student && student.id) ? student.id : 'STU-NEW';
+            const studentName = (student && student.name) ? student.name : 'Student';
+            const certificateKey = `certificate_downloaded_${studentId}`;
+            const allRecords = JSON.parse(localStorage.getItem('javaQuizRecords')) || [];
+            const studentRecords = allRecords.filter(r => {
+                if (r.studentId && r.studentId === studentId) return true;
+                if (r.studentName && r.studentName.trim().toLowerCase() === studentName.trim().toLowerCase()) return true;
+                return false;
+            });
+
+            if (!studentRecords.length) return;
+
+            const totalPossible = studentRecords.reduce((sum, r) => sum + (Number(r.total) || 5), 0);
+            const totalMarks = studentRecords.reduce((sum, r) => sum + (Number(r.score) || 0), 0);
+            const overall = totalPossible ? (totalMarks / totalPossible) * 100 : 0;
+            const passedTopics = new Set(
+                studentRecords
+                    .filter(r => (Number(r.score) || 0) >= 3)
+                    .map(r => (r.concept || '').toLowerCase().trim())
+                    .filter(Boolean)
+            );
+
+            if (overall >= 80 && passedTopics.size >= 3 && !localStorage.getItem(certificateKey)) {
+                buildCertificatePdf(studentName, overall);
+                localStorage.setItem(certificateKey, 'true');
+            }
+        }
+
+        const QUIZ_KEY = {
+            q1: { correct: 'D', reason: "A Java method may return a primitive, an object reference, or nothing at all if it is declared as void." },
+            q2: { correct: 'B', reason: "Parameters are the values passed into a method when the method is called." },
+            q3: { correct: 'A', reason: "The signature `int add(int a, int b)` declares an int return type." },
+            q4: { correct: 'C', reason: "The `void` keyword means the method returns no value." },
+            q5: { correct: 'A', reason: "Methods encourage reuse by isolating logic so it can be called again without rewriting code." }
+        };
+
+        async function submitQuiz(e) {
+            e.preventDefault();
+            const form = new FormData(document.getElementById('quiz-form'));
+            let score = 0;
+            let report = [];
+
+            for (let i = 1; i <= 5; i++) {
+                const k = `q${i}`;
+                const chosen = form.get(k);
+                const info = QUIZ_KEY[k];
+                const isCorrect = chosen === info.correct;
+                if (isCorrect) score++;
+
+                report.push({
+                    questionNo: i,
+                    chosenAnswer: chosen,
+                    correctAnswer: info.correct,
+                    isCorrect,
+                    explanation: info.reason
+                });
+
+                const expl = document.getElementById(`expl-${i}`);
+                expl.classList.remove('hidden');
+                if (isCorrect) {
+                    expl.className = "mt-3 p-3 rounded-xl text-xs bg-emerald-500/10 border border-emerald-500/30 text-emerald-300";
+                    expl.innerHTML = `<strong>Correct (${chosen})!</strong> ${info.reason}`;
+                } else {
+                    expl.className = "mt-3 p-3 rounded-xl text-xs bg-rose-500/10 border border-rose-500/30 text-rose-300";
+                    expl.innerHTML = `<strong>Incorrect.</strong> You chose <strong>${chosen}</strong>, but correct is <strong>${info.correct}</strong>.<br><span class="text-slate-300 mt-1 block">Why: ${info.reason}</span>`;
+                }
+            }
+
+            const testId = 'REC-' + Date.now();
+            const timeStr = new Date().toLocaleString();
+            const studentId = currentStudent.id || 'STU-NEW';
+            const passedConcept = score >= 3;
+
+            const rec = { id: testId, studentId, studentName: currentStudent.name, studentAge: currentStudent.age, concept: 'Methods & Parameters', score, total: 5, passed: passedConcept, timestamp: timeStr, details: report };
+            let allRecords = JSON.parse(localStorage.getItem('javaQuizRecords')) || [];
+            allRecords.push(rec);
+            localStorage.setItem('javaQuizRecords', JSON.stringify(allRecords));
+
+            document.getElementById('final-score-text').textContent = `${score} / 5 (${(score / 5) * 100}%)`;
+            document.getElementById('score-summary').classList.remove('hidden');
+            document.getElementById('submit-btn').classList.add('hidden');
+
+            const statusEl = document.getElementById('sync-status');
+            statusEl.innerHTML = passedConcept
+                ? '<span class="text-emerald-400 font-mono text-xs"><i class="fa-solid fa-circle-check mr-1"></i> Concept Passed (3+ correct)</span>'
+                : '<span class="text-amber-400 font-mono text-xs"><i class="fa-solid fa-circle-exclamation mr-1"></i> Needs 3 correct answers to pass</span>';
+
+            await maybeDownloadCertificateForStudent(currentStudent);
+
+            const payload = { action: 'ADD', id: testId, studentId, timestamp: timeStr, studentName: currentStudent.name, studentAge: String(currentStudent.age), concept: 'Methods & Parameters', score: `${score} / 5`, details: JSON.stringify(report) };
+            const params = new URLSearchParams();
+            Object.entries(payload).forEach(([key, value]) => params.append(key, String(value)));
+
+            try {
+                await fetch(`${SCRIPT_URL}?${params.toString()}&nocache=${Date.now()}`, { method: 'GET', cache: 'no-store', keepalive: true });
+            } catch (error) {
+                const postForm = document.createElement('form');
+                postForm.method = 'GET';
+                postForm.action = SCRIPT_URL;
+                postForm.target = '_blank';
+                postForm.style.display = 'none';
+                Object.entries(payload).forEach(([key, value]) => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = key;
+                    input.value = String(value);
+                    postForm.appendChild(input);
+                });
+                document.body.appendChild(postForm);
+                postForm.submit();
+                setTimeout(() => postForm.remove(), 500);
+            }
+
+            setTimeout(() => {
+                statusEl.innerHTML = '<span class="text-emerald-400 font-bold font-mono text-xs"><i class="fa-solid fa-cloud-check mr-1"></i> Synced to Cloud Google Sheet!</span>';
+            }, 1200);
+        }
+
+        runMethodSimulation();
+    </script>
+</body>
+</html>
