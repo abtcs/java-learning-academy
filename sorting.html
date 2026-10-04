@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Sorting Lab & Algorithm Evaluation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #0b0f19; color: #f1f5f9; }
+        .font-mono-code { font-family: 'JetBrains Mono', monospace; }
+        .code-active { background: rgba(14, 165, 233, 0.25) !important; border-left: 3px solid #38bdf8 !important; color: #fff !important; }
+        .code-keyword { color: #f43f5e; font-weight: 600; }
+        .code-type { color: #38bdf8; font-weight: 500; }
+        .code-num { color: #fbbf24; }
+        .crane-cable { stroke-dasharray: 4, 2; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-sky-500/30">
+
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-slate-900/90 px-6 py-4 flex items-center justify-between backdrop-blur sticky top-0 z-30">
+        <a href="index.html" class="flex items-center gap-2 text-xs font-semibold text-slate-300 hover:text-white transition">
+            <i class="fa-solid fa-arrow-left"></i> Back to Hub
+        </a>
+        <div class="flex items-center gap-3">
+            <span id="session-student-name" class="text-xs font-mono px-3 py-1 rounded bg-slate-800 text-slate-300">Student: None</span>
+            <div class="text-xs font-mono bg-sky-950/80 text-sky-400 border border-sky-800 px-2.5 py-1 rounded-full">
+                Module 01: Sorting Algorithms
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto w-full px-4 py-8 space-y-8">
+        
+        <!-- Interactive Crane Stage & Code Workspace -->
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-4">
+            
+            <!-- Controls Bar -->
+            <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-950 p-3 rounded-xl border border-slate-800">
+                <div class="flex items-center gap-2">
+                    <select id="algo-select" onchange="changeAlgo()" class="bg-slate-800 border border-slate-700 text-xs sm:text-sm rounded-lg px-3 py-1.5 text-sky-300 font-semibold focus:outline-none">
+                        <option value="bubble">Bubble Sort</option>
+                        <option value="selection">Selection Sort</option>
+                        <option value="insertion">Insertion Sort</option>
+                        <option value="quick">Quick Sort</option>
+                    </select>
+
+                    <button id="play-btn" onclick="togglePlay()" class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-play text-[10px]"></i> <span>Run</span>
+                    </button>
+                    <button onclick="stepForward()" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs transition" title="Step Next">
+                        <i class="fa-solid fa-forward-step"></i>
+                    </button>
+                    <button onclick="resetData()" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs transition" title="Reset">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-4 text-xs">
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-slate-400">Speed:</span>
+                        <input type="range" id="speed-slider" min="30" max="600" value="200" class="w-20 accent-sky-500 cursor-pointer">
+                    </div>
+                    <button onclick="generateRandomData()" class="px-2.5 py-1 rounded bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition text-xs">
+                        <i class="fa-solid fa-dice mr-1"></i> New Array
+                    </button>
+                </div>
+            </div>
+
+            <!-- Metric Cards -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                    <span class="text-[10px] uppercase font-mono text-slate-500 block mb-0.5">Execution Time</span>
+                    <div class="flex items-baseline gap-1">
+                        <span id="timer-val" class="text-base sm:text-lg font-bold font-mono text-amber-400">0.00s</span>
+                        <span id="timer-ms" class="text-[10px] font-mono text-slate-500">(0 ms)</span>
+                    </div>
+                </div>
+                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                    <span class="text-[10px] uppercase font-mono text-slate-500 block mb-0.5">Comparisons</span>
+                    <span id="cmp-val" class="text-base sm:text-lg font-bold font-mono text-sky-400">0</span>
+                </div>
+                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                    <span class="text-[10px] uppercase font-mono text-slate-500 block mb-0.5">Crane Swaps</span>
+                    <span id="swap-val" class="text-base sm:text-lg font-bold font-mono text-emerald-400">0</span>
+                </div>
+                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                    <span class="text-[10px] uppercase font-mono text-slate-500 block mb-0.5">Complexity</span>
+                    <span id="complexity-badge" class="text-xs font-mono font-bold text-purple-400">O(N²)</span>
+                </div>
+            </div>
+
+            <!-- Gantry Crane Visualizer Stage -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                <div class="lg:col-span-7 bg-slate-950 p-4 rounded-xl border border-slate-800 flex flex-col justify-between min-h-[360px] relative overflow-hidden">
+                    
+                    <!-- Overhead Crane Rail Track -->
+                    <div class="w-full h-8 border-b-2 border-slate-700 bg-slate-900/60 relative flex items-center">
+                        <div class="absolute inset-x-0 h-1 bg-gradient-to-r from-amber-500 via-sky-500 to-amber-500 opacity-30"></div>
+                        <!-- Movable Gantry Carriage -->
+                        <div id="crane-carriage" class="absolute top-1 transition-all duration-300 flex flex-col items-center" style="left: 10px;">
+                            <div class="w-8 h-4 rounded bg-amber-500 flex items-center justify-center text-[9px] font-mono font-bold text-slate-950 shadow-lg">
+                                <i class="fa-solid fa-gear fa-spin text-[8px]"></i>
+                            </div>
+                            <svg width="60" height="70" class="overflow-visible">
+                                <line id="cable-1" x1="20" y1="0" x2="20" y2="40" stroke="#f59e0b" stroke-width="2" class="crane-cable transition-all duration-300"></line>
+                                <line id="cable-2" x1="40" y1="0" x2="40" y2="40" stroke="#f59e0b" stroke-width="2" class="crane-cable transition-all duration-300"></line>
+                                <rect id="claw-1" x="14" y="38" width="12" height="6" rx="2" fill="#38bdf8" class="transition-all duration-300"></rect>
+                                <rect id="claw-2" x="34" y="38" width="12" height="6" rx="2" fill="#38bdf8" class="transition-all duration-300"></rect>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Array Blocks Stage -->
+                    <div id="array-stage" class="flex items-end justify-center gap-1 sm:gap-2 flex-1 pt-12 pb-2">
+                        <!-- Dynamically populated bars -->
+                    </div>
+
+                    <!-- Crane Explanation Indicator -->
+                    <div class="bg-slate-900/90 border border-slate-800 p-2.5 rounded-lg flex items-center justify-between text-xs">
+                        <span id="crane-status" class="text-slate-300 font-mono">Crane Idle &bull; Ready</span>
+                        <span id="active-line-counter" class="text-sky-400 font-mono text-[11px]">PC: 0</span>
+                    </div>
+                </div>
+
+                <!-- Java Code Viewer & Local Variables -->
+                <div class="lg:col-span-5 flex flex-col gap-3">
+                    <div class="bg-slate-950 rounded-xl border border-slate-800 overflow-hidden flex flex-col">
+                        <div class="bg-slate-900 px-3 py-2 border-b border-slate-800 flex items-center justify-between">
+                            <span id="code-filename" class="text-xs font-mono text-slate-300 font-semibold">BubbleSort.java</span>
+                            <span class="text-[10px] font-mono text-slate-500">JVM Engine</span>
+                        </div>
+                        <div id="code-box" class="p-2.5 font-mono-code text-[11px] leading-5 overflow-y-auto max-h-[220px]">
+                            <!-- Tokenized code rendered by script -->
+                        </div>
+                    </div>
+
+                    <!-- JVM Variable Frame Inspector -->
+                    <div class="bg-slate-950 rounded-xl border border-slate-800 p-3">
+                        <span class="text-[10px] font-mono text-slate-500 uppercase block mb-1.5">Active JVM Local Variables</span>
+                        <div id="vars-box" class="flex flex-wrap gap-1.5 text-xs font-mono">
+                            <span class="text-slate-600 italic">No active frame</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5-Question MCQ Assessment Section -->
+        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl">
+            <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
+                <div>
+                    <h3 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-emerald-400"></i> Sorting Concept Assessment: 5 MCQs
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-1">Submit your answers to store your results in the Admin portal. Wrong choices reveal JVM rationale.</p>
+                </div>
+                <span class="text-xs font-mono px-3 py-1 rounded bg-slate-800 text-slate-300">Module 01</span>
+            </div>
+
+            <form id="quiz-form" onsubmit="submitQuiz(event)" class="space-y-6">
+                <!-- Q1 -->
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+                    <p class="text-xs font-semibold text-slate-200 mb-3">1. Which sorting algorithm has an optimal best-case time complexity of O(N) when the array is already sorted?</p>
+                    <div class="space-y-2 text-xs">
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="A" required> A) Selection Sort</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-Separating sorting logic into its own isolated module ensures that any changes to algorithms, comparator functions, or sort keys will not touch or lock your main display or data management components.
+
+Assuming a standard JavaScript/TypeScript environment (like React, Node, or vanilla JS), here is a clean, modular structure.
+
+---
+
+### 1. `sorters.js` (The Dedicated Sorting Module)
+Keep all sorting strategies, order configs, and pure comparison functions here.
+
+```javascript
+/**
+ * Generic comparator for primitive values (numbers, strings, dates)
+ */
+const compareValues = (a, b, direction = 'asc') => {
+  if (a === b) return 0;
+  if (a === null || a === undefined) return 1;
+  if (b === null || b === undefined) return -1;
+
+  let comparison = 0;
+  if (typeof a === 'string' && typeof b === 'string') {
+    comparison = a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+  } else {
+    comparison = a > b ? 1 : -1;
+  }
+
+  return direction === 'desc' ? -comparison : comparison;
+};
+
+/**
+ * Sorts an array of objects by a specific property key.
+ * Returns a new array without mutating the original.
+ *
+ * @param {Array<Object>} list - The data array
+ * @param {string} key - Property path to sort by
+ * @param {'asc'|'desc'} [direction='asc'] - Sort order
+ */
+export function sortByKey(list, key, direction = 'asc') {
+  if (!Array.isArray(list)) return [];
+  return [...list].sort((itemA, itemB) => {
+    return compareValues(itemA[key], itemB[key], direction);
+  });
+}
+
+/**
+ * Multi-criteria sort (e.g., sort by status first, then by date)
+ * 
+ * @param {Array<Object>} list
+ * @param {Array<{key: string, direction: 'asc'|'desc'}>} criteria
+ */
+export function sortByMultiple(list, criteria = []) {
+  if (!Array.isArray(list)) return [];
+  return [...list].sort((itemA, itemB) => {
+    for (const { key, direction = 'asc' } of criteria) {
+      const result = compareValues(itemA[key], itemB[key], direction);
+      if (result !== 0) return result;
+    }
+    return 0;
+  });
+}
