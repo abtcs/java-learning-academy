@@ -17,7 +17,6 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-rose-500/30">
 
-    <!-- Header -->
     <header class="border-b border-slate-800 bg-slate-900/90 px-4 sm:px-6 py-3 shrink-0 backdrop-blur sticky top-0 z-30">
         <div class="max-w-7xl mx-auto flex items-center justify-between gap-3">
             <div class="flex items-center space-x-3">
@@ -43,7 +42,6 @@
         </div>
     </header>
 
-    <!-- Main Content -->
     <main class="max-w-7xl mx-auto w-full px-3 sm:px-6 py-6 flex-1 flex flex-col">
 
         <!-- Login Card -->
@@ -77,13 +75,12 @@
         <!-- Dashboard View -->
         <div id="dashboard-view" class="hidden space-y-4 w-full">
 
-            <!-- Active Records Header Card -->
             <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 flex flex-wrap items-center justify-between gap-3 shadow-lg">
                 <div>
                     <h3 class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
                         <i class="fa-solid fa-cloud text-sky-400"></i> Cloud Submissions (Google Sheet)
                     </h3>
-                    <p class="text-xs text-slate-400 mt-0.5">Real-time sync between laptop and mobile.</p>
+                    <p class="text-xs text-slate-400 mt-0.5">Audit student mistakes, delete test rows, or restart a student's course to 0%.</p>
                 </div>
                 <div class="flex items-center gap-2">
                     <button onclick="fetchCloudRecords()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 border border-slate-700 transition flex items-center gap-1.5">
@@ -93,13 +90,14 @@
                 </div>
             </div>
 
-            <!-- DESKTOP VIEW: Full Wide Table -->
+            <!-- DESKTOP VIEW: Wide Table -->
             <div class="hidden md:block bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-xs">
                         <thead class="bg-slate-950 text-slate-400 uppercase tracking-wider font-mono text-[10px] border-b border-slate-800">
                             <tr>
-                                <th class="p-3.5">Student</th>
+                                <th class="p-3.5">Student ID</th>
+                                <th class="p-3.5">Name</th>
                                 <th class="p-3.5">Age</th>
                                 <th class="p-3.5">Topic Assessed</th>
                                 <th class="p-3.5">Score</th>
@@ -116,13 +114,11 @@
             <!-- MOBILE VIEW: Cards -->
             <div id="mobile-cards-container" class="md:hidden space-y-3"></div>
 
-            <!-- Loading Spinner -->
             <div id="loading-state" class="p-12 text-center text-xs font-mono text-sky-400">
                 <i class="fa-solid fa-circle-notch fa-spin text-2xl mb-2 block"></i>
                 Connecting to Google Sheet...
             </div>
 
-            <!-- Empty State Notice -->
             <div id="empty-notice" class="bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center text-xs text-slate-500 italic hidden shadow-lg">
                 <i class="fa-solid fa-inbox text-2xl text-slate-600 block mb-2"></i>
                 No records found in Google Sheet.
@@ -187,12 +183,12 @@
             document.getElementById('loading-state').classList.remove('hidden');
 
             try {
-                // Fetch directly from Google Apps Script
                 const res = await fetch(SCRIPT_URL + "?nocache=" + Date.now());
                 const data = await res.json();
 
                 CLOUD_RECORDS = data.map(item => ({
                     id: String(item.id || item.ID || ''),
+                    studentId: String(item.studentid || item.studentId || 'N/A'),
                     studentName: item.name || item.studentname || item.Name || 'Student',
                     studentAge: item.age || item.studentage || item.Age || 'N/A',
                     concept: item.concept || item.Concept || 'General',
@@ -237,6 +233,7 @@
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-800/40 transition";
                 tr.innerHTML = `
+                    <td class="p-3.5 font-mono text-sky-400 font-bold">${rec.studentId}</td>
                     <td class="p-3.5 font-semibold text-white">${rec.studentName}</td>
                     <td class="p-3.5 text-slate-400 font-mono">${rec.studentAge}y</td>
                     <td class="p-3.5 text-slate-300 font-medium">${rec.concept}</td>
@@ -246,12 +243,15 @@
                         </span>
                     </td>
                     <td class="p-3.5 text-slate-500 font-mono text-[11px]">${rec.timestamp}</td>
-                    <td class="p-3.5 text-right space-x-2">
-                        <button onclick="inspectRecord('${rec.id}')" class="px-2.5 py-1 rounded bg-sky-950 text-sky-400 border border-sky-800 hover:bg-sky-900 transition text-[11px] font-semibold">
-                            <i class="fa-solid fa-eye mr-1"></i> Audit
+                    <td class="p-3.5 text-right space-x-1.5 whitespace-nowrap">
+                        <button onclick="inspectRecord('${rec.id}')" class="px-2 py-1 rounded bg-sky-950 text-sky-400 border border-sky-800 hover:bg-sky-900 transition text-[11px] font-semibold" title="Audit Mistakes">
+                            <i class="fa-solid fa-eye"></i> Audit
                         </button>
-                        <button onclick="deleteCloudRecord('${rec.id}')" class="px-2.5 py-1 rounded bg-rose-950 text-rose-400 border border-rose-800 hover:bg-rose-900 transition text-[11px] font-semibold">
-                            <i class="fa-solid fa-trash-can mr-1"></i> Remove
+                        <button onclick="deleteSingleRecord('${rec.id}')" class="px-2 py-1 rounded bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 transition text-[11px] font-semibold" title="Delete Row">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                        <button onclick="restartStudentCourse('${rec.studentId}', '${rec.studentName}')" class="px-2 py-1 rounded bg-amber-950/60 text-amber-400 border border-amber-800 hover:bg-amber-900 transition text-[11px] font-semibold" title="Reset Course to 0%">
+                            <i class="fa-solid fa-rotate-left"></i> Restart Course
                         </button>
                     </td>
                 `;
@@ -263,23 +263,27 @@
                 card.innerHTML = `
                     <div class="flex items-center justify-between">
                         <div>
+                            <span class="text-xs font-mono font-bold text-sky-400 mr-1.5">${rec.studentId}</span>
                             <span class="font-bold text-sm text-white">${rec.studentName}</span>
-                            <span class="text-xs text-slate-400 font-mono ml-1">(${rec.studentAge} yrs)</span>
+                            <span class="text-xs text-slate-400 font-mono">(${rec.studentAge}y)</span>
                         </div>
                         <span class="px-2 py-0.5 rounded font-mono font-bold text-xs ${scoreColor}">
                             ${rec.score}
                         </span>
                     </div>
                     <div class="text-xs text-slate-300 flex items-center justify-between border-t border-slate-800/80 pt-2">
-                        <span class="font-medium text-sky-400">${rec.concept}</span>
+                        <span class="font-medium text-slate-300">${rec.concept}</span>
                         <span class="text-[10px] text-slate-500 font-mono">${rec.timestamp}</span>
                     </div>
-                    <div class="grid grid-cols-2 gap-2 pt-1">
-                        <button onclick="inspectRecord('${rec.id}')" class="w-full py-1.5 rounded-lg bg-sky-950 text-sky-400 border border-sky-800 hover:bg-sky-900 text-xs font-semibold transition flex items-center justify-center gap-1.5">
-                            <i class="fa-solid fa-eye text-[10px]"></i> Audit Mistakes
+                    <div class="grid grid-cols-3 gap-1.5 pt-1">
+                        <button onclick="inspectRecord('${rec.id}')" class="py-1.5 rounded-lg bg-sky-950 text-sky-400 border border-sky-800 hover:bg-sky-900 text-[11px] font-semibold transition text-center">
+                            Audit
                         </button>
-                        <button onclick="deleteCloudRecord('${rec.id}')" class="w-full py-1.5 rounded-lg bg-rose-950 text-rose-400 border border-rose-800 hover:bg-rose-900 text-xs font-semibold transition flex items-center justify-center gap-1.5">
-                            <i class="fa-solid fa-trash-can text-[10px]"></i> Remove
+                        <button onclick="deleteSingleRecord('${rec.id}')" class="py-1.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 text-[11px] font-semibold transition text-center">
+                            Delete
+                        </button>
+                        <button onclick="restartStudentCourse('${rec.studentId}', '${rec.studentName}')" class="py-1.5 rounded-lg bg-amber-950/60 text-amber-400 border border-amber-800 hover:bg-amber-900 text-[11px] font-semibold transition text-center">
+                            Restart
                         </button>
                     </div>
                 `;
@@ -287,30 +291,52 @@
             });
         }
 
-        async function deleteCloudRecord(id) {
-            if (!confirm("Are you sure you want to remove this record from Google Sheet?")) return;
+        // Delete one test attempt
+        async function deleteSingleRecord(id) {
+            if (!confirm("Delete this single test submission?")) return;
 
-            // Instantly remove from screen
             CLOUD_RECORDS = CLOUD_RECORDS.filter(r => r.id !== id);
             renderRecords(CLOUD_RECORDS);
 
-            // Call Apps Script with no-cors URL parameters
             const url = `${SCRIPT_URL}?action=DELETE&id=${encodeURIComponent(id)}`;
             await fetch(url, { mode: 'no-cors' });
+        }
+
+        // RESTART ENTIRE COURSE FOR STUDENT TO 0%
+        async function restartStudentCourse(studentId, studentName) {
+            const label = studentId !== 'N/A' ? `Student ID ${studentId} (${studentName})` : studentName;
+            if (!confirm(`Are you sure you want to RESTART the course for ${label}?\n\nThis will reset their progress bar to 0% and erase all completed quiz scores so they can start fresh.`)) return;
+
+            // Remove from screen immediately
+            CLOUD_RECORDS = CLOUD_RECORDS.filter(r => r.studentId !== studentId);
+            renderRecords(CLOUD_RECORDS);
+
+            // 1. Add to local reset blacklist so student's browser immediately wipes their progress
+            let resetList = JSON.parse(localStorage.getItem('resetStudentsList')) || [];
+            if (!resetList.includes(studentId)) {
+                resetList.push(studentId);
+                localStorage.setItem('resetStudentsList', JSON.stringify(resetList));
+            }
+
+            // 2. Call Google Sheet to delete all submissions matching this studentId
+            const url = `${SCRIPT_URL}?action=RESET_STUDENT&studentId=${encodeURIComponent(studentId)}&studentName=${encodeURIComponent(studentName)}`;
+            await fetch(url, { mode: 'no-cors' });
+
+            alert(`Course for ${label} has been reset to 0%! Next time they open the site, all badges will show 'Not Attempted'.`);
         }
 
         function inspectRecord(recId) {
             const rec = CLOUD_RECORDS.find(r => r.id === recId);
             if (!rec) return;
 
-            document.getElementById('modal-title').textContent = `${rec.studentName} (${rec.studentAge}y)`;
+            document.getElementById('modal-title').textContent = `${rec.studentName} [${rec.studentId}] (${rec.studentAge}y)`;
             document.getElementById('modal-subtitle').textContent = `Topic: ${rec.concept} • Score: ${rec.score}`;
             
             const content = document.getElementById('modal-content');
             content.innerHTML = '';
 
             if (!rec.details || rec.details.length === 0) {
-                content.innerHTML = `<div class="text-xs text-slate-400 italic">Question details recorded successfully.</div>`;
+                content.innerHTML = `<div class="text-xs text-slate-400 italic">No question breakdown recorded for this attempt.</div>`;
             } else {
                 rec.details.forEach(q => {
                     const card = document.createElement('div');
