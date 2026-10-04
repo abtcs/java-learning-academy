@@ -3,40 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instructor & Admin Dashboard</title>
+    <title>Instructor & Admin Dashboard - Cloud Powered</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #0b0f19; color: #f1f5f9; }
         .font-mono-code { font-family: 'JetBrains Mono', monospace; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-rose-500/30">
 
-    <header class="border-b border-slate-800 bg-slate-900/90 px-6 py-4 flex items-center justify-between backdrop-blur sticky top-0 z-30">
-        <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-rose-500/20">
-                <i class="fa-solid fa-chart-pie text-white text-lg"></i>
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-slate-900/90 px-4 sm:px-6 py-3 shrink-0 backdrop-blur sticky top-0 z-30">
+        <div class="max-w-7xl mx-auto flex items-center justify-between gap-3">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-rose-500/20 shrink-0">
+                    <i class="fa-solid fa-chart-pie text-white text-lg"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-sm sm:text-base font-bold text-white leading-tight">Instructor & Admin Portal</h1>
+                        <span class="text-[9px] uppercase font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Live Cloud</span>
+                    </div>
+                    <p class="text-[11px] sm:text-xs text-slate-400">Google Sheet Synchronized Student Records</p>
+                </div>
             </div>
-            <div>
-                <h1 class="text-base font-bold text-white">Instructor & Admin Portal</h1>
-                <p class="text-xs text-slate-400">Student Progress Matrix & Evaluation Records</p>
+            <div class="flex items-center gap-2">
+                <a href="index.html" class="px-3 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-xs text-slate-300 hover:text-white transition flex items-center gap-1">
+                    <i class="fa-solid fa-house"></i> <span class="hidden sm:inline">Home</span>
+                </a>
+                <button id="logout-btn" onclick="logoutAdmin()" class="hidden px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-xs font-semibold text-white transition flex items-center gap-1">
+                    <i class="fa-solid fa-right-from-bracket"></i> <span>Logout</span>
+                </button>
             </div>
-        </div>
-        <div class="flex items-center gap-3">
-            <a href="index.html" class="px-3.5 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-xs text-slate-300 hover:text-white transition">
-                <i class="fa-solid fa-house"></i> Home
-            </a>
-            <button id="logout-btn" onclick="logoutAdmin()" class="hidden px-3.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-xs font-semibold text-white transition">
-                Logout
-            </button>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto w-full px-4 py-8">
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto w-full px-3 sm:px-6 py-6 flex-1 flex flex-col">
+
         <!-- Login Card -->
-        <div id="login-card" class="max-w-md mx-auto bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl">
+        <div id="login-card" class="max-w-md w-full mx-auto my-auto bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl">
             <div class="text-center mb-6">
                 <div class="w-14 h-14 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center mx-auto mb-3 text-rose-400 text-2xl">
                     <i class="fa-solid fa-user-shield"></i>
@@ -63,19 +74,27 @@
             </form>
         </div>
 
-        <!-- Dashboard View -->
-        <div id="dashboard-view" class="hidden space-y-6">
-            <!-- Progress Matrix -->
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
-                <div class="p-4 border-b border-slate-800 bg-slate-950/60 flex items-center justify-between">
-                    <div>
-                        <h3 class="text-sm font-bold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-table-cells text-sky-400"></i> Active Student Records & Marks
-                        </h3>
-                        <p class="text-xs text-slate-400">Hardcoded and saved submissions. Click "Dismiss / Remove" after review.</p>
-                    </div>
-                </div>
+        <!-- Dashboard View (Protected) -->
+        <div id="dashboard-view" class="hidden space-y-4 w-full">
 
+            <!-- Active Records Header Card -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 flex flex-wrap items-center justify-between gap-3 shadow-lg">
+                <div>
+                    <h3 class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-cloud text-sky-400"></i> Cloud Submissions (Google Sheet)
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-0.5">Real-time sync from student laptops to your mobile phone.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="fetchCloudRecords()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 border border-slate-700 transition flex items-center gap-1">
+                        <i class="fa-solid fa-arrows-rotate" id="refresh-icon"></i> <span>Refresh</span>
+                    </button>
+                    <span id="record-count-badge" class="px-2.5 py-1 rounded bg-slate-800 border border-slate-700 font-mono text-xs text-sky-400 font-bold">Loading...</span>
+                </div>
+            </div>
+
+            <!-- DESKTOP VIEW: Full Wide Table -->
+            <div class="hidden md:block bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-xs">
                         <thead class="bg-slate-950 text-slate-400 uppercase tracking-wider font-mono text-[10px] border-b border-slate-800">
@@ -88,51 +107,54 @@
                                 <th class="p-3.5 text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="admin-table-body" class="divide-y divide-slate-800/60">
+                        <tbody id="desktop-table-body" class="divide-y divide-slate-800/60">
                         </tbody>
                     </table>
                 </div>
-                <div id="empty-notice" class="p-8 text-center text-xs text-slate-500 italic hidden">
-                    All records reviewed and dismissed.
-                </div>
             </div>
+
+            <!-- MOBILE VIEW: Clean Vertical Cards -->
+            <div id="mobile-cards-container" class="md:hidden space-y-3">
+            </div>
+
+            <!-- Loading Spinner -->
+            <div id="loading-state" class="p-12 text-center text-xs font-mono text-sky-400">
+                <i class="fa-solid fa-circle-notch fa-spin text-2xl mb-2 block"></i>
+                Connecting to Google Sheet...
+            </div>
+
+            <!-- Empty State Notice -->
+            <div id="empty-notice" class="bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center text-xs text-slate-500 italic hidden shadow-lg">
+                <i class="fa-solid fa-inbox text-2xl text-slate-600 block mb-2"></i>
+                No active records found in Google Sheet.
+            </div>
+
         </div>
 
         <!-- Audit Modal -->
-        <div id="audit-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto p-6 shadow-2xl">
+        <div id="audit-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4 hidden">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto p-4 sm:p-6 shadow-2xl">
                 <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
-                    <h4 class="text-base font-bold text-white" id="modal-title">Student Error Audit</h4>
-                    <button onclick="closeModal()" class="text-slate-400 hover:text-white text-lg">&times;</button>
+                    <div>
+                        <h4 class="text-sm sm:text-base font-bold text-white" id="modal-title">Student Error Audit</h4>
+                        <span id="modal-subtitle" class="text-xs text-slate-400"></span>
+                    </div>
+                    <button onclick="closeModal()" class="text-slate-400 hover:text-white text-xl p-1">&times;</button>
                 </div>
                 <div id="modal-content" class="space-y-3"></div>
             </div>
         </div>
+
     </main>
 
     <script>
+        // YOUR EXACT GOOGLE APPS SCRIPT URL
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyhHoC6q67U2k_SZNSXTsa-KWCKL1Q2wsHiIVtmKjphJ5aYhPqhJFjd3bTHjHs74B5nrg/exec";
+
         const AUTH_USER = "biswam2";
         const AUTH_PASS = "12345678";
 
-        /* =========================================================================
-           PASTE HARDCODED STUDENT SUBMISSIONS BELOW THIS LINE:
-           ========================================================================= */
-        let HARDCODED_STUDENT_RECORDS = [
-            // Example completed record:
-            {
-                id: "REC-101",
-                studentName: "Demo Student",
-                studentAge: 20,
-                concept: "Sorting Algorithms Lab",
-                score: 5,
-                total: 5,
-                timestamp: "Demo Record",
-                details: [
-                    { questionNo: 1, chosenAnswer: "B", correctAnswer: "B", isCorrect: true, explanation: "Bubble sort with early exit runs in O(N)." }
-                ]
-            }
-        ];
-        /* ========================================================================= */
+        let CLOUD_RECORDS = [];
 
         function handleAdminLogin(e) {
             e.preventDefault();
@@ -150,7 +172,7 @@
             document.getElementById('login-card').classList.add('hidden');
             document.getElementById('dashboard-view').classList.remove('hidden');
             document.getElementById('logout-btn').classList.remove('hidden');
-            renderTable();
+            fetchCloudRecords();
         }
 
         function logoutAdmin() {
@@ -158,75 +180,161 @@
             window.location.reload();
         }
 
-        function getDismissedIds() {
-            return JSON.parse(localStorage.getItem('adminDismissedIds')) || [];
-        }
+        async function fetchCloudRecords() {
+            const icon = document.getElementById('refresh-icon');
+            if (icon) icon.classList.add('fa-spin');
+            document.getElementById('loading-state').classList.remove('hidden');
 
-        function dismissRecord(recId) {
-            let dismissed = getDismissedIds();
-            if (!dismissed.includes(recId)) {
-                dismissed.push(recId);
-                localStorage.setItem('adminDismissedIds', JSON.stringify(dismissed));
+            try {
+                const res = await fetch(SCRIPT_URL);
+                const data = await res.json();
+                
+                // Format records
+                CLOUD_RECORDS = data.map(item => ({
+                    id: String(item.id || item.ID || ''),
+                    studentName: item.name || item.studentname || item.Name || 'Student',
+                    studentAge: item.age || item.studentage || item.Age || 'N/A',
+                    concept: item.concept || item.Concept || 'General',
+                    score: item.score || item.Score || '0',
+                    timestamp: item.timestamp || item.Timestamp || 'N/A',
+                    details: Array.isArray(item.details) ? item.details : []
+                }));
+
+                renderRecords(CLOUD_RECORDS);
+            } catch (err) {
+                console.error("Failed to load records from Google Sheet:", err);
+                // Fallback to local storage if offline
+                const local = JSON.parse(localStorage.getItem('javaQuizRecords')) || [];
+                renderRecords(local);
+            } finally {
+                document.getElementById('loading-state').classList.add('hidden');
+                if (icon) icon.classList.remove('fa-spin');
             }
-            renderTable();
         }
 
-        function renderTable() {
-            const dismissed = getDismissedIds();
-            const localRecs = JSON.parse(localStorage.getItem('javaQuizRecords')) || [];
-            
-            // Combine hardcoded and local submissions, omitting any dismissed records
-            const all = [...HARDCODED_STUDENT_RECORDS, ...localRecs].filter(r => !dismissed.includes(r.id));
-            const tbody = document.getElementById('admin-table-body');
-            tbody.innerHTML = '';
+        function renderRecords(records) {
+            document.getElementById('record-count-badge').textContent = `${records.length} Records`;
 
-            if (all.length === 0) {
-                document.getElementById('empty-notice').classList.remove('hidden');
+            const desktopTbody = document.getElementById('desktop-table-body');
+            const mobileContainer = document.getElementById('mobile-cards-container');
+            const emptyNotice = document.getElementById('empty-notice');
+
+            desktopTbody.innerHTML = '';
+            mobileContainer.innerHTML = '';
+
+            if (records.length === 0) {
+                emptyNotice.classList.remove('hidden');
                 return;
             }
-            document.getElementById('empty-notice').classList.add('hidden');
+            emptyNotice.classList.add('hidden');
 
-            all.forEach(rec => {
+            records.forEach(rec => {
+                const isPassed = String(rec.score).includes("4") || String(rec.score).includes("5") || String(rec.score).includes("3");
+                const scoreColor = isPassed ? 
+                    'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 
+                    'bg-rose-500/10 text-rose-400 border border-rose-500/20';
+
+                // Desktop row
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-800/40 transition";
                 tr.innerHTML = `
                     <td class="p-3.5 font-semibold text-white">${rec.studentName}</td>
                     <td class="p-3.5 text-slate-400 font-mono">${rec.studentAge}y</td>
-                    <td class="p-3.5 text-slate-300">${rec.concept}</td>
+                    <td class="p-3.5 text-slate-300 font-medium">${rec.concept}</td>
                     <td class="p-3.5">
-                        <span class="px-2 py-0.5 rounded font-mono font-bold ${rec.score >= 3 ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'}">
-                            ${rec.score} / ${rec.total}
+                        <span class="px-2 py-0.5 rounded font-mono font-bold ${scoreColor}">
+                            ${rec.score}
                         </span>
                     </td>
                     <td class="p-3.5 text-slate-500 font-mono text-[11px]">${rec.timestamp}</td>
                     <td class="p-3.5 text-right space-x-2">
-                        <button onclick="inspectRecord('${rec.id}')" class="px-2.5 py-1 rounded bg-sky-950 text-sky-400 border border-sky-800 hover:bg-sky-900 transition text-[11px]">Audit</button>
-                        <button onclick="dismissRecord('${rec.id}')" class="px-2.5 py-1 rounded bg-rose-950 text-rose-400 border border-rose-800 hover:bg-rose-900 transition text-[11px]">Remove</button>
+                        <button onclick="inspectRecord('${rec.id}')" class="px-2.5 py-1 rounded bg-sky-950 text-sky-400 border border-sky-800 hover:bg-sky-900 transition text-[11px] font-semibold">
+                            <i class="fa-solid fa-eye mr-1"></i> Audit
+                        </button>
+                        <button onclick="deleteCloudRecord('${rec.id}')" class="px-2.5 py-1 rounded bg-rose-950 text-rose-400 border border-rose-800 hover:bg-rose-900 transition text-[11px] font-semibold">
+                            <i class="fa-solid fa-trash-can mr-1"></i> Remove
+                        </button>
                     </td>
                 `;
-                tbody.appendChild(tr);
+                desktopTbody.appendChild(tr);
+
+                // Mobile Card
+                const card = document.createElement('div');
+                card.className = "bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-2.5 shadow-md";
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <span class="font-bold text-sm text-white">${rec.studentName}</span>
+                            <span class="text-xs text-slate-400 font-mono ml-1">(${rec.studentAge} yrs)</span>
+                        </div>
+                        <span class="px-2 py-0.5 rounded font-mono font-bold text-xs ${scoreColor}">
+                            ${rec.score}
+                        </span>
+                    </div>
+                    <div class="text-xs text-slate-300 flex items-center justify-between border-t border-slate-800/80 pt-2">
+                        <span class="font-medium text-sky-400">${rec.concept}</span>
+                        <span class="text-[10px] text-slate-500 font-mono">${rec.timestamp}</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 pt-1">
+                        <button onclick="inspectRecord('${rec.id}')" class="w-full py-1.5 rounded-lg bg-sky-950 text-sky-400 border border-sky-800 hover:bg-sky-900 text-xs font-semibold transition flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-eye text-[10px]"></i> Audit Mistakes
+                        </button>
+                        <button onclick="deleteCloudRecord('${rec.id}')" class="w-full py-1.5 rounded-lg bg-rose-950 text-rose-400 border border-rose-800 hover:bg-rose-900 text-xs font-semibold transition flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-trash-can text-[10px]"></i> Remove
+                        </button>
+                    </div>
+                `;
+                mobileContainer.appendChild(card);
             });
         }
 
+        async function deleteCloudRecord(id) {
+            if (!confirm("Are you sure you want to remove this record from Google Sheet?")) return;
+
+            // Optimistic UI Removal
+            CLOUD_RECORDS = CLOUD_RECORDS.filter(r => r.id !== id);
+            renderRecords(CLOUD_RECORDS);
+
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: "DELETE", id: id })
+                });
+            } catch (err) {
+                console.error("Failed to delete row from Google Sheet:", err);
+            }
+        }
+
         function inspectRecord(recId) {
-            const localRecs = JSON.parse(localStorage.getItem('javaQuizRecords')) || [];
-            const rec = [...HARDCODED_STUDENT_RECORDS, ...localRecs].find(r => r.id === recId);
+            const rec = CLOUD_RECORDS.find(r => r.id === recId);
             if (!rec) return;
 
-            document.getElementById('modal-title').textContent = `${rec.studentName} - ${rec.concept} (${rec.score}/${rec.total})`;
+            document.getElementById('modal-title').textContent = `${rec.studentName} (${rec.studentAge}y)`;
+            document.getElementById('modal-subtitle').textContent = `Topic: ${rec.concept} • Score: ${rec.score}`;
+            
             const content = document.getElementById('modal-content');
             content.innerHTML = '';
 
-            (rec.details || []).forEach(q => {
-                const card = document.createElement('div');
-                card.className = `p-3 rounded-xl border text-xs ${q.isCorrect ? 'bg-emerald-950/20 border-emerald-500/30' : 'bg-rose-950/20 border-rose-500/30'}`;
-                card.innerHTML = `
-                    <div class="font-bold text-white mb-1">Question #${q.questionNo}</div>
-                    <div class="font-mono text-slate-300 mb-1">Chosen: <strong>${q.chosenAnswer}</strong> | Correct: <strong class="text-emerald-400">${q.correctAnswer}</strong></div>
-                    <div class="text-[11px] text-slate-400">${q.explanation}</div>
-                `;
-                content.appendChild(card);
-            });
+            if (!rec.details || rec.details.length === 0) {
+                content.innerHTML = `<div class="text-xs text-slate-400 italic">No question breakdown recorded for this attempt.</div>`;
+            } else {
+                rec.details.forEach(q => {
+                    const card = document.createElement('div');
+                    card.className = `p-3 rounded-xl border text-xs ${q.isCorrect ? 'bg-emerald-950/20 border-emerald-500/30' : 'bg-rose-950/20 border-rose-500/30'}`;
+                    card.innerHTML = `
+                        <div class="font-bold text-white mb-1">Question #${q.questionNo}</div>
+                        <div class="font-mono text-slate-300 mb-1.5">
+                            Chosen: <span class="${q.isCorrect ? 'text-emerald-400' : 'text-rose-400'} font-bold">${q.chosenAnswer}</span> | Correct: <strong class="text-emerald-400">${q.correctAnswer}</strong>
+                        </div>
+                        <div class="text-[11px] text-slate-400 bg-slate-950/80 p-2.5 rounded-lg border border-slate-800">
+                            <strong class="text-slate-300">Why:</strong> ${q.explanation}
+                        </div>
+                    `;
+                    content.appendChild(card);
+                });
+            }
+
             document.getElementById('audit-modal').classList.remove('hidden');
         }
 
