@@ -17,6 +17,7 @@
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #0b0f19; color: #f1f5f9; }
         .font-mono-code { font-family: 'JetBrains Mono', monospace; }
+        .step-active { background: rgba(16, 185, 129, 0.2) !important; border-color: #10b981 !important; color: #fff !important; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
@@ -26,106 +27,232 @@
 
     <iframe name="hidden_gsheet_iframe" id="hidden_gsheet_iframe" style="display:none;"></iframe>
 
-    <header class="border-b border-slate-800 bg-slate-900/90 px-4 sm:px-6 py-3.5 flex items-center justify-between backdrop-blur sticky top-0 z-30">
-        <a href="index.html" class="flex items-center gap-2 text-xs font-semibold text-slate-300 hover:text-white transition">
-            <i class="fa-solid fa-arrow-left"></i> Back to Hub
-        </a>
-        <div class="flex items-center gap-2.5">
-            <span id="session-student-badge" class="text-xs font-mono px-3 py-1 rounded bg-slate-800 text-slate-300">Loading student...</span>
-            <div class="text-xs font-mono bg-emerald-950/80 text-emerald-400 border border-emerald-800 px-2.5 py-1 rounded-full">
-                Module 03: For Loops
+    <header class="border-b border-slate-800 bg-slate-900/90 px-4 sm:px-6 py-3 shrink-0 backdrop-blur sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2 text-xs font-semibold text-slate-300 hover:text-white transition">
+                <i class="fa-solid fa-arrow-left"></i> Back to Academy Hub
+            </a>
+            <div class="flex items-center gap-3">
+                <span id="session-student-badge" class="text-xs font-mono px-3 py-1 rounded bg-slate-800 text-slate-300">Loading student...</span>
+                <div class="text-xs font-mono bg-emerald-950/80 text-emerald-400 border border-emerald-800 px-2.5 py-1 rounded-full">
+                    Module 03: For Loops
+                </div>
             </div>
         </div>
     </header>
 
-    <main class="max-w-4xl mx-auto w-full px-4 py-8 space-y-8 flex-1">
+    <main class="max-w-7xl mx-auto w-full px-3 sm:px-6 py-6 space-y-8 flex-1">
         
-        <section class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-xl">
-            <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
+        <!-- ========================================== -->
+        <!-- PHASE 1: FULL SCREEN INTERACTIVE LAB STAGE -->
+        <!-- ========================================== -->
+        <section id="interactive-stage-section" class="bg-slate-900 border border-slate-800 rounded-3xl p-4 sm:p-7 shadow-2xl space-y-5 transition-all">
+            
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
                 <div>
-                    <h3 class="text-base font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-repeat text-emerald-400"></i> For & Nested Loops: 5 MCQs
-                    </h3>
-                    <p class="text-xs text-slate-400 mt-1">Submit your assessment to sync marks with your instructor's sheet.</p>
+                    <h2 class="text-lg sm:text-xl font-bold text-white flex items-center gap-2.5">
+                        <i class="fa-solid fa-repeat text-emerald-400"></i> Loop Lifecycle Stepper & Nested Matrix Visualizer
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-1">Step through the 4 loop phases: Initialization, Condition Check, Loop Body, and Increment Expression.</p>
                 </div>
-                <span class="text-xs font-mono px-3 py-1 rounded bg-slate-800 text-slate-300">Passing: 3/5</span>
+                <div class="flex items-center gap-2">
+                    <span class="text-[11px] font-mono px-3 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold">
+                        Phase 1: Interactive Lab
+                    </span>
+                </div>
+            </div>
+
+            <!-- Controls Bar -->
+            <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-950 p-3 sm:p-4 rounded-2xl border border-slate-800">
+                <div class="flex items-center flex-wrap gap-2">
+                    <button id="step-btn" onclick="stepLoop()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center gap-2 transition shadow-lg shadow-emerald-600/20">
+                        <i class="fa-solid fa-forward-step text-[11px]"></i> <span>Step Next (F10)</span>
+                    </button>
+                    <button onclick="autoRunLoop()" id="autorun-btn" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs transition">
+                        <i class="fa-solid fa-play text-[10px] mr-1"></i> Auto-Play
+                    </button>
+                    <button onclick="resetLoop()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs transition" title="Reset">
+                        <i class="fa-solid fa-rotate-left mr-1"></i> Reset
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-4 text-xs font-mono">
+                    <div class="flex items-center gap-2">
+                        <span class="text-slate-400">Limit `N`:</span>
+                        <input type="number" id="loop-limit" min="2" max="8" value="5" onchange="resetLoop()" class="w-14 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-emerald-400 text-center font-bold">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lifecycle Stage & Variable Box -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                
+                <!-- Left: 4-Phase Stepper Visual -->
+                <div class="lg:col-span-6 bg-slate-950 p-5 rounded-2xl border border-slate-800 flex flex-col justify-between space-y-4">
+                    <span class="text-xs font-mono text-slate-400 uppercase font-semibold">Active Cycle Phase</span>
+
+                    <div class="grid grid-cols-2 gap-3 flex-1">
+                        <div id="phase-init" class="p-4 rounded-2xl border border-slate-800 bg-slate-900/60 flex flex-col justify-between transition-all">
+                            <span class="text-[10px] font-mono text-slate-500 uppercase">Phase 1</span>
+                            <div class="font-bold text-xs text-white">Initialization</div>
+                            <span class="font-mono text-[11px] text-slate-400">int i = 0</span>
+                        </div>
+                        <div id="phase-cond" class="p-4 rounded-2xl border border-slate-800 bg-slate-900/60 flex flex-col justify-between transition-all">
+                            <span class="text-[10px] font-mono text-slate-500 uppercase">Phase 2</span>
+                            <div class="font-bold text-xs text-white">Condition Test</div>
+                            <span class="font-mono text-[11px] text-slate-400" id="cond-label">i &lt; N</span>
+                        </div>
+                        <div id="phase-body" class="p-4 rounded-2xl border border-slate-800 bg-slate-900/60 flex flex-col justify-between transition-all">
+                            <span class="text-[10px] font-mono text-slate-500 uppercase">Phase 3</span>
+                            <div class="font-bold text-xs text-white">Execute Body</div>
+                            <span class="font-mono text-[11px] text-slate-400">process(i)</span>
+                        </div>
+                        <div id="phase-inc" class="p-4 rounded-2xl border border-slate-800 bg-slate-900/60 flex flex-col justify-between transition-all">
+                            <span class="text-[10px] font-mono text-slate-500 uppercase">Phase 4</span>
+                            <div class="font-bold text-xs text-white">Increment Step</div>
+                            <span class="font-mono text-[11px] text-slate-400">i++</span>
+                        </div>
+                    </div>
+
+                    <!-- Output iteration chips -->
+                    <div>
+                        <span class="text-[10px] font-mono text-slate-500 uppercase block mb-1.5">Executed Iterations Output:</span>
+                        <div id="output-chips" class="flex flex-wrap gap-1.5 min-h-[32px] p-2 rounded-xl bg-slate-900 border border-slate-800 text-xs font-mono">
+                            <span class="text-slate-600 italic">No iterations finished yet</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Java Loop Code Stepper -->
+                <div class="lg:col-span-6 bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden flex flex-col">
+                    <div class="bg-slate-900 px-4 py-2.5 border-b border-slate-800 flex items-center justify-between">
+                        <span class="text-xs font-mono text-slate-200 font-bold">ForLoopExecution.java</span>
+                        <span class="text-[10px] font-mono text-emerald-400">JVM Local Frame: <span id="var-i-display" class="font-bold">i = uninitialized</span></span>
+                    </div>
+                    <pre class="p-4 font-mono-code text-xs leading-6 text-slate-300 overflow-x-auto flex-1">
+<span id="cl-1" class="block px-2 rounded"><span class="text-rose-400 font-semibold">int</span> N = <span id="cl-n-val" class="text-amber-400">5</span>;</span>
+<span id="cl-2" class="block px-2 rounded"><span class="text-rose-400 font-semibold">for</span> (<span id="cl-sub-init" class="px-1 rounded">int i = 0</span>; <span id="cl-sub-cond" class="px-1 rounded">i < N</span>; <span id="cl-sub-inc" class="px-1 rounded">i++</span>) {</span>
+<span id="cl-3" class="block px-2 rounded">    System.out.println(<span class="text-emerald-300">"Iteration index: "</span> + i);</span>
+<span id="cl-4" class="block px-2 rounded">}</span>
+<span id="cl-5" class="block px-2 rounded">System.out.println(<span class="text-emerald-300">"Loop Terminated Successfully"</span>);</span></pre>
+                </div>
+            </div>
+
+            <!-- GATE ACTION -->
+            <div class="pt-4 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="text-xs text-slate-400">
+                    <i class="fa-solid fa-circle-info text-emerald-400 mr-1.5"></i>
+                    Observed loop bounds, increments, and scope lifecycle? Unlock the test below.
+                </div>
+                <button id="unlock-quiz-btn" onclick="unlockAssessment()" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 font-bold text-xs text-white shadow-xl shadow-emerald-600/30 transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-graduation-cap text-sm"></i>
+                    <span>I Have Learned This &bull; Take 5-Question Assessment</span>
+                </button>
+            </div>
+
+        </section>
+
+        <!-- ========================================== -->
+        <!-- PHASE 2: 5-QUESTION MCQ ASSESSMENT SECTION -->
+        <!-- ========================================== -->
+        <section id="assessment-section" class="hidden bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl transition-all">
+            <div class="flex items-center justify-between mb-5 border-b border-slate-800 pb-4">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono text-[10px] font-bold uppercase">Phase 2</span>
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-emerald-400"></i> Module 03: For Loops Assessment
+                        </h3>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-1">5 questions &bull; Passing score: 3/5 &bull; Automatically syncs to Google Sheets.</p>
+                </div>
+                <button onclick="scrollToVisualizer()" class="text-xs text-slate-400 hover:text-white px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-700 font-mono transition">
+                    &uarr; Review Visualizer
+                </button>
             </div>
 
             <form id="quiz-form" onsubmit="submitQuiz(event)" class="space-y-6">
                 <!-- Q1 -->
-                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 sm:p-5">
                     <p class="text-xs font-semibold text-slate-200 mb-3">1. What is the exact execution order of the three loop header expressions in a standard `for (init; cond; update)` statement?</p>
-                    <div class="space-y-2 text-xs">
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="A" required> A) init &rarr; cond &rarr; body &rarr; update</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="B"> B) init &rarr; update &rarr; cond &rarr; body</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="C"> C) cond &rarr; init &rarr; body &rarr; update</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="D"> D) update &rarr; cond &rarr; body &rarr; init</label>
+                    <div class="space-y-2.5 text-xs">
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="A" required> A) init &rarr; cond &rarr; body &rarr; update</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="B"> B) init &rarr; update &rarr; cond &rarr; body</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="C"> C) cond &rarr; init &rarr; body &rarr; update</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="D"> D) update &rarr; cond &rarr; body &rarr; init</label>
                     </div>
-                    <div id="expl-1" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
+                    <div id="expl-1" class="hidden mt-3 p-3 rounded-xl text-xs font-mono"></div>
                 </div>
 
                 <!-- Q2 -->
-                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 sm:p-5">
                     <p class="text-xs font-semibold text-slate-200 mb-3">2. How many total times will the innermost statement execute in: `for (int i=0; i<3; i++) for (int j=0; j<4; j++) print();`?</p>
-                    <div class="space-y-2 text-xs">
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="A" required> A) 7 times</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="B"> B) 12 times</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="C"> C) 9 times</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="D"> D) 16 times</label>
+                    <div class="space-y-2.5 text-xs">
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="A" required> A) 7 times</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="B"> B) 12 times</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="C"> C) 9 times</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="D"> D) 16 times</label>
                     </div>
-                    <div id="expl-2" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
+                    <div id="expl-2" class="hidden mt-3 p-3 rounded-xl text-xs font-mono"></div>
                 </div>
 
                 <!-- Q3 -->
-                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 sm:p-5">
                     <p class="text-xs font-semibold text-slate-200 mb-3">3. What happens if the condition expression is completely omitted: `for ( ; ; ) { ... }`?</p>
-                    <div class="space-y-2 text-xs">
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="A" required> A) The condition is treated as constant `true`, creating an infinite loop</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="B"> B) Compile error: condition expression is mandatory</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="C"> C) The loop never runs even once</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="D"> D) It executes exactly one iteration and halts</label>
+                    <div class="space-y-2.5 text-xs">
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="A" required> A) The condition is treated as constant `true`, creating an infinite loop</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="B"> B) Compile error: condition expression is mandatory</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="C"> C) The loop never runs even once</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="D"> D) It executes exactly one iteration and halts</label>
                     </div>
-                    <div id="expl-3" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
+                    <div id="expl-3" class="hidden mt-3 p-3 rounded-xl text-xs font-mono"></div>
                 </div>
 
                 <!-- Q4 -->
-                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 sm:p-5">
                     <p class="text-xs font-semibold text-slate-200 mb-3">4. What is the scope of a variable declared inside the initialization section: `for (int i = 0; ... )`?</p>
-                    <div class="space-y-2 text-xs">
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="A" required> A) Across the entire enclosing method</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="B"> B) Strictly limited to the for loop header and body</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="C"> C) Across the entire class</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="D"> D) Persists in the JVM until garbage collected</label>
+                    <div class="space-y-2.5 text-xs">
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="A" required> A) Across the entire enclosing method</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="B"> B) Strictly limited to the for loop header and body</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="C"> C) Across the entire class</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="D"> D) Persists in the JVM until garbage collected</label>
                     </div>
-                    <div id="expl-4" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
+                    <div id="expl-4" class="hidden mt-3 p-3 rounded-xl text-xs font-mono"></div>
                 </div>
 
                 <!-- Q5 -->
-                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 sm:p-5">
                     <p class="text-xs font-semibold text-slate-200 mb-3">5. What does the `continue` statement do when encountered inside an active for loop?</p>
-                    <div class="space-y-2 text-xs">
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="A" required> A) Terminates the entire loop immediately</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="B"> B) Skips remaining statements in the current iteration and jumps directly to the update expression</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="C"> C) Restarts the loop from index 0</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="D"> D) Exits to the outer method</label>
+                    <div class="space-y-2.5 text-xs">
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="A" required> A) Terminates the entire loop immediately</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="B"> B) Skips remaining statements in current iteration and jumps directly to update expression</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="C"> C) Restarts the loop from index 0</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="D"> D) Exits to the outer method</label>
                     </div>
-                    <div id="expl-5" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
+                    <div id="expl-5" class="hidden mt-3 p-3 rounded-xl text-xs font-mono"></div>
                 </div>
 
-                <button type="submit" id="submit-btn" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 font-bold text-sm text-white shadow-lg transition flex items-center justify-center gap-2">
+                <button type="submit" id="submit-btn" class="w-full py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 font-bold text-sm text-white shadow-xl shadow-emerald-600/30 transition flex items-center justify-center gap-2">
                     <i class="fa-solid fa-cloud-arrow-up"></i> Submit Assessment & Save to Cloud
                 </button>
             </form>
 
-            <div id="score-summary" class="hidden mt-6 p-4 rounded-xl border border-emerald-500/40 bg-emerald-950/20 text-center">
+            <div id="score-summary" class="hidden mt-6 p-5 rounded-2xl border border-emerald-500/40 bg-emerald-950/20 text-center">
                 <div class="text-xs uppercase font-mono text-slate-400 mb-1">Assessment Complete</div>
-                <div class="text-2xl font-bold font-mono text-emerald-400" id="final-score-text">0 / 5</div>
+                <div class="text-3xl font-bold font-mono text-emerald-400" id="final-score-text">0 / 5</div>
                 <div id="sync-status" class="text-xs font-mono text-amber-400 mt-2">
                     <i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Syncing to Google Sheet...
                 </div>
-                <div class="mt-4 flex justify-center gap-3">
-                    <a href="switch.html" class="px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-xs font-semibold text-white transition">Next Module: Switch &rarr;</a>
-                    <a href="admin.html" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 transition">View on Admin Panel</a>
+                <div class="mt-5 flex flex-wrap justify-center gap-3">
+                    <a href="switch.html" class="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-xs font-semibold text-white transition flex items-center gap-1.5">
+                        <span>Next Module: Switch</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </a>
+                    <a href="index.html" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 transition">
+                        Academy Dashboard
+                    </a>
+                    <a href="admin.html" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 transition">
+                        Instructor Panel
+                    </a>
                 </div>
             </div>
         </section>
@@ -133,7 +260,7 @@
     </main>
 
     <footer class="border-t border-slate-800 py-3.5 text-center text-xs text-slate-500">
-        Java Interactive Academy &bull; For Loops Module (03)
+        Java Interactive Academy &bull; Module 03: For Loops
     </footer>
 
     <script>
@@ -145,12 +272,111 @@
             document.getElementById('session-student-badge').textContent = `Student: ${currentStudent.name}${sid} (${currentStudent.age}y)`;
         }
 
+        function unlockAssessment() {
+            const sec = document.getElementById('assessment-section');
+            sec.classList.remove('hidden');
+            sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            document.getElementById('unlock-quiz-btn').innerHTML = '<i class="fa-solid fa-check text-emerald-400"></i> Assessment Unlocked Below &darr;';
+        }
+
+        function scrollToVisualizer() {
+            document.getElementById('interactive-stage-section').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // STEPPER ENGINE
+        let currentStep = 0; // 0: init, 1: cond, 2: body, 3: inc
+        let iVal = 0;
+        let autoInterval = null;
+
+        function clearPhaseHighlights() {
+            ['phase-init', 'phase-cond', 'phase-body', 'phase-inc'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.remove('step-active');
+            });
+            ['cl-sub-init', 'cl-sub-cond', 'cl-sub-inc', 'cl-3'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.className = "px-1 rounded";
+            });
+        }
+
+        function stepLoop() {
+            const limit = parseInt(document.getElementById('loop-limit').value) || 5;
+            document.getElementById('cl-n-val').textContent = limit;
+            clearPhaseHighlights();
+
+            if (currentStep === 0) {
+                // Phase 1: Init
+                iVal = 0;
+                document.getElementById('phase-init').classList.add('step-active');
+                document.getElementById('cl-sub-init').className = "px-1 rounded bg-emerald-500/30 text-white font-bold";
+                document.getElementById('var-i-display').textContent = `i = ${iVal}`;
+                currentStep = 1;
+            } else if (currentStep === 1) {
+                // Phase 2: Cond
+                document.getElementById('phase-cond').classList.add('step-active');
+                document.getElementById('cl-sub-cond').className = "px-1 rounded bg-emerald-500/30 text-white font-bold";
+                const testPassed = iVal < limit;
+                document.getElementById('cond-label').textContent = `${iVal} < ${limit} => ${testPassed}`;
+
+                if (testPassed) {
+                    currentStep = 2;
+                } else {
+                    alert(`Loop Finished! (i = ${iVal} is not < ${limit}). Resetting.`);
+                    resetLoop();
+                }
+            } else if (currentStep === 2) {
+                // Phase 3: Body
+                document.getElementById('phase-body').classList.add('step-active');
+                document.getElementById('cl-3').className = "block px-2 rounded bg-emerald-500/20 border-l-2 border-emerald-400 text-white";
+                
+                const chips = document.getElementById('output-chips');
+                if (iVal === 0) chips.innerHTML = '';
+                const chip = document.createElement('span');
+                chip.className = "px-2.5 py-0.5 rounded bg-emerald-950 border border-emerald-800 text-emerald-400 font-bold";
+                chip.textContent = `Iteration #${iVal}`;
+                chips.appendChild(chip);
+
+                currentStep = 3;
+            } else if (currentStep === 3) {
+                // Phase 4: Inc
+                document.getElementById('phase-inc').classList.add('step-active');
+                document.getElementById('cl-sub-inc').className = "px-1 rounded bg-emerald-500/30 text-white font-bold";
+                iVal++;
+                document.getElementById('var-i-display').textContent = `i = ${iVal}`;
+                currentStep = 1; // Return to condition check
+            }
+        }
+
+        function autoRunLoop() {
+            if (autoInterval) {
+                clearInterval(autoInterval);
+                autoInterval = null;
+                document.getElementById('autorun-btn').innerHTML = '<i class="fa-solid fa-play text-[10px] mr-1"></i> Auto-Play';
+            } else {
+                autoInterval = setInterval(stepLoop, 650);
+                document.getElementById('autorun-btn').innerHTML = '<i class="fa-solid fa-pause text-[10px] mr-1"></i> Pause';
+            }
+        }
+
+        function resetLoop() {
+            if (autoInterval) clearInterval(autoInterval);
+            autoInterval = null;
+            currentStep = 0;
+            iVal = 0;
+            clearPhaseHighlights();
+            document.getElementById('var-i-display').textContent = "i = uninitialized";
+            document.getElementById('cond-label').textContent = "i < N";
+            document.getElementById('output-chips').innerHTML = '<span class="text-slate-600 italic">No iterations finished yet</span>';
+            document.getElementById('autorun-btn').innerHTML = '<i class="fa-solid fa-play text-[10px] mr-1"></i> Auto-Play';
+        }
+
+        // ASSESSMENT SUBMISSION LOGIC
         const QUIZ_KEY = {
-            q1: { correct: 'A', reason: "Initialization occurs once, followed by the condition evaluation, statement execution, and the increment/update step." },
-            q2: { correct: 'B', reason: "Nested loop iterations multiply: 3 iterations on the outer loop times 4 iterations on the inner loop equals 12 total runs." },
-            q3: { correct: 'A', reason: "According to the Java Language Specification, leaving the condition empty defaults to a literal true condition." },
-            q4: { correct: 'B', reason: "A local variable declared in the for-init block is scoped only within the for statement and cannot be referenced outside." },
-            q5: { correct: 'B', reason: "In a for loop, 'continue' immediately passes control to the loop's update step before checking the condition again." }
+            q1: { correct: 'A', reason: "Init executes first, then condition evaluation, then the loop body, and lastly the increment/update step." },
+            q2: { correct: 'B', reason: "Nested iterations multiply: 3 passes on outer loop * 4 passes on inner loop = 12 total runs." },
+            q3: { correct: 'A', reason: "Omitting the condition defaults to a constant boolean 'true' according to the Java language specification." },
+            q4: { correct: 'B', reason: "Variables declared in the init clause are scoped strictly within the for loop construct." },
+            q5: { correct: 'B', reason: "'continue' bypasses remaining statements in the current iteration and jumps directly to update." }
         };
 
         function submitQuiz(e) {
@@ -177,10 +403,10 @@
                 const expl = document.getElementById(`expl-${i}`);
                 expl.classList.remove('hidden');
                 if (isCorrect) {
-                    expl.className = "mt-3 p-3 rounded-lg text-xs bg-emerald-500/10 border border-emerald-500/30 text-emerald-300";
+                    expl.className = "mt-3 p-3 rounded-xl text-xs bg-emerald-500/10 border border-emerald-500/30 text-emerald-300";
                     expl.innerHTML = `<strong>Correct (${chosen})!</strong> ${info.reason}`;
                 } else {
-                    expl.className = "mt-3 p-3 rounded-lg text-xs bg-rose-500/10 border border-rose-500/30 text-rose-300";
+                    expl.className = "mt-3 p-3 rounded-xl text-xs bg-rose-500/10 border border-rose-500/30 text-rose-300";
                     expl.innerHTML = `<strong>Incorrect.</strong> You chose <strong>${chosen}</strong>, but correct is <strong>${info.correct}</strong>.<br><span class="text-slate-300 mt-1 block">Why: ${info.reason}</span>`;
                 }
             }
@@ -246,6 +472,8 @@
                 if (document.body.contains(postForm)) postForm.remove();
             }, 1200);
         }
+
+        window.addEventListener('DOMContentLoaded', resetLoop);
     </script>
 </body>
 </html>
