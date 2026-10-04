@@ -17,7 +17,6 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-sky-500/30">
 
-    <!-- Header -->
     <header class="border-b border-slate-800 bg-slate-900/90 px-4 sm:px-6 py-3.5 flex items-center justify-between backdrop-blur sticky top-0 z-30">
         <div class="flex items-center space-x-3">
             <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-500/20">
@@ -33,19 +32,18 @@
         </a>
     </header>
 
-    <!-- Main Content -->
     <main class="max-w-5xl mx-auto w-full px-4 py-8 space-y-6 flex-1">
 
-        <!-- 1. Registration Gate Card (Visible when NOT logged in) -->
+        <!-- 1. Registration / Return Login Card -->
         <div id="auth-section" class="bg-slate-900 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl">
             <div class="max-w-md mx-auto text-center">
                 <div class="w-14 h-14 rounded-2xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center mx-auto mb-4 text-sky-400 text-2xl">
-                    <i class="fa-solid fa-user-lock"></i>
+                    <i class="fa-solid fa-id-card"></i>
                 </div>
-                <h2 class="text-xl font-bold mb-1 text-white">Student Enrollment Gate</h2>
-                <p class="text-xs text-slate-400 mb-6">Enter your name and age to unlock modules and maintain your personal progress.</p>
+                <h2 class="text-xl font-bold mb-1 text-white">Student Enrollment & Login</h2>
+                <p class="text-xs text-slate-400 mb-6">First time? Fill Name & Age (Your Student ID generates automatically). Returning? Enter your Student ID below.</p>
                 
-                <form id="student-form" onsubmit="registerStudent(event)" class="space-y-4 text-left">
+                <form id="student-form" onsubmit="handleEnrollment(event)" class="space-y-4 text-left">
                     <div>
                         <label class="block text-xs font-semibold text-slate-300 mb-1">Full Name</label>
                         <input type="text" id="student-name" required placeholder="e.g. Amit Biswas" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3.5 py-2 text-sm focus:outline-none focus:border-sky-500 text-white placeholder-slate-600">
@@ -54,8 +52,15 @@
                         <label class="block text-xs font-semibold text-slate-300 mb-1">Age</label>
                         <input type="number" id="student-age" required min="8" max="99" placeholder="e.g. 21" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3.5 py-2 text-sm focus:outline-none focus:border-sky-500 text-white placeholder-slate-600">
                     </div>
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-xs font-semibold text-slate-300">Student ID <span class="text-slate-500 font-normal">(Optional for 1st time)</span></label>
+                            <span class="text-[10px] text-sky-400 font-mono">e.g. STU-4912</span>
+                        </div>
+                        <input type="text" id="student-id-input" placeholder="Leave blank if new student" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3.5 py-2 text-sm focus:outline-none focus:border-sky-500 text-white placeholder-slate-600 font-mono">
+                    </div>
                     <button type="submit" class="w-full py-2.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white font-semibold text-sm transition shadow-lg shadow-sky-600/30 flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-unlock text-xs"></i> <span>Enroll & Unlock Curriculum</span>
+                        <i class="fa-solid fa-unlock text-xs"></i> <span>Unlock My Curriculum</span>
                     </button>
                 </form>
             </div>
@@ -64,15 +69,17 @@
         <!-- 2. Active Student Session & Isolated Progress Bar -->
         <div id="student-dashboard" class="hidden space-y-4">
             
-            <!-- User Status Card -->
             <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-wrap items-center justify-between gap-4 shadow-xl">
                 <div class="flex items-center space-x-3.5">
                     <div class="w-12 h-12 rounded-xl bg-gradient-to-tr from-sky-500/20 to-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xl border border-emerald-500/30">
-                        <i class="fa-solid fa-graduation-cap"></i>
+                        <i class="fa-solid fa-user-graduate"></i>
                     </div>
                     <div>
-                        <div class="text-xs text-slate-400">Active Student Session:</div>
-                        <h3 class="text-lg font-bold text-white"><span id="display-name"></span> <span class="text-xs font-mono font-normal text-emerald-400">(<span id="display-age"></span> yrs old)</span></h3>
+                        <div class="text-xs text-slate-400 flex items-center gap-2">
+                            <span>Active Student Profile</span>
+                            <span id="display-id" class="px-2 py-0.5 rounded bg-sky-950 text-sky-400 border border-sky-800 font-mono text-[10px] font-bold"></span>
+                        </div>
+                        <h3 class="text-lg font-bold text-white"><span id="display-name"></span> <span class="text-xs font-mono font-normal text-emerald-400">(<span id="display-age"></span> yrs)</span></h3>
                     </div>
                 </div>
                 <div>
@@ -92,7 +99,6 @@
                     <span id="progress-percentage-label" class="text-sm font-mono font-bold text-sky-400">0%</span>
                 </div>
 
-                <!-- Animated Bar -->
                 <div class="w-full bg-slate-950 h-3 rounded-full overflow-hidden border border-slate-800/80 p-0.5">
                     <div id="progress-bar-fill" class="bg-gradient-to-r from-sky-500 via-indigo-500 to-emerald-400 h-full rounded-full transition-all duration-500 ease-out" style="width: 0%"></div>
                 </div>
@@ -105,21 +111,21 @@
 
         </div>
 
-        <!-- 3. Lock Notice (Shown when student is NOT logged in) -->
+        <!-- 3. Lock Notice -->
         <div id="lock-notice" class="bg-amber-950/30 border border-amber-600/30 rounded-xl p-4 flex items-center gap-3 text-xs text-amber-300">
             <i class="fa-solid fa-lock text-amber-400 text-base shrink-0"></i>
-            <span><strong>Curriculum Locked:</strong> Enter your name and age above to unlock the 5 concept labs and view your individual progress.</span>
+            <span><strong>Curriculum Locked:</strong> Enter your details above to unlock your modules and track personal marks.</span>
         </div>
 
-        <!-- 4. Interactive Modules Grid (Gated) -->
+        <!-- 4. Interactive Modules Grid -->
         <div id="curriculum-container" class="opacity-40 pointer-events-none transition-all duration-300 space-y-4">
             <h3 class="text-xs font-mono font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-                <i class="fa-solid fa-book-open text-sky-400"></i> Course Modules & 5-Question Assessments
+                <i class="fa-solid fa-book-open text-sky-400"></i> Course Modules & Assessments
             </h3>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 
-                <!-- Module 1: Sorting Algorithms with Crane (Featured) -->
+                <!-- Sorting Lab -->
                 <a href="sorting.html" class="sm:col-span-2 lg:col-span-3 bg-gradient-to-r from-sky-950/40 via-slate-900 to-indigo-950/40 border border-sky-800/50 hover:border-sky-400 p-5 rounded-2xl transition group flex flex-col justify-between shadow-xl">
                     <div>
                         <div class="flex items-center justify-between mb-3">
@@ -130,14 +136,14 @@
                             </div>
                         </div>
                         <h4 class="text-lg font-bold text-white group-hover:text-sky-300 transition mb-1">Sorting Algorithms Lab (Bubble, Selection, Insertion)</h4>
-                        <p class="text-xs text-slate-400 max-w-3xl">Watch a robotic gantry crane pick, hoist, and swap array blocks mid-air with wall-clock execution timer, active JVM variable inspection, and 5 MCQs.</p>
+                        <p class="text-xs text-slate-400 max-w-3xl">Watch a robotic gantry crane pick, hoist, and swap array blocks mid-air with wall-clock execution timer and 5 MCQs.</p>
                     </div>
                     <div class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-sky-400 font-semibold">
                         <span>Launch Sorting Lab</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
                     </div>
                 </a>
 
-                <!-- Module 2: If-Else -->
+                <!-- If-Else -->
                 <a href="if-else.html" class="bg-slate-900/60 border border-slate-800 hover:border-sky-500/60 p-5 rounded-2xl transition group flex flex-col justify-between shadow-lg">
                     <div>
                         <div class="flex items-center justify-between mb-3">
@@ -152,7 +158,7 @@
                     </div>
                 </a>
 
-                <!-- Module 3: For Loops -->
+                <!-- For Loops -->
                 <a href="for-loop.html" class="bg-slate-900/60 border border-slate-800 hover:border-emerald-500/60 p-5 rounded-2xl transition group flex flex-col justify-between shadow-lg">
                     <div>
                         <div class="flex items-center justify-between mb-3">
@@ -160,14 +166,14 @@
                             <span id="badge-forloop" class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">Not Attempted</span>
                         </div>
                         <h4 class="text-sm font-bold text-white group-hover:text-emerald-400 transition mb-1">For & Nested Loops</h4>
-                        <p class="text-xs text-slate-400">4-phase execution stepper tracking initialization, bounds tests, statement bodies, and increment updates.</p>
+                        <p class="text-xs text-slate-400">4-phase execution stepper tracking initialization, bounds tests, and increments.</p>
                     </div>
                     <div class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-emerald-400 font-semibold">
                         <span>Launch Module</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
                     </div>
                 </a>
 
-                <!-- Module 4: Switch -->
+                <!-- Switch -->
                 <a href="switch.html" class="bg-slate-900/60 border border-slate-800 hover:border-amber-500/60 p-5 rounded-2xl transition group flex flex-col justify-between shadow-lg">
                     <div>
                         <div class="flex items-center justify-between mb-3">
@@ -175,14 +181,14 @@
                             <span id="badge-switch" class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">Not Attempted</span>
                         </div>
                         <h4 class="text-sm font-bold text-white group-hover:text-amber-400 transition mb-1">Switch Statements</h4>
-                        <p class="text-xs text-slate-400">Jump-table dispatching, break statements, default fallbacks, and modern expression rules.</p>
+                        <p class="text-xs text-slate-400">Jump-table dispatching, break statements, and default fallbacks.</p>
                     </div>
                     <div class="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs text-amber-400 font-semibold">
                         <span>Launch Module</span> <i class="fa-solid fa-arrow-right text-[10px]"></i>
                     </div>
                 </a>
 
-                <!-- Module 5: While Loop -->
+                <!-- While Loop -->
                 <a href="while-loop.html" class="bg-slate-900/60 border border-slate-800 hover:border-purple-500/60 p-5 rounded-2xl transition group flex flex-col justify-between shadow-lg">
                     <div>
                         <div class="flex items-center justify-between mb-3">
@@ -214,19 +220,27 @@
             const authSection = document.getElementById('auth-section');
             const studentDashboard = document.getElementById('student-dashboard');
 
-            if (student && student.name && student.age) {
-                // UNLOCKED STATE
+            if (student && student.name && student.id) {
+                // Check if admin triggered a restart for this student
+                const resetList = JSON.parse(localStorage.getItem('resetStudentsList')) || [];
+                if (resetList.includes(student.id)) {
+                    // Wipe local quiz records for this student
+                    let allRecords = JSON.parse(localStorage.getItem('javaQuizRecords')) || [];
+                    allRecords = allRecords.filter(r => r.studentId !== student.id);
+                    localStorage.setItem('javaQuizRecords', JSON.stringify(allRecords));
+                }
+
                 document.getElementById('display-name').textContent = student.name;
                 document.getElementById('display-age').textContent = student.age;
+                document.getElementById('display-id').textContent = student.id;
+
                 studentDashboard.classList.remove('hidden');
                 authSection.classList.add('hidden');
                 lockNotice.classList.add('hidden');
                 curriculum.classList.remove('opacity-40', 'pointer-events-none');
 
-                // Render THIS student's exclusive progress
                 updateStudentProgress();
             } else {
-                // LOCKED STATE
                 studentDashboard.classList.add('hidden');
                 authSection.classList.remove('hidden');
                 lockNotice.classList.remove('hidden');
@@ -234,25 +248,37 @@
             }
         }
 
-        function registerStudent(e) {
+        function handleEnrollment(e) {
             e.preventDefault();
             const name = document.getElementById('student-name').value.trim();
             const age = parseInt(document.getElementById('student-age').value);
-
-            if (!name || isNaN(age)) {
-                alert("Please enter a valid Name and Age.");
-                return;
-            }
-
-            const student = { name, age, registeredAt: new Date().toISOString() };
-            localStorage.setItem('currentStudent', JSON.stringify(student));
+            const inputId = document.getElementById('student-id-input').value.trim().toUpperCase();
 
             let directory = JSON.parse(localStorage.getItem('studentDirectory')) || [];
-            if (!directory.some(s => s.name.toLowerCase() === name.toLowerCase())) {
+
+            // 1. If user typed an ID, find their record or bind to it
+            let finalId = inputId;
+            if (finalId) {
+                const existing = directory.find(s => s.id === finalId);
+                if (existing) {
+                    localStorage.setItem('currentStudent', JSON.stringify(existing));
+                    checkSession();
+                    return;
+                }
+            } else {
+                // Generate a random 4-digit unique ID
+                finalId = "STU-" + Math.floor(1000 + Math.random() * 9000);
+            }
+
+            const student = { id: finalId, name, age, registeredAt: new Date().toISOString() };
+            localStorage.setItem('currentStudent', JSON.stringify(student));
+
+            if (!directory.some(s => s.id === finalId)) {
                 directory.push(student);
                 localStorage.setItem('studentDirectory', JSON.stringify(directory));
             }
 
+            alert(`Welcome, ${name}! Your assigned Student ID is: ${finalId}\n(Save this ID to log back into your session!)`);
             checkSession();
         }
 
@@ -260,8 +286,8 @@
             localStorage.removeItem('currentStudent');
             document.getElementById('student-name').value = '';
             document.getElementById('student-age').value = '';
+            document.getElementById('student-id-input').value = '';
 
-            // Reset progress bar elements immediately
             const fillBar = document.getElementById('progress-bar-fill');
             const percentLabel = document.getElementById('progress-percentage-label');
             const countLabel = document.getElementById('progress-modules-count');
@@ -272,24 +298,17 @@
             checkSession();
         }
 
-        // CALCULATE PROGRESS STRICTLY FOR THE CURRENT LOGGED-IN STUDENT
         function updateStudentProgress() {
             const student = JSON.parse(localStorage.getItem('currentStudent'));
-            if (!student || !student.name || !student.age) return;
-
-            const currentName = student.name.trim().toLowerCase();
-            const currentAge = parseInt(student.age);
+            if (!student || !student.id) return;
 
             const allRecords = JSON.parse(localStorage.getItem('javaQuizRecords')) || [];
 
-            // 1. FILTER: Isolate ONLY records matching THIS specific student
-            const thisStudentRecords = allRecords.filter(rec => {
-                const recName = (rec.studentName || '').trim().toLowerCase();
-                const recAge = parseInt(rec.studentAge);
-                return recName === currentName && recAge === currentAge;
-            });
+            // FILTER STRICTLY BY UNIQUE STUDENT ID
+            const thisStudentRecords = allRecords.filter(rec => 
+                rec.studentId ? rec.studentId === student.id : (rec.studentName && rec.studentName.toLowerCase() === student.name.toLowerCase())
+            );
 
-            // 2. Track DISTINCT completed topics (Max 5)
             const completedTopics = new Set();
             const scoresMap = {};
 
@@ -308,11 +327,9 @@
                 }
             });
 
-            // 3. Calculate distinct progress (20% per topic)
-            const distinctCount = completedTopics.size; // 0 to 5
+            const distinctCount = completedTopics.size;
             const percentage = Math.round((distinctCount / 5) * 100);
 
-            // 4. Update the Progress Bar UI
             const fillBar = document.getElementById('progress-bar-fill');
             const percentLabel = document.getElementById('progress-percentage-label');
             const countLabel = document.getElementById('progress-modules-count');
@@ -324,18 +341,17 @@
 
             if (statusText) {
                 if (distinctCount === 5) {
-                    statusText.textContent = `Outstanding! Course 100% Completed for ${student.name} 🎉`;
+                    statusText.textContent = `Course 100% Completed! Great job, ${student.name} 🎉`;
                     statusText.className = "text-emerald-400 font-bold";
                 } else if (distinctCount > 0) {
-                    statusText.textContent = `${5 - distinctCount} more module(s) remaining for ${student.name}.`;
+                    statusText.textContent = `${5 - distinctCount} more module(s) remaining for ID ${student.id}.`;
                     statusText.className = "text-sky-400";
                 } else {
-                    statusText.textContent = `Welcome ${student.name}! Start your first topic below (0% completed).`;
+                    statusText.textContent = `Course reset to 0%. Choose a topic below to begin!`;
                     statusText.className = "text-slate-400";
                 }
             }
 
-            // 5. Update individual card badges (Reset back to 'Not Attempted' if unattempted by this student)
             const updateCardBadge = (elemId, key) => {
                 const el = document.getElementById(elemId);
                 if (!el) return;
