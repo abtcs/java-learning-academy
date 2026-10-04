@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Java While & Do-While Lab - Conditional Cycles</title>
+    <title>Java While & Do-While Lab - Hydraulic Tank Visualizer</title>
     <script>
         const activeStudent = JSON.parse(localStorage.getItem('currentStudent'));
         if (!activeStudent || !activeStudent.name || !activeStudent.age) {
@@ -17,6 +17,30 @@
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #0b0f19; color: #f1f5f9; }
         .font-mono-code { font-family: 'JetBrains Mono', monospace; }
+        
+        /* Tank water animation */
+        .water-wave {
+            background: linear-gradient(180deg, rgba(168, 85, 247, 0.4) 0%, rgba(126, 34, 206, 0.8) 100%);
+            box-shadow: 0 0 25px rgba(168, 85, 247, 0.5) inset;
+            transition: height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .code-active-step {
+            background: rgba(168, 85, 247, 0.25) !important;
+            border-left: 3px solid #c084fc !important;
+            color: #fff !important;
+        }
+        @keyframes bubbleRise {
+            0% { transform: translateY(0) scale(0.8); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-120px) scale(1.2); opacity: 0; }
+        }
+        .bubble {
+            position: absolute;
+            bottom: 5px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            animation: bubbleRise 2s infinite ease-in;
+        }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
@@ -26,7 +50,8 @@
 
     <iframe name="hidden_gsheet_iframe" id="hidden_gsheet_iframe" style="display:none;"></iframe>
 
-    <header class="border-b border-slate-800 bg-slate-900/90 px-4 sm:px-6 py-3 shrink-0 backdrop-blur sticky top-0 z-40">
+    <!-- Top Header -->
+    <header class="border-b border-slate-800 bg-slate-900/90 px-4 sm:px-6 py-3.5 shrink-0 backdrop-blur sticky top-0 z-40">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
             <a href="index.html" class="flex items-center gap-2 text-xs font-semibold text-slate-300 hover:text-white transition">
                 <i class="fa-solid fa-arrow-left"></i> Back to Academy Hub
@@ -34,7 +59,7 @@
             <div class="flex items-center gap-3">
                 <span id="session-student-badge" class="text-xs font-mono px-3 py-1 rounded bg-slate-800 text-slate-300">Loading student...</span>
                 <div class="text-xs font-mono bg-purple-950/80 text-purple-400 border border-purple-800 px-2.5 py-1 rounded-full">
-                    Module 05: While & Do-While Cycles
+                    Module 05: While & Do-While Lab
                 </div>
             </div>
         </div>
@@ -42,17 +67,17 @@
 
     <main class="max-w-7xl mx-auto w-full px-3 sm:px-6 py-6 space-y-8 flex-1">
         
-        <!-- ========================================== -->
-        <!-- PHASE 1: FULL SCREEN INTERACTIVE LAB STAGE -->
-        <!-- ========================================== -->
+        <!-- ======================================================== -->
+        <!-- PHASE 1: FULL SCREEN HYDRAULIC TANK INTERACTIVE LAB -->
+        <!-- ======================================================== -->
         <section id="interactive-stage-section" class="bg-slate-900 border border-slate-800 rounded-3xl p-4 sm:p-7 shadow-2xl space-y-5 transition-all">
             
             <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-4">
                 <div>
                     <h2 class="text-lg sm:text-xl font-bold text-white flex items-center gap-2.5">
-                        <i class="fa-solid fa-arrows-spin text-purple-400"></i> Pre-Test vs Post-Test Execution Cycle Sandbox
+                        <i class="fa-solid fa-faucet-drip text-purple-400"></i> Hydraulic Water Tank & Cycle Stepper
                     </h2>
-                    <p class="text-xs text-slate-400 mt-1">Compare standard `while` (pre-condition check) with `do-while` (post-condition check) when the initial condition is already false.</p>
+                    <p class="text-xs text-slate-400 mt-1">See how Java conditions act like mechanical valves: pre-test checks before pumping vs post-test guaranteeing at least one pump stroke.</p>
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="text-[11px] font-mono px-3 py-1 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20 font-bold">
@@ -61,78 +86,127 @@
                 </div>
             </div>
 
-            <!-- Controls Workspace -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-950 p-4 rounded-2xl border border-slate-800">
-                <div>
-                    <label class="block text-xs font-mono text-slate-400 mb-1">Loop Type</label>
-                    <select id="while-type" onchange="runWhileSimulation()" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-purple-300 font-bold focus:outline-none">
-                        <option value="while" selected>Standard `while` (Pre-Test)</option>
-                        <option value="dowhile">`do-while` (Post-Test)</option>
+            <!-- Controls Console -->
+            <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-950 p-3 sm:p-4 rounded-2xl border border-slate-800">
+                <div class="flex items-center flex-wrap gap-2">
+                    <select id="loop-mode-select" onchange="switchLoopMode()" class="bg-slate-800 border border-slate-700 text-xs sm:text-sm rounded-xl px-3 py-2 text-purple-300 font-semibold focus:outline-none">
+                        <option value="while">Standard `while` (Pre-Test)</option>
+                        <option value="dowhile">`do-while` (Post-Test Guarantee)</option>
+                        <option value="infinite">Accidental Infinite Loop (Omitted Increment)</option>
                     </select>
+
+                    <button id="step-btn" onclick="stepCycle()" class="px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold text-xs flex items-center gap-2 transition shadow-lg shadow-purple-600/20">
+                        <i class="fa-solid fa-water text-[11px]"></i> <span>Pump 1 Gallon (Step)</span>
+                    </button>
+                    <button id="auto-btn" onclick="toggleAutoPump()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs transition">
+                        <i class="fa-solid fa-play text-[10px] mr-1"></i> Auto-Pump
+                    </button>
+                    <button onclick="resetLab()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs transition" title="Reset">
+                        <i class="fa-solid fa-rotate-left mr-1"></i> Reset
+                    </button>
                 </div>
 
-                <div>
-                    <label class="block text-xs font-mono text-slate-400 mb-1">Starting Variable `x` Value</label>
-                    <div class="flex gap-4 pt-1.5 text-xs font-mono">
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer">
-                            <input type="radio" name="xRadio" value="10" checked onchange="runWhileSimulation()" class="accent-purple-500"> x = 10 (Fails condition x &lt; 5)
-                        </label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer">
-                            <input type="radio" name="xRadio" value="2" onchange="runWhileSimulation()" class="accent-purple-500"> x = 2 (Valid start)
-                        </label>
+                <!-- Simulation Settings -->
+                <div class="flex items-center gap-4 text-xs font-mono">
+                    <div class="flex items-center gap-2">
+                        <span class="text-slate-400">Target Level `N`:</span>
+                        <input type="number" id="target-n" min="2" max="10" value="5" onchange="resetLab()" class="w-14 bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-purple-400 text-center font-bold">
                     </div>
-                </div>
-
-                <div class="flex items-center">
-                    <div id="cycle-indicator" class="w-full p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-mono text-purple-400">
-                        Guarantee Check: Ready
+                    <div class="flex items-center gap-2">
+                        <span class="text-slate-400">Initial `x`:</span>
+                        <select id="initial-x-select" onchange="resetLab()" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-slate-200">
+                            <option value="0">0 (Normal Start)</option>
+                            <option value="5">5 (Already Equal to N)</option>
+                            <option value="10">10 (Already Exceeds N)</option>
+                        </select>
                     </div>
                 </div>
             </div>
 
-            <!-- Visual State Display -->
+            <!-- Stage Display: Visual Hydraulic Tank & Java Stepper -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-                <!-- Visual Pipeline -->
-                <div class="lg:col-span-6 bg-slate-950 p-5 rounded-2xl border border-slate-800 flex flex-col justify-between space-y-4">
-                    <span class="text-xs font-mono text-slate-400 uppercase font-semibold">Cycle Execution Pipeline</span>
+                
+                <!-- Left: Physical Hydraulic Tank Stage -->
+                <div class="lg:col-span-6 bg-slate-950 p-5 rounded-2xl border border-slate-800 flex flex-col justify-between space-y-4 relative overflow-hidden">
+                    
+                    <div class="flex items-center justify-between text-xs font-mono">
+                        <span class="text-slate-400 uppercase font-semibold">Hydraulic Container Simulation</span>
+                        <span id="valve-status" class="px-2.5 py-1 rounded bg-slate-900 border border-slate-800 text-slate-400 font-bold">Valve: Idle</span>
+                    </div>
 
-                    <div class="space-y-3 flex-1 flex flex-col justify-center">
-                        <div id="pipe-check" class="p-4 rounded-2xl border border-slate-800 bg-slate-900/60 flex items-center justify-between transition-all">
-                            <div>
-                                <span class="text-[10px] font-mono text-slate-500 uppercase block">Check Point</span>
-                                <div class="font-bold text-xs text-white">Condition Evaluation `(x < 5)`</div>
+                    <!-- Water Tank Body -->
+                    <div class="flex-1 flex items-center justify-center py-4">
+                        <div class="relative w-44 sm:w-56 h-64 rounded-2xl border-4 border-slate-700 bg-slate-900/60 overflow-hidden shadow-2xl flex flex-col justify-end p-1">
+                            
+                            <!-- Gauge Measurement Markers -->
+                            <div class="absolute left-2 inset-y-2 flex flex-col justify-between text-[9px] font-mono text-slate-500 z-20 pointer-events-none select-none">
+                                <span>Max (10)</span>
+                                <span>7 gal</span>
+                                <span>5 gal</span>
+                                <span>2 gal</span>
+                                <span>0 gal</span>
                             </div>
-                            <span id="pipe-check-status" class="text-xs font-mono font-bold text-slate-600">PENDING</span>
-                        </div>
-                        <div id="pipe-body" class="p-4 rounded-2xl border border-slate-800 bg-slate-900/60 flex items-center justify-between transition-all">
-                            <div>
-                                <span class="text-[10px] font-mono text-slate-500 uppercase block">Execution Point</span>
-                                <div class="font-bold text-xs text-white">Loop Body Execution `{ x++; }`</div>
+
+                            <!-- Emergency Infinite Loop Overheat Indicator -->
+                            <div id="overheat-alert" class="hidden absolute inset-0 bg-rose-600/30 backdrop-blur-[1px] z-30 flex flex-col items-center justify-center text-center p-3">
+                                <i class="fa-solid fa-triangle-exclamation text-rose-400 text-3xl mb-1 animate-bounce"></i>
+                                <span class="text-white font-bold text-xs uppercase tracking-wider">Infinite Cycle Alert!</span>
+                                <span class="text-[10px] text-rose-200 font-mono mt-1">Condition never becomes false. Pump never halts!</span>
                             </div>
-                            <span id="pipe-body-status" class="text-xs font-mono font-bold text-slate-600">PENDING</span>
+
+                            <!-- Water Fill Element with Waves -->
+                            <div id="tank-water" class="water-wave w-full rounded-b-xl relative flex items-center justify-center" style="height: 0%;">
+                                <!-- Bubbles -->
+                                <div class="bubble" style="left: 20%; width: 6px; height: 6px;"></div>
+                                <div class="bubble" style="left: 55%; width: 10px; height: 10px; animation-delay: 0.8s;"></div>
+                                <div class="bubble" style="left: 75%; width: 5px; height: 5px; animation-delay: 1.4s;"></div>
+                                
+                                <span id="water-level-label" class="text-white font-mono font-bold text-xs z-20 drop-shadow">0 Gallons</span>
+                            </div>
+
                         </div>
                     </div>
 
-                    <div id="while-result-box" class="p-3 rounded-xl bg-purple-950/40 border border-purple-800/80 text-xs font-mono text-purple-300">
-                        Output: Ready
+                    <!-- Status Indicator Bar -->
+                    <div class="grid grid-cols-3 gap-2 text-center text-xs font-mono">
+                        <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800">
+                            <span class="text-[10px] text-slate-500 block">Current `x`</span>
+                            <span id="stat-x" class="text-base font-bold text-purple-400">0</span>
+                        </div>
+                        <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800">
+                            <span class="text-[10px] text-slate-500 block">Pump Cycles</span>
+                            <span id="stat-cycles" class="text-base font-bold text-sky-400">0</span>
+                        </div>
+                        <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800">
+                            <span class="text-[10px] text-slate-500 block">Gate Condition</span>
+                            <span id="stat-cond" class="text-base font-bold text-emerald-400">Ready</span>
+                        </div>
                     </div>
+
                 </div>
 
-                <!-- Java Loop Snippet -->
+                <!-- Right: Java Live Bytecode Stepper -->
                 <div class="lg:col-span-6 bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden flex flex-col">
                     <div class="bg-slate-900 px-4 py-2.5 border-b border-slate-800 flex items-center justify-between">
-                        <span class="text-xs font-mono text-slate-200 font-bold" id="while-filename">WhileLoopDemo.java</span>
-                        <span class="text-[10px] font-mono text-purple-400">Bytecode Flow</span>
+                        <span id="code-filename" class="text-xs font-mono text-slate-200 font-bold">StandardWhile.java</span>
+                        <span id="step-phase-badge" class="text-[10px] font-mono px-2 py-0.5 rounded bg-purple-950 border border-purple-800 text-purple-300">Phase: Ready</span>
                     </div>
-                    <pre id="while-code-pre" class="p-4 font-mono-code text-xs leading-6 text-slate-300 overflow-x-auto flex-1"></pre>
+                    <pre id="code-sandbox" class="p-4 font-mono-code text-xs leading-6 text-slate-300 overflow-x-auto flex-1"></pre>
+                    
+                    <!-- JVM Stack Inspection -->
+                    <div class="bg-slate-900/80 p-3 border-t border-slate-800 text-[11px] font-mono flex items-center justify-between">
+                        <span class="text-slate-400">JVM Local Frame:</span>
+                        <span id="jvm-stack" class="text-purple-300 font-bold">x = 0, target = 5</span>
+                    </div>
                 </div>
+
             </div>
 
             <!-- GATE ACTION -->
             <div class="pt-4 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
                 <div class="text-xs text-slate-400">
                     <i class="fa-solid fa-circle-info text-purple-400 mr-1.5"></i>
-                    Compared pre-test vs post-test execution guarantees? Unlock your assessment below.
+                    Explored how pre-test valves differ from post-test loops and infinite hazards? Unlock your test below.
                 </div>
                 <button id="unlock-quiz-btn" onclick="unlockAssessment()" class="w-full sm:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 font-bold text-xs text-white shadow-xl shadow-purple-600/30 transition flex items-center justify-center gap-2">
                     <i class="fa-solid fa-graduation-cap text-sm"></i>
@@ -142,16 +216,16 @@
 
         </section>
 
-        <!-- ========================================== -->
+        <!-- ======================================================== -->
         <!-- PHASE 2: 5-QUESTION MCQ ASSESSMENT SECTION -->
-        <!-- ========================================== -->
+        <!-- ======================================================== -->
         <section id="assessment-section" class="hidden bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl transition-all">
             <div class="flex items-center justify-between mb-5 border-b border-slate-800 pb-4">
                 <div>
                     <div class="flex items-center gap-2">
                         <span class="px-2 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20 font-mono text-[10px] font-bold uppercase">Phase 2</span>
                         <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-list-check text-purple-400"></i> Module 05: While Loops Assessment
+                            <i class="fa-solid fa-list-check text-purple-400"></i> Module 05: While & Do-While Assessment
                         </h3>
                     </div>
                     <p class="text-xs text-slate-400 mt-1">5 questions &bull; Passing score: 3/5 &bull; Automatically syncs to Google Sheets.</p>
@@ -179,7 +253,7 @@
                     <p class="text-xs font-semibold text-slate-200 mb-3">2. What occurs in this code snippet: `int x = 0; while (x < 5); { x++; }`?</p>
                     <div class="space-y-2.5 text-xs">
                         <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="A" required> A) It increments x up to 5 and terminates normally</label>
-                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="B"> B) Infinite loop: the semicolon after `while (x < 5);` creates an empty body, so x never increments</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="B"> B) Infinite loop: the accidental semicolon creates an empty body, so x never increments</label>
                         <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="C"> C) Syntax compilation error</label>
                         <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="D"> D) The block `{ x++; }` runs only once</label>
                     </div>
@@ -191,7 +265,7 @@
                     <p class="text-xs font-semibold text-slate-200 mb-3">3. How many times does this loop body execute: `int a = 10; do { a++; } while (a < 5);`?</p>
                     <div class="space-y-2.5 text-xs">
                         <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="A" required> A) Exactly 0 times</label>
-                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="B"> B) Exactly 1 time</label>
+                        <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="B"> B) Exactly 1 time (Post-condition check guarantee)</label>
                         <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="C"> C) 5 times</label>
                         <label class="flex items-center gap-2.5 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="D"> D) Infinite times</label>
                     </div>
@@ -270,55 +344,217 @@
             document.getElementById('interactive-stage-section').scrollIntoView({ behavior: 'smooth' });
         }
 
-        function runWhileSimulation() {
-            const type = document.getElementById('while-type').value;
-            const xVal = parseInt(document.querySelector('input[name="xRadio"]:checked').value);
+        // ==========================================
+        // HYDRAULIC TANK SIMULATION ENGINE
+        // ==========================================
+        let mode = 'while'; // 'while' | 'dowhile' | 'infinite'
+        let currentX = 0;
+        let targetN = 5;
+        let cyclesRun = 0;
+        let stepState = 'init'; // 'init' | 'check' | 'body' | 'done'
+        let autoPumpInterval = null;
 
-            const pre = document.getElementById('while-code-pre');
-            const checkEl = document.getElementById('pipe-check');
-            const checkStatus = document.getElementById('pipe-check-status');
-            const bodyEl = document.getElementById('pipe-body');
-            const bodyStatus = document.getElementById('pipe-body-status');
+        function updateCodeViewer() {
+            const sandbox = document.getElementById('code-sandbox');
+            const fnLabel = document.getElementById('code-filename');
 
-            if (type === 'while') {
-                document.getElementById('while-filename').textContent = "StandardWhile.java";
-                pre.innerHTML = `int x = ${xVal};\nwhile (x < 5) {\n    System.out.println("Loop body ran!");\n    x++;\n}`;
-                
-                const conditionPassed = (xVal < 5);
-                checkEl.className = "p-4 rounded-2xl border border-purple-500 bg-purple-950/40 flex items-center justify-between";
-                checkStatus.textContent = conditionPassed ? "TRUE (PASS)" : "FALSE (TERMINATE)";
-                checkStatus.className = `text-xs font-mono font-bold ${conditionPassed ? 'text-emerald-400' : 'text-rose-400'}`;
-
-                if (conditionPassed) {
-                    bodyEl.className = "p-4 rounded-2xl border border-emerald-500 bg-emerald-950/30 flex items-center justify-between";
-                    bodyStatus.textContent = "EXECUTED";
-                    bodyStatus.className = "text-xs font-mono font-bold text-emerald-400";
-                    document.getElementById('while-result-box').innerHTML = `Output: Loop executed. Final x value = <strong>${xVal + 1}</strong>`;
-                } else {
-                    bodyEl.className = "p-4 rounded-2xl border border-slate-800 bg-slate-900/60 flex items-center justify-between";
-                    bodyStatus.textContent = "BYPASSED (0 RUNS)";
-                    bodyStatus.className = "text-xs font-mono font-bold text-slate-600";
-                    document.getElementById('while-result-box').innerHTML = `Output: Condition was false before first pass. Body ran <strong>0 times</strong>.`;
-                }
+            if (mode === 'while') {
+                fnLabel.textContent = "StandardWhile.java";
+                sandbox.innerHTML = 
+`<span id="line-1" class="block px-2 rounded"><span class="text-rose-400 font-semibold">int</span> x = <span id="cv-x" class="text-amber-300">${currentX}</span>;</span>
+<span id="line-2" class="block px-2 rounded"><span class="text-rose-400 font-semibold">int</span> target = <span id="cv-target" class="text-amber-300">${targetN}</span>;</span>
+<span id="line-3" class="block px-2 rounded"></span>
+<span id="line-4" class="block px-2 rounded"><span class="text-rose-400 font-semibold">while</span> (x &lt; target) {</span>
+<span id="line-5" class="block px-2 rounded">    System.out.println(<span class="text-emerald-300">"Pumping 1 Gallon... Level: "</span> + x);</span>
+<span id="line-6" class="block px-2 rounded">    x++; <span class="text-slate-500">// Increment level</span></span>
+<span id="line-7" class="block px-2 rounded">}</span>
+<span id="line-8" class="block px-2 rounded">System.out.println(<span class="text-emerald-300">"Halted: Tank reaches target capacity!"</span>);</span>`;
+            } else if (mode === 'dowhile') {
+                fnLabel.textContent = "DoWhileGuarantee.java";
+                sandbox.innerHTML = 
+`<span id="line-1" class="block px-2 rounded"><span class="text-rose-400 font-semibold">int</span> x = <span id="cv-x" class="text-amber-300">${currentX}</span>;</span>
+<span id="line-2" class="block px-2 rounded"><span class="text-rose-400 font-semibold">int</span> target = <span id="cv-target" class="text-amber-300">${targetN}</span>;</span>
+<span id="line-3" class="block px-2 rounded"></span>
+<span id="line-4" class="block px-2 rounded"><span class="text-rose-400 font-semibold">do</span> {</span>
+<span id="line-5" class="block px-2 rounded">    System.out.println(<span class="text-emerald-300">"Pumping guaranteed stroke... Level: "</span> + x);</span>
+<span id="line-6" class="block px-2 rounded">    x++; <span class="text-slate-500">// Mandatory first pass</span></span>
+<span id="line-7" class="block px-2 rounded">} <span class="text-rose-400 font-semibold">while</span> (x &lt; target);</span>
+<span id="line-8" class="block px-2 rounded">System.out.println(<span class="text-emerald-300">"Halted: Checked condition at the bottom."</span>);</span>`;
             } else {
-                document.getElementById('while-filename').textContent = "DoWhileGuarantee.java";
-                pre.innerHTML = `int x = ${xVal};\ndo {\n    System.out.println("Loop body ran!");\n    x++;\n} while (x < 5);`;
-
-                bodyEl.className = "p-4 rounded-2xl border border-purple-500 bg-purple-950/40 flex items-center justify-between";
-                bodyStatus.textContent = "EXECUTED (FIRST PASS GUARANTEE)";
-                bodyStatus.className = "text-xs font-mono font-bold text-purple-400";
-
-                const newX = xVal + 1;
-                const conditionPassed = (newX < 5);
-                checkEl.className = "p-4 rounded-2xl border border-slate-800 bg-slate-900/60 flex items-center justify-between";
-                checkStatus.textContent = conditionPassed ? "TRUE (CONTINUE)" : "FALSE (STOP AFTER 1 PASS)";
-                checkStatus.className = `text-xs font-mono font-bold ${conditionPassed ? 'text-emerald-400' : 'text-amber-400'}`;
-
-                document.getElementById('while-result-box').innerHTML = `Output: Body guaranteed execution at least once. Body ran <strong>1 time</strong> (x incremented to ${newX}).`;
+                fnLabel.textContent = "InfiniteHazard.java";
+                sandbox.innerHTML = 
+`<span id="line-1" class="block px-2 rounded"><span class="text-rose-400 font-semibold">int</span> x = <span id="cv-x" class="text-amber-300">${currentX}</span>;</span>
+<span id="line-2" class="block px-2 rounded"><span class="text-rose-400 font-semibold">int</span> target = <span id="cv-target" class="text-amber-300">${targetN}</span>;</span>
+<span id="line-3" class="block px-2 rounded"></span>
+<span id="line-4" class="block px-2 rounded"><span class="text-rose-400 font-semibold">while</span> (x &lt; target) {</span>
+<span id="line-5" class="block px-2 rounded">    System.out.println(<span class="text-rose-300">"Pumping without update!"</span>);</span>
+<span id="line-6" class="block px-2 rounded bg-rose-950/40 text-rose-300">    <span class="text-rose-400 font-bold">// BUG:</span> developer forgot 'x++'!</span>
+<span id="line-7" class="block px-2 rounded">}</span>`;
             }
         }
 
-        // ASSESSMENT SUBMISSION LOGIC
+        function highlightLine(lineNum) {
+            for (let i = 1; i <= 8; i++) {
+                const el = document.getElementById(`line-${i}`);
+                if (el) el.classList.remove('code-active-step');
+            }
+            if (lineNum) {
+                const targetEl = document.getElementById(`line-${lineNum}`);
+                if (targetEl) targetEl.classList.add('code-active-step');
+            }
+        }
+
+        function updateTankUI() {
+            const fillPercent = Math.min(100, Math.max(0, (currentX / 10) * 100));
+            document.getElementById('tank-water').style.height = `${fillPercent}%`;
+            document.getElementById('water-level-label').textContent = `${currentX} Gallons (${Math.round(fillPercent)}%)`;
+            document.getElementById('stat-x').textContent = currentX;
+            document.getElementById('stat-cycles').textContent = cyclesRun;
+            document.getElementById('jvm-stack').textContent = `x = ${currentX}, target = ${targetN}, cycles = ${cyclesRun}`;
+
+            const cvX = document.getElementById('cv-x');
+            if (cvX) cvX.textContent = currentX;
+        }
+
+        function stepCycle() {
+            if (stepState === 'done') {
+                alert("Simulation has finished! Click 'Reset' to experiment again.");
+                return;
+            }
+
+            const badge = document.getElementById('step-phase-badge');
+            const valveStatus = document.getElementById('valve-status');
+            const statCond = document.getElementById('stat-cond');
+
+            // INFINITE LOOP SIMULATION MODE
+            if (mode === 'infinite') {
+                highlightLine(4);
+                cyclesRun++;
+                document.getElementById('stat-cycles').textContent = cyclesRun;
+                valveStatus.textContent = "Valve: NEVER CLOSES";
+                valveStatus.className = "px-2.5 py-1 rounded bg-rose-950 border border-rose-800 text-rose-400 font-bold animate-pulse";
+                document.getElementById('overheat-alert').classList.remove('hidden');
+                badge.textContent = `Warning: Cycle #${cyclesRun} infinite`;
+                if (cyclesRun > 12) {
+                    toggleAutoPump();
+                    alert("Emergency Stop Triggered! Infinite loop detected because 'x' was never incremented.");
+                }
+                return;
+            }
+
+            // STANDARD WHILE LOOP FLOW
+            if (mode === 'while') {
+                if (stepState === 'init' || stepState === 'check') {
+                    // Phase: Condition Evaluation
+                    highlightLine(4);
+                    badge.textContent = "Phase: Evaluating (x < target)";
+                    const cond = currentX < targetN;
+                    statCond.textContent = cond ? "TRUE (OPEN)" : "FALSE (SHUT)";
+                    statCond.className = `text-base font-bold ${cond ? 'text-emerald-400' : 'text-rose-400'}`;
+                    
+                    if (cond) {
+                        valveStatus.textContent = "Valve: Open";
+                        valveStatus.className = "px-2.5 py-1 rounded bg-emerald-950 border border-emerald-800 text-emerald-400 font-bold";
+                        stepState = 'body';
+                    } else {
+                        valveStatus.textContent = "Valve: Pre-Blocked";
+                        valveStatus.className = "px-2.5 py-1 rounded bg-rose-950 border border-rose-800 text-rose-400 font-bold";
+                        highlightLine(8);
+                        badge.textContent = "Halted: Condition False";
+                        stepState = 'done';
+                        if (autoPumpInterval) toggleAutoPump();
+                    }
+                } else if (stepState === 'body') {
+                    // Phase: Execute Body & Increment
+                    highlightLine(6);
+                    badge.textContent = "Phase: Pumping Gallon & Incrementing";
+                    currentX++;
+                    cyclesRun++;
+                    updateTankUI();
+                    stepState = 'check'; // Return to top for next evaluation
+                }
+            } 
+            
+            // DO-WHILE LOOP FLOW
+            else if (mode === 'dowhile') {
+                if (stepState === 'init') {
+                    // Enters body immediately without prior check
+                    highlightLine(4);
+                    badge.textContent = "Phase: Guaranteed First Pass";
+                    valveStatus.textContent = "Valve: Forcing First Stroke";
+                    valveStatus.className = "px-2.5 py-1 rounded bg-purple-950 border border-purple-800 text-purple-300 font-bold";
+                    statCond.textContent = "BYPASS CHECK";
+                    statCond.className = "text-base font-bold text-purple-300";
+                    stepState = 'body';
+                } else if (stepState === 'body') {
+                    highlightLine(6);
+                    badge.textContent = "Phase: Stroke Executing";
+                    currentX++;
+                    cyclesRun++;
+                    updateTankUI();
+                    stepState = 'check';
+                } else if (stepState === 'check') {
+                    // Evaluates condition at bottom
+                    highlightLine(7);
+                    badge.textContent = "Phase: Post-Condition Evaluation";
+                    const cond = currentX < targetN;
+                    statCond.textContent = cond ? "TRUE (REPEAT)" : "FALSE (STOP)";
+                    statCond.className = `text-base font-bold ${cond ? 'text-emerald-400' : 'text-rose-400'}`;
+
+                    if (cond) {
+                        stepState = 'body';
+                    } else {
+                        valveStatus.textContent = "Valve: Closed at Bottom";
+                        valveStatus.className = "px-2.5 py-1 rounded bg-rose-950 border border-rose-800 text-rose-400 font-bold";
+                        highlightLine(8);
+                        badge.textContent = "Halted: Checked Post-Condition";
+                        stepState = 'done';
+                        if (autoPumpInterval) toggleAutoPump();
+                    }
+                }
+            }
+        }
+
+        function toggleAutoPump() {
+            const btn = document.getElementById('auto-btn');
+            if (autoPumpInterval) {
+                clearInterval(autoPumpInterval);
+                autoPumpInterval = null;
+                btn.innerHTML = '<i class="fa-solid fa-play text-[10px] mr-1"></i> Auto-Pump';
+            } else {
+                if (stepState === 'done') resetLab();
+                autoPumpInterval = setInterval(stepCycle, 600);
+                btn.innerHTML = '<i class="fa-solid fa-pause text-[10px] mr-1"></i> Pause';
+            }
+        }
+
+        function switchLoopMode() {
+            mode = document.getElementById('loop-mode-select').value;
+            resetLab();
+        }
+
+        function resetLab() {
+            if (autoPumpInterval) toggleAutoPump();
+            targetN = parseInt(document.getElementById('target-n').value) || 5;
+            currentX = parseInt(document.getElementById('initial-x-select').value) || 0;
+            cyclesRun = 0;
+            stepState = 'init';
+
+            document.getElementById('overheat-alert').classList.add('hidden');
+            document.getElementById('valve-status').textContent = "Valve: Idle";
+            document.getElementById('valve-status').className = "px-2.5 py-1 rounded bg-slate-900 border border-slate-800 text-slate-400 font-bold";
+            document.getElementById('step-phase-badge').textContent = "Phase: Ready";
+            document.getElementById('stat-cond').textContent = "Ready";
+            document.getElementById('stat-cond').className = "text-base font-bold text-emerald-400";
+
+            updateCodeViewer();
+            updateTankUI();
+            highlightLine(null);
+        }
+
+        // ==========================================
+        // ASSESSMENT SUBMISSION LOGIC (GOOGLE SHEET)
+        // ==========================================
         const QUIZ_KEY = {
             q1: { correct: 'A', reason: "Because 'do-while' checks its condition at the bottom, its body executes at least once even if the condition is false initially." },
             q2: { correct: 'B', reason: "The accidental semicolon terminates the loop head with an empty statement. The condition (0 < 5) remains true forever." },
@@ -421,7 +657,7 @@
             }, 1200);
         }
 
-        window.addEventListener('DOMContentLoaded', runWhileSimulation);
+        window.addEventListener('DOMContentLoaded', resetLab);
     </script>
 </body>
 </html>
