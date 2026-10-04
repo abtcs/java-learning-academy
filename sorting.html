@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Java Sorting Lab & Algorithm Evaluation</title>
+    <script>
+        // STRICT ROUTE GUARD: If no student session exists, redirect immediately
+        const activeStudent = JSON.parse(localStorage.getItem('currentStudent'));
+        if (!activeStudent || !activeStudent.name || !activeStudent.age) {
+            alert("Access Denied: Please enter your Name and Age on the home portal first!");
+            window.location.href = "index.html";
+        }
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -25,16 +33,16 @@
             <i class="fa-solid fa-arrow-left"></i> Back to Hub
         </a>
         <div class="flex items-center gap-3">
-            <span id="session-student-name" class="text-xs font-mono px-3 py-1 rounded bg-slate-800 text-slate-300">Student: None</span>
+            <span id="session-student-badge" class="text-xs font-mono px-3 py-1 rounded bg-slate-800 text-slate-300">Student: Loading...</span>
             <div class="text-xs font-mono bg-sky-950/80 text-sky-400 border border-sky-800 px-2.5 py-1 rounded-full">
-                Module 01: Sorting Algorithms
+                Module 01: Sorting Lab
             </div>
         </div>
     </header>
 
     <main class="max-w-6xl mx-auto w-full px-4 py-8 space-y-8">
         
-        <!-- Interactive Crane Stage & Code Workspace -->
+        <!-- Interactive Crane Visualizer & Code Workspace -->
         <section class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-4">
             
             <!-- Controls Bar -->
@@ -44,7 +52,6 @@
                         <option value="bubble">Bubble Sort</option>
                         <option value="selection">Selection Sort</option>
                         <option value="insertion">Insertion Sort</option>
-                        <option value="quick">Quick Sort</option>
                     </select>
 
                     <button id="play-btn" onclick="togglePlay()" class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center gap-1.5 transition">
@@ -92,7 +99,7 @@
                 </div>
             </div>
 
-            <!-- Gantry Crane Visualizer Stage -->
+            <!-- Crane Stage Area -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
                 <div class="lg:col-span-7 bg-slate-950 p-4 rounded-xl border border-slate-800 flex flex-col justify-between min-h-[360px] relative overflow-hidden">
                     
@@ -121,7 +128,7 @@
                     <!-- Crane Explanation Indicator -->
                     <div class="bg-slate-900/90 border border-slate-800 p-2.5 rounded-lg flex items-center justify-between text-xs">
                         <span id="crane-status" class="text-slate-300 font-mono">Crane Idle &bull; Ready</span>
-                        <span id="active-line-counter" class="text-sky-400 font-mono text-[11px]">PC: 0</span>
+                        <span id="active-line-counter" class="text-sky-400 font-mono text-[11px]">PC: Line 0</span>
                     </div>
                 </div>
 
@@ -153,11 +160,11 @@
             <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
                 <div>
                     <h3 class="text-base font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-list-check text-emerald-400"></i> Sorting Concept Assessment: 5 MCQs
+                        <i class="fa-solid fa-list-check text-emerald-400"></i> Sorting Assessment: 5 MCQs
                     </h3>
-                    <p class="text-xs text-slate-400 mt-1">Submit your answers to store your results in the Admin portal. Wrong choices reveal JVM rationale.</p>
+                    <p class="text-xs text-slate-400 mt-1">Submit your answers to record your score in the Admin portal. Wrong choices reveal JVM rationale.</p>
                 </div>
-                <span class="text-xs font-mono px-3 py-1 rounded bg-slate-800 text-slate-300">Module 01</span>
+                <span class="text-xs font-mono px-3 py-1 rounded bg-slate-800 text-slate-300">Passing: 3/5</span>
             </div>
 
             <form id="quiz-form" onsubmit="submitQuiz(event)" class="space-y-6">
@@ -166,62 +173,478 @@
                     <p class="text-xs font-semibold text-slate-200 mb-3">1. Which sorting algorithm has an optimal best-case time complexity of O(N) when the array is already sorted?</p>
                     <div class="space-y-2 text-xs">
                         <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="A" required> A) Selection Sort</label>
-                        <label class="flex items-center gap-2 text-slate-300 cursor-Separating sorting logic into its own isolated module ensures that any changes to algorithms, comparator functions, or sort keys will not touch or lock your main display or data management components.
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="B"> B) Optimized Bubble Sort (with swapped flag check)</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="C"> C) Merge Sort</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q1" value="D"> D) Quick Sort</label>
+                    </div>
+                    <div id="expl-1" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
+                </div>
 
-Assuming a standard JavaScript/TypeScript environment (like React, Node, or vanilla JS), here is a clean, modular structure.
+                <!-- Q2 -->
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+                    <p class="text-xs font-semibold text-slate-200 mb-3">2. In Selection Sort, how many swaps occur across an array of length N in the worst case?</p>
+                    <div class="space-y-2 text-xs">
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="A" required> A) Exactly N² swaps</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="B"> B) At most N - 1 swaps (O(N) memory writes)</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="C"> C) Exactly 0 swaps</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q2" value="D"> D) N log N swaps</label>
+                    </div>
+                    <div id="expl-2" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
+                </div>
 
----
+                <!-- Q3 -->
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+                    <p class="text-xs font-semibold text-slate-200 mb-3">3. Why is Insertion Sort particularly efficient for online real-time streaming data?</p>
+                    <div class="space-y-2 text-xs">
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="A" required> A) It can sort elements one-by-one as they arrive into an already sorted prefix</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="B"> B) It never requires any comparisons</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="C"> C) It runs in O(1) time complexity</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q3" value="D"> D) It uses recursive call stacks</label>
+                    </div>
+                    <div id="expl-3" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
+                </div>
 
-### 1. `sorters.js` (The Dedicated Sorting Module)
-Keep all sorting strategies, order configs, and pure comparison functions here.
+                <!-- Q4 -->
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+                    <p class="text-xs font-semibold text-slate-200 mb-3">4. What does it mean for a sorting algorithm to be "Stable"?</p>
+                    <div class="space-y-2 text-xs">
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="A" required> A) It cannot throw a NullPointerException</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="B"> B) It preserves the relative order of duplicate elements with identical keys</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="C"> C) It runs in the exact same time regardless of input ordering</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q4" value="D"> D) It uses O(1) auxiliary space</label>
+                    </div>
+                    <div id="expl-4" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
+                </div>
 
-```javascript
-/**
- * Generic comparator for primitive values (numbers, strings, dates)
- */
-const compareValues = (a, b, direction = 'asc') => {
-  if (a === b) return 0;
-  if (a === null || a === undefined) return 1;
-  if (b === null || b === undefined) return -1;
+                <!-- Q5 -->
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+                    <p class="text-xs font-semibold text-slate-200 mb-3">5. Which condition causes Quick Sort to degrade to its worst-case O(N²) time performance?</p>
+                    <div class="space-y-2 text-xs">
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="A" required> A) When selecting the median as pivot</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="B"> B) When partitions are highly unbalanced (e.g. sorted array with first/last pivot)</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="C"> C) When array size is a power of 2</label>
+                        <label class="flex items-center gap-2 text-slate-300 cursor-pointer"><input type="radio" name="q5" value="D"> D) When running on a 64-bit JVM</label>
+                    </div>
+                    <div id="expl-5" class="hidden mt-3 p-3 rounded-lg text-xs font-mono"></div>
+                </div>
 
-  let comparison = 0;
-  if (typeof a === 'string' && typeof b === 'string') {
-    comparison = a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
-  } else {
-    comparison = a > b ? 1 : -1;
-  }
+                <button type="submit" id="submit-btn" class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 font-bold text-sm text-white shadow-lg transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> Submit Assessment & Save Results
+                </button>
+            </form>
 
-  return direction === 'desc' ? -comparison : comparison;
-};
+            <div id="score-summary" class="hidden mt-6 p-4 rounded-xl border border-sky-500/40 bg-sky-950/20 text-center">
+                <div class="text-xs uppercase font-mono text-slate-400 mb-1">Assessment Complete</div>
+                <div class="text-2xl font-bold font-mono text-sky-400" id="final-score-text">0 / 5</div>
+                <div class="mt-4 flex justify-center gap-3">
+                    <a href="if-else.html" class="px-4 py-2 rounded-lg bg-sky-600 hover:bg-sky-500 text-xs font-semibold text-white transition">Next Module: If-Else &rarr;</a>
+                    <a href="admin.html" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-300 transition">View on Admin Panel</a>
+                </div>
+            </div>
+        </section>
 
-/**
- * Sorts an array of objects by a specific property key.
- * Returns a new array without mutating the original.
- *
- * @param {Array<Object>} list - The data array
- * @param {string} key - Property path to sort by
- * @param {'asc'|'desc'} [direction='asc'] - Sort order
- */
-export function sortByKey(list, key, direction = 'asc') {
-  if (!Array.isArray(list)) return [];
-  return [...list].sort((itemA, itemB) => {
-    return compareValues(itemA[key], itemB[key], direction);
-  });
-}
+    </main>
 
-/**
- * Multi-criteria sort (e.g., sort by status first, then by date)
- * 
- * @param {Array<Object>} list
- * @param {Array<{key: string, direction: 'asc'|'desc'}>} criteria
- */
-export function sortByMultiple(list, criteria = []) {
-  if (!Array.isArray(list)) return [];
-  return [...list].sort((itemA, itemB) => {
-    for (const { key, direction = 'asc' } of criteria) {
-      const result = compareValues(itemA[key], itemB[key], direction);
-      if (result !== 0) return result;
-    }
-    return 0;
-  });
-}
+    <footer class="border-t border-slate-800 py-4 text-center text-xs text-slate-500">
+        Java Interactive Academy &bull; Sorting Lab (Module 01)
+    </footer>
+
+    <script>
+        // Display student badge
+        const currentStudent = JSON.parse(localStorage.getItem('currentStudent'));
+        if (currentStudent) {
+            document.getElementById('session-student-badge').textContent = `Student: ${currentStudent.name} (${currentStudent.age}y)`;
+        }
+
+        // Clean Java Code Snippets
+        const JAVA_CODES = {
+            bubble: [
+                "public void bubbleSort(int[] arr) {",
+                "    int n = arr.length;",
+                "    for (int i = 0; i < n - 1; i++) {",
+                "        boolean swapped = false;",
+                "        for (int j = 0; j < n - i - 1; j++) {",
+                "            if (arr[j] > arr[j + 1]) {",
+                "                int temp = arr[j];",
+                "                arr[j] = arr[j + 1];",
+                "                arr[j + 1] = temp;",
+                "                swapped = true;",
+                "            }",
+                "        }",
+                "        if (!swapped) break;",
+                "    }",
+                "}"
+            ],
+            selection: [
+                "public void selectionSort(int[] arr) {",
+                "    int n = arr.length;",
+                "    for (int i = 0; i < n - 1; i++) {",
+                "        int minIdx = i;",
+                "        for (int j = i + 1; j < n; j++) {",
+                "            if (arr[j] < arr[minIdx]) {",
+                "                minIdx = j;",
+                "            }",
+                "        }",
+                "        int temp = arr[minIdx];",
+                "        arr[minIdx] = arr[i];",
+                "        arr[i] = temp;",
+                "    }",
+                "}"
+            ],
+            insertion: [
+                "public void insertionSort(int[] arr) {",
+                "    int n = arr.length;",
+                "    for (int i = 1; i < n; i++) {",
+                "        int key = arr[i];",
+                "        int j = i - 1;",
+                "        while (j >= 0 && arr[j] > key) {",
+                "            arr[j + 1] = arr[j];",
+                "            j = j - 1;",
+                "        }",
+                "        arr[j + 1] = key;",
+                "    }",
+                "}"
+            ]
+        };
+
+        const KEYWORDS = new Set(["public", "void", "int", "boolean", "for", "if", "else", "while", "break", "return", "true", "false"]);
+        const TYPES = new Set(["int[]", "int", "boolean"]);
+
+        let array = [45, 18, 72, 33, 89, 21, 64, 50, 12, 38];
+        let isRunning = false;
+        let animationInterval = null;
+        let generator = null;
+        let comparisons = 0;
+        let swaps = 0;
+
+        // Stopwatch Timer Variables
+        let startTime = 0;
+        let accumulatedTime = 0;
+        let timerInterval = null;
+
+        function startTimer() {
+            startTime = performance.now();
+            timerInterval = setInterval(() => {
+                const elapsed = accumulatedTime + (performance.now() - startTime);
+                document.getElementById('timer-val').textContent = (elapsed / 1000).toFixed(2) + 's';
+                document.getElementById('timer-ms').textContent = `(${Math.floor(elapsed)} ms)`;
+            }, 30);
+        }
+
+        function pauseTimer() {
+            if (startTime > 0) {
+                accumulatedTime += (performance.now() - startTime);
+                startTime = 0;
+            }
+            clearInterval(timerInterval);
+        }
+
+        function resetTimer() {
+            pauseTimer();
+            accumulatedTime = 0;
+            startTime = 0;
+            document.getElementById('timer-val').textContent = '0.00s';
+            document.getElementById('timer-ms').textContent = '(0 ms)';
+        }
+
+        function renderCode(algoKey) {
+            const box = document.getElementById('code-box');
+            box.innerHTML = '';
+            const lines = JAVA_CODES[algoKey] || [];
+            document.getElementById('code-filename').textContent = algoKey.charAt(0).toUpperCase() + algoKey.slice(1) + "Sort.java";
+
+            lines.forEach((lineText, idx) => {
+                const lineDiv = document.createElement('div');
+                lineDiv.className = 'px-2 py-0.5 rounded flex items-center transition-colors';
+                lineDiv.id = `line-${idx}`;
+
+                const numSpan = document.createElement('span');
+                numSpan.className = 'text-slate-600 w-5 select-none text-[10px] text-right mr-3 font-mono';
+                numSpan.textContent = idx + 1;
+                lineDiv.appendChild(numSpan);
+
+                const codeSpan = document.createElement('span');
+                codeSpan.className = 'flex-1 whitespace-pre';
+
+                const tokens = lineText.split(/([a-zA-Z0-9_]+|[^\s\w]|\s+)/g).filter(Boolean);
+                tokens.forEach(tok => {
+                    const span = document.createElement('span');
+                    if (KEYWORDS.has(tok)) span.className = 'code-keyword';
+                    else if (TYPES.has(tok)) span.className = 'code-type';
+                    else if (/^\d+$/.test(tok)) span.className = 'code-num';
+                    else span.className = 'text-slate-200';
+                    span.textContent = tok;
+                    codeSpan.appendChild(span);
+                });
+
+                lineDiv.appendChild(codeSpan);
+                box.appendChild(lineDiv);
+            });
+        }
+
+        function highlightLine(lineNum) {
+            document.querySelectorAll('#code-box > div').forEach(el => el.classList.remove('code-active'));
+            if (lineNum !== null && lineNum !== undefined) {
+                const target = document.getElementById(`line-${lineNum}`);
+                if (target) {
+                    target.classList.add('code-active');
+                    target.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                    document.getElementById('active-line-counter').textContent = `PC: Line ${lineNum + 1}`;
+                }
+            }
+        }
+
+        function renderBars(active = [], sorted = []) {
+            const stage = document.getElementById('array-stage');
+            stage.innerHTML = '';
+            const maxVal = Math.max(...array, 100);
+
+            array.forEach((val, idx) => {
+                const bar = document.createElement('div');
+                bar.id = `bar-${idx}`;
+                const heightPercent = Math.max(12, (val / maxVal) * 100);
+                bar.style.height = `${heightPercent}%`;
+                bar.className = 'w-9 sm:w-11 rounded-t flex flex-col items-center justify-end pb-1.5 transition-all duration-150';
+
+                if (sorted.includes(idx)) bar.classList.add('bg-emerald-500');
+                else if (active.includes(idx)) bar.classList.add('bg-amber-400', 'shadow-lg', 'shadow-amber-400/40');
+                else bar.classList.add('bg-sky-600');
+
+                bar.innerHTML = `<span class="text-[11px] font-mono font-bold text-white">${val}</span>`;
+                stage.appendChild(bar);
+            });
+        }
+
+        function moveCraneTo(idx1, idx2) {
+            const bar1 = document.getElementById(`bar-${idx1}`);
+            const carriage = document.getElementById('crane-carriage');
+            if (bar1 && carriage) {
+                const rect = bar1.getBoundingClientRect();
+                const parentRect = bar1.parentElement.getBoundingClientRect();
+                const offset = rect.left - parentRect.left;
+                carriage.style.left = `${offset - 8}px`;
+            }
+        }
+
+        function renderVars(varsObj) {
+            const box = document.getElementById('vars-box');
+            box.innerHTML = '';
+            if (!varsObj || Object.keys(varsObj).length === 0) {
+                box.innerHTML = '<span class="text-slate-600 italic">No active frame</span>';
+                return;
+            }
+            Object.entries(varsObj).forEach(([k, v]) => {
+                const badge = document.createElement('div');
+                badge.className = 'px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-[10px] font-mono';
+                badge.innerHTML = `<span class="text-slate-500">${k}:</span> <span class="text-sky-300 font-bold">${v}</span>`;
+                box.appendChild(badge);
+            });
+        }
+
+        // Sorting Generators
+        function* bubbleGen() {
+            let n = array.length;
+            yield { line: 1, vars: { n }, status: "Reading array length" };
+            for (let i = 0; i < n - 1; i++) {
+                yield { line: 2, vars: { i, n }, status: `Outer loop iteration i = ${i}` };
+                let swapped = false;
+                yield { line: 3, vars: { i, swapped } };
+                for (let j = 0; j < n - i - 1; j++) {
+                    comparisons++;
+                    moveCraneTo(j, j + 1);
+                    yield { line: 5, active: [j, j + 1], vars: { i, j, "arr[j]": array[j], "arr[j+1]": array[j+1] }, status: `Comparing arr[${j}] (${array[j]}) vs arr[${j+1}] (${array[j+1]})` };
+                    if (array[j] > array[j + 1]) {
+                        swaps++;
+                        let temp = array[j];
+                        array[j] = array[j + 1];
+                        array[j + 1] = temp;
+                        yield { line: 8, active: [j, j + 1], vars: { temp, swapped: true }, status: `Crane hoisted and swapped blocks at index ${j} and ${j+1}` };
+                        swapped = true;
+                    }
+                }
+                yield { line: 12, vars: { swapped } };
+                if (!swapped) break;
+            }
+        }
+
+        function* selectionGen() {
+            let n = array.length;
+            yield { line: 1, vars: { n } };
+            for (let i = 0; i < n - 1; i++) {
+                let minIdx = i;
+                yield { line: 3, active: [i], vars: { i, minIdx }, status: `Assumed minimum index = ${i}` };
+                for (let j = i + 1; j < n; j++) {
+                    comparisons++;
+                    yield { line: 5, active: [minIdx, j], vars: { i, j, minIdx }, status: `Testing if arr[${j}] < arr[${minIdx}]` };
+                    if (array[j] < array[minIdx]) {
+                        minIdx = j;
+                        yield { line: 6, active: [minIdx], vars: { minIdx }, status: `Found new minimum at index ${minIdx} (${array[minIdx]})` };
+                    }
+                }
+                if (minIdx !== i) {
+                    swaps++;
+                    moveCraneTo(i, minIdx);
+                    let temp = array[minIdx];
+                    array[minIdx] = array[i];
+                    array[i] = temp;
+                    yield { line: 10, active: [i, minIdx], vars: { i, minIdx, temp }, status: `Crane swapped minimum block into slot ${i}` };
+                }
+            }
+        }
+
+        function* insertionGen() {
+            let n = array.length;
+            for (let i = 1; i < n; i++) {
+                let key = array[i];
+                let j = i - 1;
+                moveCraneTo(i, i);
+                yield { line: 3, active: [i], vars: { i, key, j }, status: `Picked key element ${key} at index ${i}` };
+                while (j >= 0 && (comparisons++, array[j] > key)) {
+                    array[j + 1] = array[j];
+                    swaps++;
+                    yield { line: 6, active: [j, j + 1], vars: { key, j }, status: `Shifted arr[${j}] rightward` };
+                    j = j - 1;
+                }
+                array[j + 1] = key;
+                yield { line: 9, active: [j + 1], vars: { "arr[j+1]": key }, status: `Inserted key ${key} at slot ${j+1}` };
+            }
+        }
+
+        function stepForward() {
+            if (!generator) {
+                const algo = document.getElementById('algo-select').value;
+                if (algo === 'bubble') generator = bubbleGen();
+                else if (algo === 'selection') generator = selectionGen();
+                else if (algo === 'insertion') generator = insertionGen();
+                startTimer();
+            }
+
+            const res = generator.next();
+            if (!res.done) {
+                const step = res.value;
+                highlightLine(step.line);
+                if (step.vars) renderVars(step.vars);
+                if (step.status) document.getElementById('crane-status').textContent = step.status;
+                if (step.active) renderBars(step.active);
+                else renderBars();
+
+                document.getElementById('cmp-val').textContent = comparisons;
+                document.getElementById('swap-val').textContent = swaps;
+            } else {
+                stop();
+                pauseTimer();
+                highlightLine(null);
+                renderBars([], array.map((_, i) => i));
+                document.getElementById('crane-status').textContent = "Sorting Completed Successfully!";
+            }
+        }
+
+        function togglePlay() {
+            if (isRunning) stop();
+            else start();
+        }
+
+        function start() {
+            isRunning = true;
+            document.getElementById('play-btn').innerHTML = '<i class="fa-solid fa-pause text-[10px]"></i> <span>Pause</span>';
+            document.getElementById('play-btn').className = 'px-3.5 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-semibold text-xs flex items-center gap-1.5 transition';
+            startTimer();
+
+            const speed = 620 - parseInt(document.getElementById('speed-slider').value);
+            animationInterval = setInterval(stepForward, Math.max(25, speed));
+        }
+
+        function stop() {
+            isRunning = false;
+            clearInterval(animationInterval);
+            pauseTimer();
+            document.getElementById('play-btn').innerHTML = '<i class="fa-solid fa-play text-[10px]"></i> <span>Run</span>';
+            document.getElementById('play-btn').className = 'px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center gap-1.5 transition';
+        }
+
+        function resetData() {
+            stop();
+            resetTimer();
+            generator = null;
+            comparisons = 0;
+            swaps = 0;
+            document.getElementById('cmp-val').textContent = '0';
+            document.getElementById('swap-val').textContent = '0';
+            document.getElementById('crane-status').textContent = 'Crane Idle • Ready';
+            highlightLine(null);
+            renderVars({});
+            renderBars();
+        }
+
+        function generateRandomData() {
+            array = [];
+            for (let i = 0; i < 10; i++) array.push(Math.floor(Math.random() * 85) + 12);
+            resetData();
+        }
+
+        function changeAlgo() {
+            const algo = document.getElementById('algo-select').value;
+            renderCode(algo);
+            resetData();
+        }
+
+        // MCQ Submission
+        const QUIZ_KEY = {
+            q1: { correct: 'B', reason: "With an early break condition ('if (!swapped) break;'), Bubble Sort stops after one pass if no elements were swapped, taking O(N) time." },
+            q2: { correct: 'B', reason: "Selection Sort performs only one swap per outer loop pass, giving at most N - 1 total swaps even in the worst case." },
+            q3: { correct: 'A', reason: "Insertion Sort operates online, meaning it can sort elements sequentially as they are received without needing all data upfront." },
+            q4: { correct: 'B', reason: "Stability guarantees that identical elements remain in the exact same relative order after sorting as they were before." },
+            q5: { correct: 'B', reason: "When partitions are severely unbalanced (e.g., partitioning 0 elements on one side and N-1 on the other), recursion depth reaches N, causing O(N²) time complexity." }
+        };
+
+        function submitQuiz(e) {
+            e.preventDefault();
+            const form = new FormData(document.getElementById('quiz-form'));
+            let score = 0;
+            let report = [];
+
+            for (let i = 1; i <= 5; i++) {
+                const k = `q${i}`;
+                const chosen = form.get(k);
+                const info = QUIZ_KEY[k];
+                const isCorrect = (chosen === info.correct);
+                if (isCorrect) score++;
+
+                report.push({ questionNo: i, chosenAnswer: chosen, correctAnswer: info.correct, isCorrect, explanation: info.reason });
+                const expl = document.getElementById(`expl-${i}`);
+                expl.classList.remove('hidden');
+                if (isCorrect) {
+                    expl.className = "mt-3 p-3 rounded-lg text-xs bg-emerald-500/10 border border-emerald-500/30 text-emerald-300";
+                    expl.innerHTML = `<strong>Correct (${chosen})!</strong> ${info.reason}`;
+                } else {
+                    expl.className = "mt-3 p-3 rounded-lg text-xs bg-rose-500/10 border border-rose-500/30 text-rose-300";
+                    expl.innerHTML = `<strong>Incorrect.</strong> You chose <strong>${chosen}</strong>, but correct is <strong>${info.correct}</strong>.<br><span class="text-slate-300 mt-1 block">Why: ${info.reason}</span>`;
+                }
+            }
+
+            const rec = {
+                id: 'REC-' + Date.now(),
+                studentName: currentStudent.name,
+                studentAge: currentStudent.age,
+                concept: 'Sorting Algorithms Lab',
+                score, total: 5,
+                timestamp: new Date().toLocaleString(),
+                details: report
+            };
+
+            let allRecords = JSON.parse(localStorage.getItem('javaQuizRecords')) || [];
+            allRecords.push(rec);
+            localStorage.setItem('javaQuizRecords', JSON.stringify(allRecords));
+
+            document.getElementById('final-score-text').textContent = `${score} / 5 (${(score / 5) * 100}%)`;
+            document.getElementById('score-summary').classList.remove('hidden');
+            document.getElementById('submit-btn').classList.add('hidden');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            renderCode('bubble');
+            renderBars();
+        });
+    </script>
+</body>
+</html>
